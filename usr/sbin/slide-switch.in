@@ -1,7 +1,11 @@
 #!/bin/sh
 # Copyright (C) 2016 Jeffery To
 
-. /usr/lib/slide-switch/functions.sh
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+datarootdir=@datarootdir@
+
+. "@datadir@/@PACKAGE_NAME@/functions.sh"
 
 case $1 in
 	-i|--init)

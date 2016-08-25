@@ -1,18 +1,23 @@
 #!/bin/sh
 # Copyright (C) 2016 Jeffery To
 
-version=0.9.0
+package_name=@PACKAGE_NAME@
+package_version=@PACKAGE_VERSION@
 
-platform_info=/usr/lib/slide-switch/platform.sh
-state_dir=/var/run/slide-switch
-lock_dir=/var/lock/slide-switch
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+
+lib_dir=@libdir@/$package_name
+state_dir=@localstatedir@/run/$package_name
+lock_dir=@localstatedir@/lock/$package_name
 
 gpio_table=/sys/kernel/debug/gpio
 hotplug_call=/sbin/hotplug-call
 rc_button=/etc/rc.button
 
-switches_cache="$state_dir/switches"
-state_file="$state_dir/state"
+platform_info=$lib_dir/platform.sh
+switches_cache=$state_dir/switches
+state_file=$state_dir/state
 
 . /usr/share/libubox/jshn.sh
 
@@ -622,5 +627,5 @@ do_button() {
 }
 
 do_version() {
-	echo "$version"
+	echo "$package_name $package_version"
 }

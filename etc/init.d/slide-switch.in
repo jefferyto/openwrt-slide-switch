@@ -1,8 +1,11 @@
 #!/bin/sh /etc/rc.common
 # Copyright (C) 2016 Jeffery To
 
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+
 START=70
 
 boot() {
-	/usr/sbin/slide-switch --init
+	"@sbindir@/slide-switch" --init
 }

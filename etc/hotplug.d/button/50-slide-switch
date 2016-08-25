@@ -1,6 +1,0 @@
-#!/bin/sh
-# Copyright (C) 2016 Jeffery To
-
-/usr/sbin/slide-switch --button "$BUTTON" &
-
-exit 0
