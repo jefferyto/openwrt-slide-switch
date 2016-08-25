@@ -1,0 +1,24 @@
+{
+	"gl-mt300a": {
+		"switch": {
+			"gpios": [ 1, 2 ],
+			"codes": [ "BTN_0", "BTN_1" ],
+			"positions": {
+				"lo_hi": "left",
+				"lo_lo": "center",
+				"hi_lo": "right"
+			}
+		}
+	},
+	"gl-mt300n": {
+		"switch": {
+			"gpios": [ 42, 43 ],
+			"codes": [ "BTN_0", "BTN_1" ],
+			"positions": {
+				"hi_lo": "left",
+				"lo_lo": "center",
+				"lo_hi": "right"
+			}
+		}
+	}
+}

@@ -1,0 +1,20 @@
+#!/bin/sh
+# Copyright (C) 2016 Jeffery To
+
+. /usr/lib/slide-switch/functions.sh
+
+case $1 in
+	-i|--init)
+		do_init
+		;;
+	-b|--button)
+		[ -z "$2" ] && exit $ex_usage
+		do_button "$2"
+		;;
+	-v|--version)
+		do_version
+		;;
+	*)
+		exit $ex_usage
+		;;
+esac

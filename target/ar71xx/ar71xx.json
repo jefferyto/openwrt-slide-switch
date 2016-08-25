@@ -1,0 +1,102 @@
+{
+	"gl-ar150": {
+		"switch": {
+			"gpios": [ 7, 8 ],
+			"codes": [ "BTN_7", "BTN_8" ],
+			"positions": {
+				"lo_hi": "left",
+				"lo_lo": "center",
+				"hi_lo": "right"
+			}
+		}
+	},
+	"gl-ar300m": {
+		"switch": {
+			"gpios": [ 0, 1 ],
+			"codes": [ "BTN_0", "BTN_1" ],
+			"positions": {
+				"lo_hi": "left",
+				"lo_lo": "center",
+				"hi_lo": "right"
+			}
+		}
+	},
+	"tl-mr12u": "tl-mr13u",
+	"tl-mr13u": {
+		"mode": {
+			"gpios": [ 6, 7 ],
+			"codes": [ "BTN_0", "BTN_1" ],
+			"positions": {
+				"lo_hi": "3g",
+				"hi_lo": "router",
+				"hi_hi": "ap"
+			}
+		}
+	},
+	"tl-mr3020": {
+		"mode": {
+			"gpios": [ 18, 20 ],
+			"codes": [ "BTN_0", "BTN_1" ],
+			"positions": {
+				"hi_lo": "3g",
+				"lo_hi": "wisp",
+				"hi_hi": "ap"
+			}
+		}
+	},
+	"tl-mr3040-v2": {
+		"mode": {
+			"gpios": [ 19, 20 ],
+			"codes": [ "BTN_0", "BTN_1" ],
+			"positions": {
+				"lo_hi": "3g",
+				"hi_lo": "wisp",
+				"hi_hi": "ap"
+			}
+		}
+	},
+	"tl-wr720n-v3": {
+		"mode": {
+			"gpios": [ 18, 20 ],
+			"codes": [ "BTN_0", "BTN_1" ],
+			"positions": {
+				"hi_hi": "ap",
+				"hi_lo": "3g",
+				"lo_hi": "router"
+			}
+		}
+	},
+	"tl-wr810n": {
+		"mode": {
+			"gpios": [ 0, 1 ],
+			"codes": [ "BTN_1", "BTN_0" ],
+			"positions": {
+				"lo_hi": "router-ap",
+				"hi_lo": "repeater",
+				"hi_hi": "client"
+			}
+		}
+	},
+	"wzr-hp-ag300h": {
+		"router": {
+			"gpios": [ 6, 7 ],
+			"codes": [ "BTN_6", "BTN_5" ],
+			"positions": {
+				"hi_hi": "on",
+				"hi_lo": "off",
+				"lo_hi": "auto"
+			}
+		}
+	},
+	"wzr-hp-g300nh": {
+		"router": {
+			"gpios": [ 34, 38 ],
+			"codes": [ "BTN_5", "BTN_6" ],
+			"positions": {
+				"lo_lo": "on",
+				"hi_lo": "off",
+				"lo_hi": "auto"
+			}
+		}
+	}
+}
