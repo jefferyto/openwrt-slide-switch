@@ -7,3 +7,6 @@ Makefile.in
 /configure
 /install-sh
 /missing
+
+/build/*
+!/build/.gitignore
