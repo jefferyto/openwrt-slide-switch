@@ -3,5 +3,5 @@
 
 . /lib/ar71xx.sh
 
-switch_data_file=/usr/lib/slide-switch/ar71xx.json
+switch_data_file=$lib_dir/ar71xx.json
 board_name=$(ar71xx_board_name)

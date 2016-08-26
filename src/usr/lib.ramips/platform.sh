@@ -3,5 +3,5 @@
 
 . /lib/ramips.sh
 
-switch_data_file=/usr/lib/slide-switch/ramips.json
+switch_data_file=$lib_dir/ramips.json
 board_name=$(ramips_board_name)
