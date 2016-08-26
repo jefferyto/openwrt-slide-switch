@@ -1,8 +1,5 @@
-# automake
-Makefile
 Makefile.in
 
-# autoconf
 /autom4te.cache
 /aclocal.m4
 /config.log

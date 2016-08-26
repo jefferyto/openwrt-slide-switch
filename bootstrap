@@ -1,0 +1,20 @@
+#!/bin/sh
+# Copyright (C) 2016 Jeffery To
+
+me=$(basename "$0")
+
+if autoreconf --version >/dev/null 2>&1; then
+	autoreconf --install --verbose "$@"
+else
+	echo "$me: running: aclocal $@"
+	aclocal "$@" || exit
+
+	echo "$me: running: automake --add-missing --copy $@"
+	automake --add-missing --copy "$@" || exit
+
+	echo "$me: running: autoconf $@"
+	autoconf "$@" || exit
+fi
+
+echo
+echo "Ready for \`cd build && ../configure && make && make install'"

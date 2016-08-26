@@ -17,13 +17,13 @@ AM_INIT_AUTOMAKE
 
 AC_CONFIG_FILES([
 	Makefile
-	etc/hotplug.d/button/Makefile
-	etc/hotplug.d/button/50-slide-switch
-	etc/init.d/Makefile
-	etc/init.d/slide-switch
-	usr/sbin/Makefile
-	usr/sbin/slide-switch
-	usr/share/slide-switch/Makefile
-	usr/share/slide-switch/functions.sh
+	src/etc/hotplug.d/button/Makefile
+	src/etc/hotplug.d/button/50-slide-switch
+	src/etc/init.d/Makefile
+	src/etc/init.d/slide-switch
+	src/usr/sbin/Makefile
+	src/usr/sbin/slide-switch
+	src/usr/share/slide-switch/Makefile
+	src/usr/share/slide-switch/functions.sh
 ])
 AC_OUTPUT

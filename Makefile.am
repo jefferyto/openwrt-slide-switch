@@ -1,4 +1,4 @@
-SUBDIRS = etc/hotplug.d/button \
-	etc/init.d \
-	usr/sbin \
-	usr/share/slide-switch
+SUBDIRS = src/etc/hotplug.d/button \
+	src/etc/init.d \
+	src/usr/sbin \
+	src/usr/share/slide-switch
