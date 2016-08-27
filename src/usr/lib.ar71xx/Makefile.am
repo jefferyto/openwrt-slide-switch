@@ -18,8 +18,8 @@
 # along with slide-switch.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-pkglibdirdir = $(pkglibdir)
-pkglibdir_DATA = ar71xx.json platform.sh
+platformexecdir = $(pkglibdir)
+platformexec_DATA = ar71xx.json platform.sh
 EXTRA_DIST = ar71xx.json platform.sh.cut
 CLEANFILES = platform.sh
 

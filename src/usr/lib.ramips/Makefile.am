@@ -18,8 +18,8 @@
 # along with slide-switch.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-pkglibdirdir = $(pkglibdir)
-pkglibdir_DATA = platform.sh ramips.json
+platformexecdir = $(pkglibdir)
+platformexec_DATA = platform.sh ramips.json
 EXTRA_DIST = platform.sh.cut ramips.json
 CLEANFILES = platform.sh
 
