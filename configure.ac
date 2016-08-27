@@ -43,6 +43,12 @@ fi
 AC_ARG_WITH([platform],
 	[AS_HELP_STRING([--with-platform=BOARD], [support slide switches for this platform/board])])
 
+case $with_platform in
+	ar71xx|ramips)	;;
+	''|yes|no)	AC_MSG_WARN([no platform specified]) ;;
+	*)		AC_MSG_WARN([unknown platform specified]) ;;
+esac
+
 AM_CONDITIONAL([PLATFORM_AR71XX], [test "x$with_platform" = xar71xx])
 AM_CONDITIONAL([PLATFORM_RAMIPS], [test "x$with_platform" = xramips])
 
