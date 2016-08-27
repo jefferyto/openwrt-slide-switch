@@ -1,9 +1,0 @@
-#!/bin/sh
-# Copyright (C) 2016 Jeffery To
-
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-
-"@sbindir@/slide-switch" --button "$BUTTON" &
-
-exit 0

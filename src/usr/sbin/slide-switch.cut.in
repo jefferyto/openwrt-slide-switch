@@ -1,5 +1,6 @@
+#!/bin/sh
 #
-# src/usr/sbin/Makefile.am
+# src/usr/sbin/slide-switch.cut.in
 # This file is part of slide-switch.
 #
 # Copyright (C) 2016 Jeffery To
@@ -17,9 +18,33 @@
 # You should have received a copy of the GNU General Public License
 # along with slide-switch.  If not, see <http://www.gnu.org/licenses/>.
 #
+# --8<---- CUT HERE
+#!/bin/sh
+#
+# Copyright (C) 2016 Jeffery To
+# https://github.com/jefferyto/openwrt-slide-switch
+#
+# slide-switch is free software, licensed under the GNU General Public License v2.
+#
 
-sbin_SCRIPTS = slide-switch
-CLEANFILES = slide-switch
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+datarootdir=@datarootdir@
 
-slide-switch: slide-switch.cut
-	$(AWK) 'p; /--8<----/ {p=1}' $< > $@
+. "@datadir@/@PACKAGE_NAME@/functions.sh"
+
+case $1 in
+	-i|--init)
+		do_init
+		;;
+	-b|--button)
+		[ -z "$2" ] && exit $ex_usage
+		do_button "$2"
+		;;
+	-v|--version)
+		do_version
+		;;
+	*)
+		exit $ex_usage
+		;;
+esac
