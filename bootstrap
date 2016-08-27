@@ -1,19 +1,21 @@
 #!/bin/sh
 # Copyright (C) 2016 Jeffery To
 
+set -o errexit
+
 me=$(basename "$0")
 
 if autoreconf --version >/dev/null 2>&1; then
-	autoreconf --install --verbose "$@" || exit
+	autoreconf --install --verbose "$@"
 else
 	echo "$me: running: aclocal $@"
-	aclocal "$@" || exit
+	aclocal "$@"
 
 	echo "$me: running: autoconf $@"
-	autoconf "$@" || exit
+	autoconf "$@"
 
 	echo "$me: running: automake --add-missing --copy $@"
-	automake --add-missing --copy "$@" || exit
+	automake --add-missing --copy "$@"
 fi
 
 echo
