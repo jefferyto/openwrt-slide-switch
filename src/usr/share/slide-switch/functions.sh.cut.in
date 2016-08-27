@@ -118,7 +118,7 @@ list_contains() {
 	local list=" $1 "
 	local item=" $2 "
 
-	[ "${list%$item*}" != "$list" ]
+	[ "x${list%$item*}" != "x$list" ]
 }
 
 
@@ -171,14 +171,14 @@ check_position_string() {
 	local str="$position"
 	local prev
 
-	while [ "$str" != "$prev" ]; do
+	while [ "x$str" != "x$prev" ]; do
 		prev=$str
 
 		str=${str%_hi}
 		str=${str%_lo}
 	done
 
-	[ "$str" = hi ] || [ "$str" = lo ] || warning "position \"$position\" is not in the format \"(hi|lo)(_(hi|lo))*\""
+	[ "x$str" = xhi ] || [ "x$str" = xlo ] || warning "position \"$position\" is not in the format \"(hi|lo)(_(hi|lo))*\""
 }
 
 check_nonempty_string() {
@@ -192,7 +192,7 @@ check_safe_string() {
 	local str="$1"
 	local label="$2"
 
-	[ "${str%[!0-9A-Za-z_-]*}" = "$str" ] || error "$label \"$str\" must contain letters, digits, underscores and/or hyphens only"
+	[ "x${str%[!0-9A-Za-z_-]*}" = "x$str" ] || error "$label \"$str\" must contain letters, digits, underscores and/or hyphens only"
 }
 
 check_position_code() {
@@ -286,7 +286,7 @@ load_switch_data() {
 
 	type=$(jsonfilter -i "$switch_data_file" -t "@[\"$board\"]")
 
-	[ "$type" = string ] && {
+	[ "x$type" = xstring ] && {
 		debug "$board shares switch data with another board, loading alternate board name"
 		board=$(jsonfilter -i "$switch_data_file" -e "@[\"$board\"]")
 
@@ -636,7 +636,7 @@ do_button() {
 	current=$(get_current_position "$switch")
 	debug "current position for switch \"$switch\" is \"$current\""
 
-	[ "$current" != "$previous" ] || {
+	[ "x$current" != "x$previous" ] || {
 		debug "switch \"$switch\" position unchanged"
 		return $ex_tempfail
 	}
