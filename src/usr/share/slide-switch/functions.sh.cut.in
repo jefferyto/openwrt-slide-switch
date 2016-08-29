@@ -76,6 +76,7 @@ log() {
 	local message="$2"
 
 	[ "$level" -le "$VERBOSITY" ] && logger -t "slide-switch[$$]" -p "user.$level" "$message"
+
 	return 0
 }
 
@@ -572,6 +573,8 @@ trigger_button_event() {
 		debug "attempting to call $rc_button/$button"
 		[ -x "$rc_button/$button" ] && "$rc_button/$button"
 	)
+
+	return 0
 }
 
 do_init() {
