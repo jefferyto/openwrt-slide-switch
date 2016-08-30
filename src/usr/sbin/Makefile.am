@@ -19,7 +19,6 @@
 #
 
 sbin_SCRIPTS = slide-switch
-CLEANFILES = slide-switch
 
-slide-switch: slide-switch.cut
-	$(AWK) 'p; /--8<----/ {p=1}' $< > $@
+UNSUFFIX = $(sbin_SCRIPTS)
+include $(top_srcdir)/rules.mk

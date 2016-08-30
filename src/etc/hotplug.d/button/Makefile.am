@@ -20,7 +20,6 @@
 
 buttondir = $(sysconfdir)/hotplug.d/button
 button_DATA = 50-slide-switch
-CLEANFILES = 50-slide-switch
 
-50-slide-switch: 50-slide-switch.cut
-	$(AWK) 'p; /--8<----/ {p=1}' $< > $@
+UNSUFFIX = $(button_DATA)
+include $(top_srcdir)/rules.mk

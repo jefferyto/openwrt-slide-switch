@@ -20,8 +20,8 @@
 
 platformexecdir = $(pkglibdir)
 platformexec_DATA = platform.sh ramips.json
-EXTRA_DIST = platform.sh.cut ramips.json
-CLEANFILES = platform.sh
 
-platform.sh: platform.sh.cut
-	$(AWK) 'p; /--8<----/ {p=1}' $< > $@
+include $(top_srcdir)/rules.mk
+
+EXTRA_DIST = $(platformexec_DATA:=-cut)
+CLEANFILES += $(platformexec_DATA)

@@ -1,5 +1,6 @@
+#!/bin/sh /etc/rc.common
 #
-# src/usr/share/slide-switch/Makefile.am
+# src/etc/init.d/slide-switch.sh-cut.in
 # This file is part of slide-switch.
 #
 # Copyright (C) 2016 Jeffery To
@@ -17,9 +18,20 @@
 # You should have received a copy of the GNU General Public License
 # along with slide-switch.  If not, see <http://www.gnu.org/licenses/>.
 #
+# --8<---- CUT HERE
+#!/bin/sh /etc/rc.common
+#
+# Copyright (C) 2016 Jeffery To
+# https://github.com/jefferyto/openwrt-slide-switch
+#
+# slide-switch is free software, licensed under the GNU General Public License v2.
+#
 
-pkgdata_DATA = functions.sh
+prefix=@prefix@
+exec_prefix=@exec_prefix@
 
-include $(top_srcdir)/rules.mk
+START=70
 
-CLEANFILES += functions.sh
+boot() {
+	"@sbindir@/slide-switch" --init
+}

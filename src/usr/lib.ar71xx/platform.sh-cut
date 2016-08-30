@@ -1,6 +1,6 @@
-#!/bin/sh /etc/rc.common
+#!/bin/sh
 #
-# src/etc/init.d/slide-switch.cut.in
+# src/usr/lib.ar71xx/platform.sh-cut
 # This file is part of slide-switch.
 #
 # Copyright (C) 2016 Jeffery To
@@ -19,7 +19,7 @@
 # along with slide-switch.  If not, see <http://www.gnu.org/licenses/>.
 #
 # --8<---- CUT HERE
-#!/bin/sh /etc/rc.common
+#!/bin/sh
 #
 # Copyright (C) 2016 Jeffery To
 # https://github.com/jefferyto/openwrt-slide-switch
@@ -27,11 +27,7 @@
 # slide-switch is free software, licensed under the GNU General Public License v2.
 #
 
-prefix=@prefix@
-exec_prefix=@exec_prefix@
+. /lib/ar71xx.sh
 
-START=70
-
-boot() {
-	"@sbindir@/slide-switch" --init
-}
+switch_data_file=$lib_dir/ar71xx.json
+board_name=$(ar71xx_board_name)

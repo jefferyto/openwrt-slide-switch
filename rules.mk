@@ -1,6 +1,5 @@
-#!/bin/sh
 #
-# src/usr/sbin/slide-switch.cut.in
+# rules.mk
 # This file is part of slide-switch.
 #
 # Copyright (C) 2016 Jeffery To
@@ -18,33 +17,16 @@
 # You should have received a copy of the GNU General Public License
 # along with slide-switch.  If not, see <http://www.gnu.org/licenses/>.
 #
-# --8<---- CUT HERE
-#!/bin/sh
-#
-# Copyright (C) 2016 Jeffery To
-# https://github.com/jefferyto/openwrt-slide-switch
-#
-# slide-switch is free software, licensed under the GNU General Public License v2.
-#
 
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-datarootdir=@datarootdir@
+SUFFIXES: .json .json-cut .sh .sh-cut
 
-. "@datadir@/@PACKAGE_NAME@/functions.sh"
+.json-cut.json:
+	$(AWK) 'p; /--8<----/ {p=1}' $< > $@
 
-case $1 in
-	-i|--init)
-		do_init
-		;;
-	-b|--button)
-		[ -z "$2" ] && exit $ex_usage
-		do_button "$2"
-		;;
-	-v|--version)
-		do_version
-		;;
-	*)
-		exit $ex_usage
-		;;
-esac
+.sh-cut.sh:
+	$(AWK) 'p; /--8<----/ {p=1}' $< > $@
+
+CLEANFILES = $(UNSUFFIX) $(UNSUFFIX:=.sh)
+
+$(UNSUFFIX): $(UNSUFFIX:=.sh)
+	cp $(UNSUFFIX:=.sh) $(UNSUFFIX)

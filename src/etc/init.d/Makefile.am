@@ -20,7 +20,6 @@
 
 initddir = $(sysconfdir)/init.d
 initd_SCRIPTS = slide-switch
-CLEANFILES = slide-switch
 
-slide-switch: slide-switch.cut
-	$(AWK) 'p; /--8<----/ {p=1}' $< > $@
+UNSUFFIX = $(initd_SCRIPTS)
+include $(top_srcdir)/rules.mk

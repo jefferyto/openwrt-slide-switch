@@ -1,0 +1,44 @@
+/*
+ * src/usr/lib.ramips/ramips.json-cut
+ * This file is part of slide-switch.
+ *
+ * Copyright (C) 2016 Jeffery To
+ * https://github.com/jefferyto/openwrt-slide-switch
+ *
+ * slide-switch is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * slide-switch is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with slide-switch.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * --8<---- CUT HERE */
+{
+	"gl-mt300a": {
+		"switch": {
+			"gpios": [ 1, 2 ],
+			"codes": [ "BTN_0", "BTN_1" ],
+			"positions": {
+				"lo_hi": "left",
+				"lo_lo": "center",
+				"hi_lo": "right"
+			}
+		}
+	},
+	"gl-mt300n": {
+		"switch": {
+			"gpios": [ 42, 43 ],
+			"codes": [ "BTN_0", "BTN_1" ],
+			"positions": {
+				"hi_lo": "left",
+				"lo_lo": "center",
+				"lo_hi": "right"
+			}
+		}
+	}
+}

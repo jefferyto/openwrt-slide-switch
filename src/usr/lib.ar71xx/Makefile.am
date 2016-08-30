@@ -20,8 +20,8 @@
 
 platformexecdir = $(pkglibdir)
 platformexec_DATA = ar71xx.json platform.sh
-EXTRA_DIST = ar71xx.json platform.sh.cut
-CLEANFILES = platform.sh
 
-platform.sh: platform.sh.cut
-	$(AWK) 'p; /--8<----/ {p=1}' $< > $@
+include $(top_srcdir)/rules.mk
+
+EXTRA_DIST = $(platformexec_DATA:=-cut)
+CLEANFILES += $(platformexec_DATA)

@@ -55,15 +55,15 @@ AM_CONDITIONAL([PLATFORM_RAMIPS], [test "x$with_platform" = xramips])
 AC_CONFIG_FILES([
 	Makefile
 	src/etc/hotplug.d/button/Makefile
-	src/etc/hotplug.d/button/50-slide-switch.cut
+	src/etc/hotplug.d/button/50-slide-switch.sh-cut
 	src/etc/init.d/Makefile
-	src/etc/init.d/slide-switch.cut
+	src/etc/init.d/slide-switch.sh-cut
 	src/usr/lib.ar71xx/Makefile
 	src/usr/lib.ramips/Makefile
 	src/usr/sbin/Makefile
-	src/usr/sbin/slide-switch.cut
+	src/usr/sbin/slide-switch.sh-cut
 	src/usr/share/slide-switch/Makefile
-	src/usr/share/slide-switch/functions.sh.cut
+	src/usr/share/slide-switch/functions.sh-cut
 ])
 
 AC_OUTPUT

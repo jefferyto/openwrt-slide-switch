@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# src/usr/lib.ar71xx/platform.sh.cut
+# src/usr/lib.ramips/platform.sh-cut
 # This file is part of slide-switch.
 #
 # Copyright (C) 2016 Jeffery To
@@ -27,7 +27,7 @@
 # slide-switch is free software, licensed under the GNU General Public License v2.
 #
 
-. /lib/ar71xx.sh
+. /lib/ramips.sh
 
-switch_data_file=$lib_dir/ar71xx.json
-board_name=$(ar71xx_board_name)
+switch_data_file=$lib_dir/ramips.json
+board_name=$(ramips_board_name)
