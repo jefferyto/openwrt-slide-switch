@@ -1,0 +1,83 @@
+# slide-switch
+
+slide-switch translates slide switch position changes into normal button
+presses and releases for OpenWrt / LEDE devices.
+
+## Usage
+
+After installing slide-switch, follow the instructions at the [OpenWrt
+wiki][button howto] to add scripts for each switch position. Both procd
+scripts (in `/etc/rc.button`) and hotplug scripts (in
+`/etc/hotplug.d/button`) are supported.
+
+Each switch position has a corresponding button name in the form
+`<switch name>-<switch position>`. For example, the TP-Link TL-MR3020
+has a switch named "mode" with positions "3g", "wisp" and "ap", so the
+button names for each switch position are `mode-3g`, `mode-wisp` and
+`mode-ap`. See [Supported Devices](#supported-devices) for a list of
+switch names and positions.
+
+slide-switch will trigger both button presses and releases. For example,
+if the "mode" switch on the TP-Link TL-MR3020 is moved from "3g" to
+"wisp", a release action (`ACTION=released`) will be triggered for the
+`mode-3g` "button", and a press action (`ACTION=pressed`) will be
+triggered for the `mode-wisp` "button". (For both actions, a `SEEN`
+variable will also be set to the number of seconds since a previous
+action occurred for that button.) Note that timeout action is not
+supported at this time.
+
+## Supported Platforms
+
+slide-switch has been tested with OpenWrt Chaos Calmer 15.05 and should
+work with current OpenWrt / LEDE development snapshots.
+
+## Supported Devices
+
+| Device                  | Switch Name | Switch Positions              | Verified | Notes |
+| ----------------------- | ----------- | ----------------------------- | -------- | ----- |
+| Buffalo WZR-HP-AG300H   | router      | on / off / auto               |          |       |
+| Buffalo WZR-HP-G300NH   | router      | on / off / auto               |          |       |
+| GLI (GL.iNet) GL-AR150  | switch      | left / center / right         |          |       |
+| GLI (GL.iNet) GL-AR300M | switch      | left / center / right         |          |       |
+| GLI (GL.iNet) GL-MT300A | switch      | left / center / right         |          |       |
+| GLI (GL.iNet) GL-MT300M | switch      | left / center / right         |          |       |
+| TP-Link TL-MR12U        | mode        | 3g / router / ap              |          |       |
+| TP-Link TL-MR13U        | mode        | 3g / router / ap              |          |       |
+| TP-Link TL-MR3020       | mode        | 3g / wisp / ap                |          |       |
+| TP-Link TL-MR3040       | mode        | 3g / wisp / ap                |          | v2.0 and later |
+| TP-Link TL-WR720N       | mode        | ap / 3g / router              |          | v3 and v4 (Chinese version) |
+| TP-Link TL-WR810N       | mode        | router-ap / repeater / client |          |       |
+
+Data for these devices was initially collected from the OpenWrt wiki and
+from OpenWrt / LEDE source code. Devices where the switch data has been
+verified correct is noted in the Verified column.
+
+## Changelog
+
+See [NEWS][].
+
+## Contributing
+
+Beyond code for bug fixes or new features, any help to verify switch
+data or add data for new devices would be greatly appreciated.
+
+## License
+
+Copyright (C) 2016 Jeffery To  
+<https://github.com/jefferyto/openwrt-slide-switch>
+
+slide-switch is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+version 2 as published by the Free Software Foundation.
+
+slide-switch is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with slide-switch.  If not, see <http://www.gnu.org/licenses/>.
+
+
+[button howto]: https://wiki.openwrt.org/doc/howto/hardware.button
+[NEWS]: NEWS
