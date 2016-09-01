@@ -33,5 +33,5 @@ exec_prefix=@exec_prefix@
 START=99
 
 boot() {
-	"@sbindir@/slide-switch" --init
+	"@sbindir@/slide-switch" init
 }
