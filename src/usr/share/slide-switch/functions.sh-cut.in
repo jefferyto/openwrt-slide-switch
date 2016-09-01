@@ -580,13 +580,25 @@ trigger_button_event() {
 }
 
 do_init() {
+	local force="$1"
 	local switches
 	local switch
 	local position
 
-	debug "do_init"
+	debug "do_init \"$force\""
+
+	case $force in
+		'')	debug "not forcing init" ;;
+		force)	debug "forcing init" ;;
+		*)	return $ex_usage;
+	esac
 
 	load_switch_data || return
+
+	[ "x$force" = "xforce" ] || ! load_state || {
+		debug "have already init, nothing to do"
+		return 0
+	}
 
 	switches=$(get_switches)
 

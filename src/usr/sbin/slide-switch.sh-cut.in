@@ -35,7 +35,7 @@ datarootdir=@datarootdir@
 
 case $1 in
 	init)
-		do_init
+		do_init "$2"
 		;;
 	button)
 		[ -z "$2" ] && exit $ex_usage
