@@ -57,7 +57,7 @@ AC_CONFIG_FILES([
 	src/etc/hotplug.d/button/Makefile
 	src/etc/hotplug.d/button/50-slide-switch.sh-cut
 	src/etc/init.d/Makefile
-	src/etc/init.d/slide-switch.sh-cut
+	src/etc/init.d/zzz-slide-switch.sh-cut
 	src/usr/lib.ar71xx/Makefile
 	src/usr/lib.ramips/Makefile
 	src/usr/sbin/Makefile

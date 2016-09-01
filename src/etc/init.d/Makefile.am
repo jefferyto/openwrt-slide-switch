@@ -19,7 +19,7 @@
 #
 
 initddir = $(sysconfdir)/init.d
-initd_SCRIPTS = slide-switch
+initd_SCRIPTS = zzz-slide-switch
 
 UNSUFFIX = $(initd_SCRIPTS)
 include $(top_srcdir)/rules.mk
