@@ -12,19 +12,20 @@ scripts (in `/etc/rc.button`) and hotplug scripts (in
 
 Each switch position has a corresponding button name in the form
 `<switch name>-<switch position>`. For example, the TP-Link TL-MR3020
-has a switch named "mode" with positions "3g", "wisp" and "ap", so the
-button names for each switch position are `mode-3g`, `mode-wisp` and
-`mode-ap`. See [Supported Devices](#supported-devices) for a list of
-switch names and positions.
+has a switch named *mode* with positions "3g", "wisp" and "ap"; button
+names for the positions would be `mode-3g`, `mode-wisp` and `mode-ap`.
+See [Supported Devices](#supported-devices) for a list of switch names
+and positions.
 
 slide-switch will trigger both button presses and releases. For example,
-if the "mode" switch on the TP-Link TL-MR3020 is moved from "3g" to
-"wisp", a release action (`ACTION=released`) will be triggered for the
-`mode-3g` "button", and a press action (`ACTION=pressed`) will be
-triggered for the `mode-wisp` "button". (For both actions, a `SEEN`
-variable will also be set to the number of seconds since a previous
-action occurred for that button.) Note that timeout action is not
-supported at this time.
+if the *mode* switch is moved from "3g" to "wisp", a release action will
+be triggered for "3g" (`BUTTON=mode-3g ACTION=released`), and a press
+action will be triggered for "wisp" (`BUTTON=mode-wisp ACTION=pressed`).
+Note that the timeout action is not supported at this time.
+
+On boot, slide-switch will also trigger a button press for the active
+position of each switch. To disable or re-enable this behaviour, run
+`slide-switch boot disable` or `slide-switch boot enable`, respectively.
 
 ## Supported Platforms
 
