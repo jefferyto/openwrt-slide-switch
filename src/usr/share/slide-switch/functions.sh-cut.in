@@ -36,6 +36,7 @@ exec_prefix=@exec_prefix@
 lib_dir=@libdir@/$package_name
 state_dir=@localstatedir@/run/$package_name
 lock_dir=@localstatedir@/lock/$package_name
+initd_dir=@sysconfdir@/init.d
 
 gpio_table=/sys/kernel/debug/gpio
 hotplug_call=/sbin/hotplug-call
@@ -44,6 +45,7 @@ rc_button=/etc/rc.button
 platform_info=$lib_dir/platform.sh
 switches_cache=$state_dir/switches
 state_file=$state_dir/state
+initd_script=$initd_dir/zzz-$package_name
 
 . /usr/share/libubox/jshn.sh
 
@@ -653,6 +655,21 @@ do_button() {
 	save_state
 
 	release_locks
+}
+
+do_boot() {
+	local action="$1"
+
+	debug "do_boot \"$action\""
+
+	[ -x "$initd_script" ] || error "init.d script \"$initd_script\" not found" || return $ex_unavailable
+
+	case $action in
+		enable|disable)	;;
+		*)		return $ex_usage ;;
+	esac
+
+	"$initd_script" "$action"
 }
 
 do_version() {

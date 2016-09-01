@@ -41,6 +41,10 @@ case $1 in
 		[ -z "$2" ] && exit $ex_usage
 		do_button "$2"
 		;;
+	boot)
+		[ -z "$2" ] && exit $ex_usage
+		do_boot "$2"
+		;;
 	-v|--version)
 		do_version
 		;;
