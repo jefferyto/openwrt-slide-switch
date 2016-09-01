@@ -632,6 +632,8 @@ do_button() {
 
 	debug "do_button \"$button\""
 
+	[ -n "$button" ] || error "missing button name" || return $ex_usage
+
 	load_switch_data || return
 
 	switch=$(get_switch_for_button "$button") && get_lock "$switch" || return $ex_tempfail
@@ -677,7 +679,8 @@ do_boot() {
 	[ -x "$initd_script" ] || error "init.d script \"$initd_script\" not found" || return $ex_unavailable
 
 	case $action in
-		enable|disable)	;;
+		enable		debug "enabling init on boot" ;;
+		disable)	debug "disabling init on boot" ;;
 		*)		return $ex_usage ;;
 	esac
 

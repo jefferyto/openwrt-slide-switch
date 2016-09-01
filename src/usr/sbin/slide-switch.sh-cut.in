@@ -35,14 +35,15 @@ datarootdir=@datarootdir@
 
 case $1 in
 	init)
+		# $2 optional: "force" to force init
 		do_init "$2"
 		;;
 	button)
-		[ -z "$2" ] && exit $ex_usage
+		# $2 required: button name from button event
 		do_button "$2"
 		;;
 	boot)
-		[ -z "$2" ] && exit $ex_usage
+		# $2 required: "enable" or "disable"
 		do_boot "$2"
 		;;
 	-v|--version)
