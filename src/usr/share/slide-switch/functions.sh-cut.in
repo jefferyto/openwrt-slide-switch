@@ -282,7 +282,7 @@ load_switch_data() {
 	[ -n "$board" ] || error "missing board name" || return $ex_dataerr
 	[ -f "$switch_data_file" ] || error "cannot find switch data file \"$switch_data_file\"" || return $ex_noinput
 
-	debug "attemping to load switch data for $board from $switch_data_file"
+	debug "attempting to load switch data for $board from $switch_data_file"
 
 	jsonfilter -q -i "$switch_data_file" -t "@"
 	[ "$?" -ne 126 ] || error "failed to parse $switch_data_file" || return $ex_dataerr
@@ -569,7 +569,7 @@ trigger_button_event() {
 
 		debug "triggering button event with BUTTON=\"$button\" ACTION=\"$action\" SEEN=\"$seen\""
 
-		debug "attemping to call $hotplug_call"
+		debug "attempting to call $hotplug_call"
 		[ -x "$hotplug_call" ] && "$hotplug_call" button
 
 		debug "attempting to call $rc_button/$button"
