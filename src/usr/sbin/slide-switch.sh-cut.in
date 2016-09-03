@@ -42,6 +42,10 @@ case $1 in
 		# $2 required: button name from button event
 		do_button "$2"
 		;;
+	position)
+		# $2 required: switch name
+		do_position "$2"
+		;;
 	boot)
 		# $2 required: "enable" or "disable"
 		do_boot "$2"

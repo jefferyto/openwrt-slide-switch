@@ -671,6 +671,22 @@ do_button() {
 	release_locks
 }
 
+do_position() {
+	local switch="$1"
+	local position
+
+	debug "do_position \"$switch\""
+
+	[ -n "$switch" ] || error "missing switch name" || return $ex_usage
+
+	load_switch_data || return
+
+	list_contains "$(get_switches)" "$switch" || error "\"$switch\" is not a valid switch" || return $ex_usage
+
+	position=$(get_current_position "$switch")
+	echo "$(get_position_name "$switch" "$position")"
+}
+
 do_boot() {
 	local action="$1"
 
@@ -679,7 +695,7 @@ do_boot() {
 	[ -x "$initd_script" ] || error "init.d script \"$initd_script\" not found" || return $ex_unavailable
 
 	case $action in
-		enable		debug "enabling init on boot" ;;
+		enable)		debug "enabling init on boot" ;;
 		disable)	debug "disabling init on boot" ;;
 		*)		return $ex_usage ;;
 	esac
