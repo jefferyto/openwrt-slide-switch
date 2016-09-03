@@ -590,7 +590,7 @@ do_init() {
 	case $force in
 		'')	debug "not forcing init" ;;
 		force)	debug "forcing init" ;;
-		*)	return $ex_usage;
+		*)	error "invalid option \"$force\"" || return $ex_usage ;;
 	esac
 
 	load_switch_data || return
@@ -697,7 +697,7 @@ do_boot() {
 	case $action in
 		enable)		debug "enabling init on boot" ;;
 		disable)	debug "disabling init on boot" ;;
-		*)		return $ex_usage ;;
+		*)		error "invalid option \"$action\"" || return $ex_usage ;;
 	esac
 
 	"$initd_script" "$action"
