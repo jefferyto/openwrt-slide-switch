@@ -616,54 +616,63 @@ do_init() {
 	done
 }
 
-do_button() {
+do_update() {
 	local button="$1"
-	local has_previous="1"
+	local switches
 	local switch
+	local locked
+	local now
 	local current
 	local previous
-	local now
-	local position_name
-	local before
 
-	debug "do_button \"$button\""
-
-	[ -n "$button" ] || error "missing button name" || return $ex_usage
+	debug "do_update \"$button\""
 
 	load_switch_data || return
 
-	switch=$(get_switch_for_button "$button") && get_lock "$switch" || return $ex_tempfail
+	if [ -n "$button" ]; then
+		switches=$(get_switches)
+	else
+		switches=$(get_switch_for_button "$button")
+	fi
+
+	for switch in $switches; do
+		get_lock "$switch" && locked="$locked $switch"
+	done
+
+	[ -n "$locked" ] || {
+		debug "no switches to update"
+		return
+	}
 
 	sleep 1
 
-	load_state "$switch" || {
-		init_state "$switch"
-		has_previous=
-	}
-
-	if [ -n "$has_previous" ]; then
-		previous=$(get_state_position)
-		debug "previous position for switch \"$switch\" is \"$previous\""
-	else
-		debug "no previous position for switch \"$switch\""
-	fi
-
-	current=$(get_current_position "$switch")
-	debug "current position for switch \"$switch\" is \"$current\""
-
-	[ "x$current" != "x$previous" ] || {
-		debug "switch \"$switch\" position unchanged"
-		release_locks
-		return $ex_tempfail
-	}
-
 	now="$(get_epoch)"
 
-	[ -n "$has_previous" ] && trigger_button_event "$switch" "$previous" released "$now"
-	trigger_button_event "$switch" "$current" pressed "$now"
+	for switch in $locked; do
+		if load_state "$switch"; then
+			previous=$(get_state_position)
+			debug "previous position for switch \"$switch\" is \"$previous\""
+		else
+			init_state "$switch"
+			previous=
+			debug "no previous position for switch \"$switch\""
+		fi
 
-	set_state_position "$current"
-	save_state "$switch"
+		current=$(get_current_position "$switch")
+		debug "current position for switch \"$switch\" is \"$current\""
+
+		[ "x$current" != "x$previous" ] || {
+			debug "switch \"$switch\" position unchanged"
+			continue
+		}
+
+		[ -n "$previous" ] && trigger_button_event "$switch" "$previous" released "$now"
+		trigger_button_event "$switch" "$current" pressed "$now"
+
+		set_state_position "$current"
+		save_state "$switch"
+	done
+
 	release_locks
 }
 

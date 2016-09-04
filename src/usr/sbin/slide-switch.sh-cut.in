@@ -38,9 +38,9 @@ case $1 in
 		# $2 optional: "force" to force init
 		do_init "$2"
 		;;
-	button)
-		# $2 required: button name from button event
-		do_button "$2"
+	update)
+		# $2 option: button name from button event
+		do_update "$2"
 		;;
 	position)
 		# $2 required: switch name
