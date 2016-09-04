@@ -600,7 +600,7 @@ do_init() {
 		debug "attempting to init switch \"$switch\""
 
 		[ "x$force" = "xforce" ] || ! load_state "$switch" || {
-			debug "switch \"$switch\" has already init"
+			debug "switch \"$switch\" already init"
 			continue
 		}
 
@@ -677,9 +677,13 @@ do_update() {
 }
 
 do_switch() {
+	local switches
+
 	load_switch_data || return
 
-	echo "$(get_switches)"
+	switches=$(get_switches)
+
+	echo "${switches# }"
 }
 
 do_position() {
