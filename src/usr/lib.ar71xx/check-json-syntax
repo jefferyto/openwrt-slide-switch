@@ -1,5 +1,6 @@
+#!/bin/sh
 #
-# rules.mk
+# src/usr/lib.ar71xx/check-json-syntax
 # This file is part of slide-switch.
 #
 # Copyright (C) 2016 Jeffery To
@@ -18,17 +19,4 @@
 # along with slide-switch.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-SUFFIXES: .json .json-cut .sh .sh-cut
-
-.json-cut.json:
-	$(AWK) 'p; /--8<----/ {p=1}' $< > $@
-
-.sh-cut.sh:
-	$(AWK) 'p; /--8<----/ {p=1}' $< > $@
-
-CLEANFILES = $(UNSUFFIX) $(UNSUFFIX:=.sh)
-
-$(UNSUFFIX): $(UNSUFFIX:=.sh)
-	cp $(UNSUFFIX:=.sh) $(UNSUFFIX)
-
-EXTRA_DIST = $(TESTS)
+python -m json.tool ar71xx.json

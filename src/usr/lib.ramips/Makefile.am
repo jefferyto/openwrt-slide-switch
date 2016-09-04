@@ -20,8 +20,9 @@
 
 platformexecdir = $(pkglibdir)
 platformexec_DATA = platform.sh ramips.json
+TESTS = check-shell-syntax check-json-syntax
 
 include $(top_srcdir)/rules.mk
 
-EXTRA_DIST = $(platformexec_DATA:=-cut)
+EXTRA_DIST += $(platformexec_DATA:=-cut)
 CLEANFILES += $(platformexec_DATA)

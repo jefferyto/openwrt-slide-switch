@@ -20,6 +20,7 @@
 
 initddir = $(sysconfdir)/init.d
 initd_SCRIPTS = zzz-slide-switch
+TESTS = check-shell-syntax
 
 UNSUFFIX = $(initd_SCRIPTS)
 include $(top_srcdir)/rules.mk

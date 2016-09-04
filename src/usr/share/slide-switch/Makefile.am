@@ -19,6 +19,7 @@
 #
 
 pkgdata_DATA = functions.sh
+TESTS = check-shell-syntax
 
 include $(top_srcdir)/rules.mk
 

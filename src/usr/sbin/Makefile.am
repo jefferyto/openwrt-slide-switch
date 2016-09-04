@@ -19,6 +19,7 @@
 #
 
 sbin_SCRIPTS = slide-switch
+TESTS = check-shell-syntax
 
 UNSUFFIX = $(sbin_SCRIPTS)
 include $(top_srcdir)/rules.mk
