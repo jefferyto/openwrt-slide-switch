@@ -34,7 +34,7 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 
 lib_dir=@libdir@/$package_name
-state_dir=@localstatedir@/run/$package_name
+run_dir=@localstatedir@/run/$package_name
 lock_dir=@localstatedir@/lock/$package_name
 initd_dir=@sysconfdir@/init.d
 
@@ -43,8 +43,8 @@ hotplug_call=/sbin/hotplug-call
 rc_button=/etc/rc.button
 
 platform_info=$lib_dir/platform.sh
-switches_cache=$state_dir/switches
-state_file=$state_dir/state
+switches_cache=$run_dir/switches
+state_dir=$run_dir/state
 initd_script=$initd_dir/zzz-$package_name
 
 . /usr/share/libubox/jshn.sh
@@ -225,6 +225,8 @@ validate_switch_data() {
 	[ -n "$switches" ] || warning "no switches defined for \"$board_name\""
 
 	for switch in $switches; do
+		check_nonempty_string "$switch" "switch name" &&
+		check_safe_string "$switch" "switch name" &&
 		check_json_type "$switch" object || return
 
 		json_select "$switch"
@@ -256,7 +258,7 @@ validate_switch_data() {
 
 			json_get_var position_name "$position"
 
-			check_nonempty_string "$position_name" "$switch.position.$position" &&
+			check_nonempty_string "$position_name" "position name" &&
 			check_safe_string "$position_name" "position name" &&
 			check_position_code "$switch" "$position_name" "$codes" || return
 		done
@@ -396,42 +398,44 @@ get_position_name() {
 }
 
 
+get_state_file() {
+	local switch="$1"
+
+	echo "$state_dir/$switch"
+}
+
 init_state() {
+	local switch="$1"
 	local now="$(get_epoch)"
-	local switches="$(get_switches)"
-	local switch
 	local positions
 	local position
 
-	debug "initializing state"
+	debug "initializing state for switch \"$switch\""
+
+	json_set_namespace switches
+	json_select
+	json_select "$switch"
+	json_get_keys positions positions
+
+	position=$(get_current_position "$switch")
+	debug "setting \"$position\" as initial position for switch \"$switch\""
+
 	json_set_namespace state
 	json_init
-
-	for switch in $switches; do
-		position=$(get_current_position "$switch")
-
-		json_set_namespace switches
-		json_select
-		json_select "$switch"
-		json_get_keys positions positions
-
-		debug "setting \"$position\" as initial position for switch \"$switch\""
-
-		json_set_namespace state
-		json_select
-		json_add_object "$switch"
-		json_add_string position "$position"
-		json_add_object seen
-		for position in $positions; do
-			json_add_int "$position" "$now"
-		done
-		json_close_object
-		json_close_object
+	json_add_string position "$position"
+	json_add_object seen
+	for position in $positions; do
+		json_add_int "$position" "$now"
 	done
+	json_close_object
 }
 
 load_state() {
-	debug "attempting to load state from $state_file"
+	local switch="$1"
+	local state_file="$(get_state_file "$switch")"
+
+	debug "attempting to load state for switch \"$switch\" from $state_file"
+
 	[ -f "$state_file" ] && {
 		debug "loading state from $state_file"
 		json_set_namespace state
@@ -440,7 +444,11 @@ load_state() {
 }
 
 save_state() {
-	debug "saving state to $state_file"
+	local switch="$1"
+	local state_file="$(get_state_file "$switch")"
+
+	debug "saving state for switch \"$switch\" to $state_file"
+
 	json_set_namespace state
 	mkdir -p "$(dirname "$state_file")"
 	echo "$(json_dump)" > "$state_file"
@@ -448,43 +456,34 @@ save_state() {
 
 
 get_state_position() {
-	local switch="$1"
-
 	json_set_namespace state
 	json_select
-	json_select "$switch"
 	echo "$(get_json_value position)"
 }
 
 set_state_position() {
-	local switch="$1"
-	local position="$2"
+	local position="$1"
 
 	json_set_namespace state
 	json_select
-	json_select "$switch"
 	json_add_string position "$position"
 }
 
 get_state_seen() {
-	local switch="$1"
-	local position="$2"
+	local position="$1"
 
 	json_set_namespace state
 	json_select
-	json_select "$switch"
 	json_select seen
 	echo "$(get_json_value "$position")"
 }
 
 set_state_seen() {
-	local switch="$1"
-	local position="$2"
-	local seen="$3"
+	local position="$1"
+	local seen="$2"
 
 	json_set_namespace state
 	json_select
-	json_select "$switch"
 	json_select seen
 	json_add_int "$position" "$seen"
 }
@@ -493,7 +492,7 @@ set_state_seen() {
 get_lock_dir() {
 	local switch="$1"
 
-	echo "$lock_dir/$switch.lock"
+	echo "$lock_dir/$switch"
 }
 
 cleanup_locks() {
@@ -555,9 +554,9 @@ trigger_button_event() {
 
 	[ -n "$position_name" ] || warning "could not get position name for switch \"$switch\" and position \"$position\"" || return
 
-	before=$(get_state_seen "$switch" "$position")
+	before=$(get_state_seen "$position")
 	[ -n "$now" ] || now=$before
-	set_state_seen "$switch" "$position" "$now"
+	set_state_seen "$position" "$now"
 
 	button=$(get_position_code "$switch" "$position_name")
 	seen=$(($now - $before))
@@ -595,29 +594,26 @@ do_init() {
 
 	load_switch_data || return
 
-	[ "x$force" = "xforce" ] || ! load_state || {
-		debug "have already init, nothing to do"
-		return 0
-	}
-
 	switches=$(get_switches)
 
 	for switch in $switches; do
-		get_lock "$switch" || {
-			release_locks
-			return $ex_tempfail
+		debug "attempting to init switch \"$switch\""
+
+		[ "x$force" = "xforce" ] || ! load_state "$switch" || {
+			debug "switch \"$switch\" has already init"
+			continue
 		}
-	done
 
-	init_state
-	save_state
+		get_lock "$switch" || continue
 
-	for switch in $switches; do
-		position=$(get_state_position "$switch")
+		init_state "$switch"
+
+		position=$(get_state_position)
 		trigger_button_event "$switch" "$position" pressed
-	done
 
-	release_locks
+		save_state "$switch"
+		release_locks
+	done
 }
 
 do_button() {
@@ -640,13 +636,13 @@ do_button() {
 
 	sleep 1
 
-	load_state || {
-		init_state
+	load_state "$switch" || {
+		init_state "$switch"
 		has_previous=
 	}
 
 	if [ -n "$has_previous" ]; then
-		previous=$(get_state_position "$switch")
+		previous=$(get_state_position)
 		debug "previous position for switch \"$switch\" is \"$previous\""
 	else
 		debug "no previous position for switch \"$switch\""
@@ -657,6 +653,7 @@ do_button() {
 
 	[ "x$current" != "x$previous" ] || {
 		debug "switch \"$switch\" position unchanged"
+		release_locks
 		return $ex_tempfail
 	}
 
@@ -665,9 +662,8 @@ do_button() {
 	[ -n "$has_previous" ] && trigger_button_event "$switch" "$previous" released "$now"
 	trigger_button_event "$switch" "$current" pressed "$now"
 
-	set_state_position "$switch" "$current"
-	save_state
-
+	set_state_position "$current"
+	save_state "$switch"
 	release_locks
 }
 
