@@ -77,7 +77,7 @@ log() {
 	local level="$1"
 	local message="$2"
 
-	[ "$level" -le "$VERBOSITY" ] && logger -t "slide-switch[$$]" -p "user.$level" "$message"
+	[ "$level" -le "$VERBOSITY" ] && logger -t "$package_name[$$]" -p "user.$level" "$message"
 
 	return 0
 }
