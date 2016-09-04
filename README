@@ -34,20 +34,20 @@ work with current OpenWrt / LEDE development snapshots.
 
 ## Supported Devices
 
-| Device                  | Switch Name | Switch Positions              | Verified | Notes |
-| ----------------------- | ----------- | ----------------------------- | -------- | ----- |
-| Buffalo WZR-HP-AG300H   | router      | on / off / auto               |          |       |
-| Buffalo WZR-HP-G300NH   | router      | on / off / auto               |          |       |
-| GLI (GL.iNet) GL-AR150  | switch      | left / center / right         |          |       |
-| GLI (GL.iNet) GL-AR300M | switch      | left / center / right         |          |       |
-| GLI (GL.iNet) GL-MT300A | switch      | left / center / right         |          |       |
-| GLI (GL.iNet) GL-MT300M | switch      | left / center / right         |          |       |
-| TP-Link TL-MR12U        | mode        | 3g / router / ap              |          |       |
-| TP-Link TL-MR13U        | mode        | 3g / router / ap              |          |       |
-| TP-Link TL-MR3020       | mode        | 3g / wisp / ap                |          |       |
-| TP-Link TL-MR3040       | mode        | 3g / wisp / ap                |          | v2.0 and later |
-| TP-Link TL-WR720N       | mode        | ap / 3g / router              |          | v3 and v4 (Chinese version) |
-| TP-Link TL-WR810N       | mode        | router-ap / repeater / client |          |       |
+| Device                  | Switch Name | Switch Positions              | Verified           | Notes |
+| ----------------------- | :---------: | :---------------------------: | :----------------: | ----- |
+| Buffalo WZR-HP-AG300H   | router      | on / off / auto               |                    |       |
+| Buffalo WZR-HP-G300NH   | router      | on / off / auto               |                    |       |
+| GLI (GL.iNet) GL-AR150  | switch      | left / center / right         |                    |       |
+| GLI (GL.iNet) GL-AR300M | switch      | left / center / right         |                    |       |
+| GLI (GL.iNet) GL-MT300A | switch      | left / center / right         |                    |       |
+| GLI (GL.iNet) GL-MT300M | switch      | left / center / right         |                    |       |
+| TP-Link TL-MR12U        | mode        | 3g / router / ap              |                    |       |
+| TP-Link TL-MR13U        | mode        | 3g / router / ap              |                    |       |
+| TP-Link TL-MR3020       | mode        | 3g / wisp / ap                | :heavy_check_mark: |       |
+| TP-Link TL-MR3040       | mode        | 3g / wisp / ap                |                    | v2.0 and later |
+| TP-Link TL-WR720N       | mode        | ap / 3g / router              |                    | v3 and v4 (Chinese version) |
+| TP-Link TL-WR810N       | mode        | router-ap / repeater / client |                    |       |
 
 Data for these devices was initially collected from the OpenWrt wiki and
 from OpenWrt / LEDE source code. Devices where the switch data has been
