@@ -676,6 +676,12 @@ do_update() {
 	release_locks
 }
 
+do_switch() {
+	load_switch_data || return
+
+	echo "$(get_switches)"
+}
+
 do_position() {
 	local switch="$1"
 	local position

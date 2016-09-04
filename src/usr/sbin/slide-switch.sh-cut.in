@@ -42,6 +42,9 @@ case $1 in
 		# $2 option: button name from button event
 		do_update "$2"
 		;;
+	switch)
+		do_switch
+		;;
 	position)
 		# $2 required: switch name
 		do_position "$2"
