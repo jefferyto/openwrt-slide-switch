@@ -518,7 +518,7 @@ get_lock() {
 	mkdir -p "$lock_dir"
 
 	mkdir "$dir" 2>/dev/null || {
-		debug "failed to get lock for $switch ($dir)"
+		debug "failed to get lock for switch \"$switch\" ($dir)"
 		return 1
 	}
 
@@ -630,9 +630,9 @@ do_update() {
 	load_switch_data || return
 
 	if [ -n "$button" ]; then
-		switches=$(get_switches)
-	else
 		switches=$(get_switch_for_button "$button")
+	else
+		switches=$(get_switches)
 	fi
 
 	for switch in $switches; do
