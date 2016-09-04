@@ -39,14 +39,14 @@ case $1 in
 		do_init "$2"
 		;;
 	update)
-		# $2 option: button name from button event
+		# $2 optional: button name from button event
 		do_update "$2"
 		;;
 	switch)
 		do_switch
 		;;
 	position)
-		# $2 required: switch name
+		# $2 optional: switch name
 		do_position "$2"
 		;;
 	boot)

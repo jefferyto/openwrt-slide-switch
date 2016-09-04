@@ -683,19 +683,32 @@ do_switch() {
 }
 
 do_position() {
-	local switch="$1"
+	local requested="$1"
+	local switches
+	local switch
 	local position
+	local position_names
 
-	debug "do_position \"$switch\""
-
-	[ -n "$switch" ] || error "missing switch name" || return $ex_usage
+	debug "do_position \"$required\""
 
 	load_switch_data || return
 
-	list_contains "$(get_switches)" "$switch" || error "\"$switch\" is not a valid switch" || return $ex_usage
+	switches=$(get_switches)
 
-	position=$(get_current_position "$switch")
-	echo "$(get_position_name "$switch" "$position")"
+	if [ -n "$requested" ]; then
+		for switch in $requested; do
+			list_contains "$switches" "$switch" || error "\"$switch\" is not a valid switch" || return $ex_usage
+		done
+	else
+		requested=$switches
+	fi
+
+	for switch in $requested; do
+		position=$(get_current_position "$switch")
+		position_names="$position_names $(get_position_name "$switch" "$position")"
+	done
+
+	echo "${position_names# }"
 }
 
 do_boot() {
