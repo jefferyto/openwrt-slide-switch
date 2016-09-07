@@ -84,20 +84,20 @@ log() {
 
 error() {
 	local message="$1"
-	local exitTrue="$2"
+	local returnTrue="$2"
 
 	log 3 "$message"
 
-	[ -n "$exitTrue" ]
+	[ -n "$returnTrue" ]
 }
 
 warning() {
 	local message="$1"
-	local exitTrue="$2"
+	local returnTrue="$2"
 
 	log 4 "$message"
 
-	[ -n "$exitTrue" ]
+	[ -n "$returnTrue" ]
 }
 
 debug() {

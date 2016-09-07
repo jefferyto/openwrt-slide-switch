@@ -32,4 +32,4 @@ exec_prefix=@exec_prefix@
 
 "@sbindir@/slide-switch" update "$BUTTON" &
 
-exit 0
+return 0
