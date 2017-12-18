@@ -27,7 +27,7 @@
 # slide-switch is free software, licensed under the GNU General Public License v2.
 #
 
-. /lib/ar71xx.sh
+. /lib/functions.sh
 
 switch_data_file=$lib_dir/ar71xx.json
-board_name=$(ar71xx_board_name)
+board_name=$(board_name)

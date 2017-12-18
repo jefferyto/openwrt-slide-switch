@@ -97,6 +97,17 @@
 			}
 		}
 	},
+	"tl-wr902ac-v1": {
+		"mode": {
+			"gpios": [ 17, 14 ],
+			"codes": [ "BTN_0", "BTN_1" ],
+			"positions": {
+				"hi_lo": "share-eth",
+				"lo_hi": "share-hotspot",
+				"hi_hi": "ap"
+			}
+		}
+	},
 	"wzr-hp-ag300h": {
 		"router": {
 			"gpios": [ 6, 7 ],
