@@ -97,6 +97,7 @@
 			}
 		}
 	},
+	"tl-wr810n-v2": "tl-wr810n",
 	"tl-wr902ac-v1": {
 		"mode": {
 			"gpios": [ 17, 14 ],
