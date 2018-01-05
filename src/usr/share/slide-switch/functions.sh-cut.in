@@ -290,7 +290,7 @@ load_switch_data() {
 
 	debug "attempting to load switch data for $board from $switch_data_file"
 
-	jsonfilter -q -i "$switch_data_file" -t "@"
+	jsonfilter -q -i "$switch_data_file" -t "@" > /dev/null
 	[ "$?" -ne 126 ] || error "failed to parse $switch_data_file" || return $ex_dataerr
 
 	type=$(jsonfilter -i "$switch_data_file" -t "@[\"$board\"]")
