@@ -2,7 +2,7 @@
 # src/usr/lib.ramips/Makefile.am
 # This file is part of slide-switch.
 #
-# Copyright (C) 2016 Jeffery To
+# Copyright (C) 2016-2018 The slide-switch authors
 # https://github.com/jefferyto/openwrt-slide-switch
 #
 # slide-switch is free software; you can redistribute it and/or
