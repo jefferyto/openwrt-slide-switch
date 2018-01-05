@@ -1,7 +1,7 @@
 # News
 
 ## Unreleased
-* Added support for TP-Link TL-WR902NAC v1
+* Added support for TP-Link TL-WR902AC v1
 * Fixed ar71xx_board_name / ramips_board_name not found error
 * Fixed "object" included in first-run output
 
