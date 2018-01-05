@@ -106,6 +106,10 @@ debug() {
 	log 7 "$message"
 }
 
+board_name() {
+	[ -e /tmp/sysinfo/board_name ] && cat /tmp/sysinfo/board_name || echo "generic"
+}
+
 get_epoch() {
 	echo "$(date -u +%s)"
 }
@@ -222,7 +226,7 @@ validate_switch_data() {
 
 	json_get_keys switches
 
-	[ -n "$switches" ] || warning "no switches defined for \"$board_name\""
+	[ -n "$switches" ] || warning "no switches defined"
 
 	for switch in $switches; do
 		check_nonempty_string "$switch" "switch name" &&
@@ -268,7 +272,7 @@ validate_switch_data() {
 }
 
 load_switch_data() {
-	local board="$board_name"
+	local board="$(board_name)"
 	local type
 	local data
 

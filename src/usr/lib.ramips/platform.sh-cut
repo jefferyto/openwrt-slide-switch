@@ -27,7 +27,4 @@
 # slide-switch is free software, licensed under the GNU General Public License v2.
 #
 
-. /lib/functions.sh
-
 switch_data_file=$lib_dir/ramips.json
-board_name=$(board_name)
