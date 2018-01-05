@@ -1,6 +1,6 @@
 # News
 
-## Unreleased
+## 0.9.1 - 2018-01-05
 * Added support for:
   * GLI (GL.iNet) GL-MT300N v2
   * TP-Link TL-WR810N v2 (unverified)
