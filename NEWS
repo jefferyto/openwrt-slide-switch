@@ -1,8 +1,10 @@
 # News
 
 ## Unreleased
-* Added support for TP-Link TL-WR810N v2 (unverified)
-* Added support for TP-Link TL-WR902AC v1
+* Added support for:
+  * GLI (GL.iNet) GL-MT300N v2
+  * TP-Link TL-WR810N v2 (unverified)
+  * TP-Link TL-WR902AC v1
 * Fixed ar71xx_board_name / ramips_board_name not found error
 * Fixed "object" included in first-run output
 

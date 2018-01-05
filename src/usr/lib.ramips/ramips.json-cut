@@ -40,5 +40,16 @@
 				"lo_hi": "right"
 			}
 		}
+	},
+	"gl-mt300n-v2": {
+		"switch": {
+			"gpios": [ 0, 3 ],
+			"codes": [ "BTN_0", "BTN_1" ],
+			"positions": {
+				"hi_lo": "left",
+				"lo_lo": "center",
+				"lo_hi": "right"
+			}
+		}
 	}
 }

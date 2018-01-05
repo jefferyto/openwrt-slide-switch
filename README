@@ -41,7 +41,7 @@ work with current OpenWrt / LEDE development snapshots.
 | GLI (GL.iNet) GL-AR150  | switch      | left / center / right          |                    |       |
 | GLI (GL.iNet) GL-AR300M | switch      | left / center / right          |                    |       |
 | GLI (GL.iNet) GL-MT300A | switch      | left / center / right          |                    |       |
-| GLI (GL.iNet) GL-MT300M | switch      | left / center / right          |                    |       |
+| GLI (GL.iNet) GL-MT300N | switch      | left / center / right          |                    | v1 and v2 |
 | TP-Link TL-MR12U        | mode        | 3g / router / ap               |                    |       |
 | TP-Link TL-MR13U        | mode        | 3g / router / ap               |                    |       |
 | TP-Link TL-MR3020       | mode        | 3g / wisp / ap                 | :heavy_check_mark: |       |
