@@ -29,8 +29,10 @@ position of each switch. To disable or re-enable this behaviour, run
 
 ## Supported Platforms
 
-slide-switch has been tested with OpenWrt Chaos Calmer 15.05 and should
-work with current OpenWrt / LEDE development snapshots.
+slide-switch 0.9.0 has been tested with OpenWrt 15.05 (Chaos Calmer) and
+LEDE 17.01 (Reboot).
+
+0.9.1 should work with current OpenWrt / LEDE development snapshots.
 
 ## Supported Devices
 
