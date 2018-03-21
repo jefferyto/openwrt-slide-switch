@@ -5,9 +5,9 @@ presses and releases for OpenWrt / LEDE devices.
 
 ## Usage
 
-After installing slide-switch, follow the instructions at the [OpenWrt
-wiki][button howto] to add scripts for each switch position. Both procd
-scripts (in `/etc/rc.button`) and hotplug scripts (in
+After installing slide-switch, follow the instructions in the [OpenWrt
+User Guide][button howto] to add scripts for each switch position. Both
+procd scripts (in `/etc/rc.button`) and hotplug scripts (in
 `/etc/hotplug.d/button`) are supported.
 
 Each switch position has a corresponding button name in the form
@@ -83,5 +83,5 @@ You should have received a copy of the GNU General Public License
 along with slide-switch.  If not, see <http://www.gnu.org/licenses/>.
 
 
-[button howto]: https://wiki.openwrt.org/doc/howto/hardware.button
+[button howto]: https://openwrt.org/docs/guide-user/hardware/hardware.button
 [NEWS]: NEWS
