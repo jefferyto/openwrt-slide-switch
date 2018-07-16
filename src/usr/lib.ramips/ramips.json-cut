@@ -51,5 +51,16 @@
 				"lo_hi": "right"
 			}
 		}
+	},
+	"tl-wr902ac-v3": {
+		"mode": {
+			"gpios": [ 2, 3 ],
+			"codes": [ "BTN_0", "BTN_1" ],
+			"positions": {
+				"lo_hi": "share-eth",
+				"hi_lo": "share-hotspot",
+				"hi_hi": "ap"
+			}
+		}
 	}
 }
