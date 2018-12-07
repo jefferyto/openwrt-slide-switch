@@ -52,6 +52,16 @@
 			}
 		}
 	},
+	"ht-tm02": {
+		"mode": {
+			"gpios": [ 14 ],
+			"codes": [ "BTN_0" ],
+			"positions": {
+				"lo": "wired",
+				"hi": "wireless"
+			}
+		}
+	},
 	"tl-wr902ac-v3": {
 		"mode": {
 			"gpios": [ 2, 3 ],
