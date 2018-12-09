@@ -61,8 +61,7 @@
 			}
 		}
 	},
-	"tl-mr12u": "tl-mr13u",
-	"tl-mr13u": {
+	"tl-mr12u": {
 		"mode": {
 			"gpios": [ 6, 7 ],
 			"codes": [ "BTN_0", "BTN_1" ],
@@ -73,6 +72,7 @@
 			}
 		}
 	},
+	"tl-mr13u": "tl-mr12u",
 	"tl-mr3020": {
 		"mode": {
 			"gpios": [ 18, 20 ],
