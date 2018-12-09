@@ -1,6 +1,6 @@
 # News
 
-## Unreleased
+## 0.9.3 - 2018-12-10
 * Added support for routers with two-way switches:
   * GLI (GL.iNet) GL-AR750
   * GLI (GL.iNet) GL-AR750S
