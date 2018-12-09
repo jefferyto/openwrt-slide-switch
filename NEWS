@@ -1,5 +1,9 @@
 # News
 
+## Unreleased
+* Added support for routers with two-way switches:
+  * HooToo HT-TM02
+
 ## 0.9.2 - 2018-07-18
 * Added support for TP-Link TL-WR902AC v3
 
