@@ -120,11 +120,11 @@
 	"tl-wr810n-v2": "tl-wr810n",
 	"tl-wr902ac-v1": {
 		"mode": {
-			"gpios": [ 17, 14 ],
-			"codes": [ "BTN_0", "BTN_1" ],
+			"gpios": [ 14, 17 ],
+			"codes": [ "BTN_1", "BTN_0" ],
 			"positions": {
-				"hi_lo": "share-eth",
-				"lo_hi": "share-hotspot",
+				"lo_hi": "share-eth",
+				"hi_lo": "share-hotspot",
 				"hi_hi": "ap"
 			}
 		}
