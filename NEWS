@@ -2,7 +2,12 @@
 
 ## Unreleased
 * Added support for routers with two-way switches:
+  * GLI (GL.iNet) GL-AR750
+  * GLI (GL.iNet) GL-AR750S
   * HooToo HT-TM02
+* Added support for two-way switches in:
+  * Buffalo WZR-HP-AG300H
+  * Buffalo WZR-HP-G300NH
 
 ## 0.9.2 - 2018-07-18
 * Added support for TP-Link TL-WR902AC v3

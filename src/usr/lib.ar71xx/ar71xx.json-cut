@@ -41,6 +41,26 @@
 			}
 		}
 	},
+	"gl-ar750": {
+		"switch": {
+			"gpios": [ 0 ],
+			"codes": [ "BTN_0" ],
+			"positions": {
+				"lo": "left",
+				"hi": "right"
+			}
+		}
+	},
+	"gl-ar750s": {
+		"switch": {
+			"gpios": [ 8 ],
+			"codes": [ "BTN_0" ],
+			"positions": {
+				"lo": "left",
+				"hi": "right"
+			}
+		}
+	},
 	"tl-mr12u": "tl-mr13u",
 	"tl-mr13u": {
 		"mode": {
@@ -110,6 +130,14 @@
 		}
 	},
 	"wzr-hp-ag300h": {
+		"movie-engine": {
+			"gpios": [ 8 ],
+			"codes": [ "BTN_7" ],
+			"positions": {
+				"lo": "on",
+				"hi": "off"
+			}
+		},
 		"router": {
 			"gpios": [ 6, 7 ],
 			"codes": [ "BTN_6", "BTN_5" ],
@@ -121,6 +149,14 @@
 		}
 	},
 	"wzr-hp-g300nh": {
+		"movie-engine": {
+			"gpios": [ 35, 39 ],
+			"codes": [ "BTN_3", "BTN_4" ],
+			"positions": {
+				"lo_hi": "on",
+				"hi_lo": "off"
+			}
+		},
 		"router": {
 			"gpios": [ 34, 38 ],
 			"codes": [ "BTN_5", "BTN_6" ],
