@@ -2,7 +2,7 @@
 # configure.ac
 # This file is part of slide-switch.
 #
-# Copyright (C) 2016-2018 The slide-switch authors
+# Copyright (C) 2016-2019 The slide-switch authors
 # https://github.com/jefferyto/openwrt-slide-switch
 #
 # slide-switch is free software; you can redistribute it and/or
@@ -24,7 +24,7 @@ AC_PREREQ([2.69])
 AC_INIT([slide-switch], [0.9.4-dev], [https://github.com/jefferyto/openwrt-slide-switch])
 AM_INIT_AUTOMAKE
 
-AC_COPYRIGHT([Copyright (C) 2016-2018 The slide-switch authors])
+AC_COPYRIGHT([Copyright (C) 2016-2019 The slide-switch authors])
 
 # Checks for programs.
 AC_PROG_AWK

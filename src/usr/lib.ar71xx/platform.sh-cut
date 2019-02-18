@@ -3,7 +3,7 @@
 # src/usr/lib.ar71xx/platform.sh-cut
 # This file is part of slide-switch.
 #
-# Copyright (C) 2016-2018 The slide-switch authors
+# Copyright (C) 2016-2019 The slide-switch authors
 # https://github.com/jefferyto/openwrt-slide-switch
 #
 # slide-switch is free software; you can redistribute it and/or
@@ -21,7 +21,7 @@
 # --8<---- CUT HERE
 #!/bin/sh
 #
-# Copyright (C) 2016-2018 The slide-switch authors
+# Copyright (C) 2016-2019 The slide-switch authors
 # https://github.com/jefferyto/openwrt-slide-switch
 #
 # slide-switch is free software, licensed under the GNU General Public License v2.
