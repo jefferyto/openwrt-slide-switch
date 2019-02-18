@@ -72,5 +72,16 @@
 				"hi_hi": "ap"
 			}
 		}
+	},
+	"tplink,tl-mr3020-v3": {
+		"mode": {
+			"gpios": [ 41, 42 ],
+			"codes": [ "BTN_0", "BTN_1" ],
+			"positions": {
+				"lo_hi": "3g",
+				"hi_lo": "wisp",
+				"hi_hi": "ap"
+			}
+		}
 	}
 }
