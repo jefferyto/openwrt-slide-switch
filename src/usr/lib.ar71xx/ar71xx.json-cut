@@ -35,9 +35,9 @@
 			"gpios": [ 0, 1 ],
 			"codes": [ "BTN_0", "BTN_1" ],
 			"positions": {
-				"lo_hi": "left",
-				"lo_lo": "center",
-				"hi_lo": "right"
+				"lo_hi": "switch-left",
+				"lo_lo": "switch-center",
+				"hi_lo": "switch-right"
 			}
 		}
 	},
