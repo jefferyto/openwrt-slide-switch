@@ -18,9 +18,10 @@
 # along with slide-switch.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-pkgdata_DATA = functions.sh
-TESTS = check-shell-syntax
+pkgdata_DATA = functions.sh switch-data.json
+TESTS = check-json-syntax check-shell-syntax
 
 include $(top_srcdir)/rules.mk
 
-CLEANFILES += functions.sh
+EXTRA_DIST += switch-data.json-cut
+CLEANFILES += $(pkgdata_DATA)

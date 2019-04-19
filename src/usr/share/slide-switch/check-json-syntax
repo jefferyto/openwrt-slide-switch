@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# src/usr/lib.ar71xx/check-shell-syntax
+# src/usr/share/slide-switch/check-json-syntax
 # This file is part of slide-switch.
 #
 # Copyright (C) 2016-2019 The slide-switch authors
@@ -19,4 +19,4 @@
 # along with slide-switch.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-sh -n platform.sh
+python -m json.tool switch-data.json

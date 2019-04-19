@@ -32,8 +32,9 @@ package_version=@PACKAGE_VERSION@
 
 prefix=@prefix@
 exec_prefix=@exec_prefix@
+datarootdir=@datarootdir@
 
-lib_dir=@libdir@/$package_name
+data_dir=@datadir@/$package_name
 run_dir=@localstatedir@/run/$package_name
 lock_dir=@localstatedir@/lock/$package_name
 initd_dir=@sysconfdir@/init.d
@@ -42,14 +43,12 @@ gpio_table=/sys/kernel/debug/gpio
 hotplug_call=/sbin/hotplug-call
 rc_button=/etc/rc.button
 
-platform_info=$lib_dir/platform.sh
+switch_data_file=$data_dir/switch-data.json
 switches_cache=$run_dir/switches
 state_dir=$run_dir/state
 initd_script=$initd_dir/zzz-$package_name
 
 . /usr/share/libubox/jshn.sh
-
-[ -f "$switches_cache" ] || [ ! -f "$platform_info" ] || . "$platform_info"
 
 case $VERBOSITY in
 	emerg)		VERBOSITY=0 ;;
@@ -282,8 +281,6 @@ load_switch_data() {
 		json_load "$(cat "$switches_cache")"
 		return
 	}
-
-	[ -f "$platform_info" ] || warning "$platform_info missing, this does not appear to be a supported platform" || return $ex_unavailable
 
 	[ -n "$board" ] || error "missing board name" || return $ex_dataerr
 	[ -f "$switch_data_file" ] || error "cannot find switch data file \"$switch_data_file\"" || return $ex_noinput
