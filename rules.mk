@@ -18,11 +18,13 @@
 # along with slide-switch.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-.json-cut.json:
+SUFFIXES = -cut -in
+
+-cut-in:
 	$(AWK) 'p; /--8<----/ {p=1}' $< > $@
 
-.sh-cut.sh-in:
-	$(AWK) 'p; /--8<----/ {p=1}' $< > $@
+.json-in.json:
+	tr -d '[:space:]' < $< > $@
 
 # https://www.gnu.org/software/make/manual/html_node/Directory-Variables.html
 # https://www.gnu.org/software/automake/manual/html_node/Uniform.html#index-pkgdatadir
