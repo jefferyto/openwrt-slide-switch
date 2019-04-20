@@ -27,16 +27,12 @@
 # slide-switch is free software, licensed under the GNU General Public License v2.
 #
 
-package_name=@PACKAGE_NAME@
-package_version=@PACKAGE_VERSION@
+package=@PACKAGE@
+version=@VERSION@
 
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-datarootdir=@datarootdir@
-
-data_dir=@datadir@/$package_name
-run_dir=@localstatedir@/run/$package_name
-lock_dir=@localstatedir@/lock/$package_name
+data_dir=@pkgdatadir@
+run_dir=@runstatedir@/@PACKAGE@
+lock_dir=@localstatedir@/lock/@PACKAGE@
 initd_dir=@sysconfdir@/init.d
 
 gpio_table=/sys/kernel/debug/gpio
@@ -46,7 +42,7 @@ rc_button=/etc/rc.button
 switch_data_file=$data_dir/switch-data.json
 switches_cache=$run_dir/switches
 state_dir=$run_dir/state
-initd_script=$initd_dir/zzz-$package_name
+initd_script=$initd_dir/zzz-slide-switch
 
 . /usr/share/libubox/jshn.sh
 
@@ -76,7 +72,7 @@ log() {
 	local level="$1"
 	local message="$2"
 
-	[ "$level" -le "$VERBOSITY" ] && logger -t "$package_name[$$]" -p "user.$level" "$message"
+	[ "$level" -le "$VERBOSITY" ] && logger -t "$package[$$]" -p "user.$level" "$message"
 
 	return 0
 }
@@ -733,5 +729,5 @@ do_boot() {
 }
 
 do_version() {
-	echo "$package_name $package_version"
+	echo "$package $version"
 }

@@ -27,9 +27,6 @@
 # slide-switch is free software, licensed under the GNU General Public License v2.
 #
 
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-
 START=99
 
 boot() {

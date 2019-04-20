@@ -43,13 +43,9 @@ fi
 AC_CONFIG_FILES([
 	Makefile
 	src/etc/hotplug.d/button/Makefile
-	src/etc/hotplug.d/button/50-slide-switch.sh-cut
 	src/etc/init.d/Makefile
-	src/etc/init.d/zzz-slide-switch.sh-cut
 	src/usr/sbin/Makefile
-	src/usr/sbin/slide-switch.sh-cut
 	src/usr/share/slide-switch/Makefile
-	src/usr/share/slide-switch/functions.sh-cut
 ])
 
 AC_OUTPUT

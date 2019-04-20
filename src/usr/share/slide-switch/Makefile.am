@@ -19,9 +19,9 @@
 #
 
 pkgdata_DATA = functions.sh switch-data.json
-TESTS = check-json-syntax check-shell-syntax
+dist_check_SCRIPTS = check-json-syntax check-shell-syntax
+
+CLEANFILES = $(pkgdata_DATA)
+EXTRA_DIST = $(pkgdata_DATA:=-cut)
 
 include $(top_srcdir)/rules.mk
-
-EXTRA_DIST += switch-data.json-cut
-CLEANFILES += $(pkgdata_DATA)
