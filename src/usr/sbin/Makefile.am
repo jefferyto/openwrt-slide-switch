@@ -19,7 +19,9 @@
 #
 
 sbin_SCRIPTS = slide-switch
-TESTS = check-shell-syntax
+dist_check_SCRIPTS = check-shell-syntax
 
-UNSUFFIX = $(sbin_SCRIPTS)
+CLEANFILES = $(sbin_SCRIPTS)
+EXTRA_DIST = $(sbin_SCRIPTS:=.sh-cut)
+
 include $(top_srcdir)/rules.mk

@@ -1,6 +1,8 @@
 # News
 
 ## 0.9.4 - Unreleased
+* Merged platform data to make the package architecture-independent
+* Minify switch data file during installation
 * Added support for TP-Link TL-MR3020 v3
 
 ## 0.9.3 - 2018-12-10

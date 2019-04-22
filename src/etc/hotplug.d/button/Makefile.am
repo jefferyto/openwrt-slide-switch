@@ -20,7 +20,9 @@
 
 buttondir = $(sysconfdir)/hotplug.d/button
 button_DATA = 50-slide-switch
-TESTS = check-shell-syntax
+dist_check_SCRIPTS = check-shell-syntax
 
-UNSUFFIX = $(button_DATA)
+CLEANFILES = $(button_DATA)
+EXTRA_DIST = $(button_DATA:=.sh-cut)
+
 include $(top_srcdir)/rules.mk

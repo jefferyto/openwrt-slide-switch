@@ -1,5 +1,6 @@
+#!/bin/sh
 #
-# src/usr/lib.ar71xx/Makefile.am
+# src/usr/share/slide-switch/check-json-syntax
 # This file is part of slide-switch.
 #
 # Copyright (C) 2016-2019 The slide-switch authors
@@ -18,11 +19,4 @@
 # along with slide-switch.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-platformexecdir = $(pkglibdir)
-platformexec_DATA = platform.sh ar71xx.json
-TESTS = check-shell-syntax check-json-syntax
-
-include $(top_srcdir)/rules.mk
-
-EXTRA_DIST += $(platformexec_DATA:=-cut)
-CLEANFILES += $(platformexec_DATA)
+python -m json.tool switch-data.json
