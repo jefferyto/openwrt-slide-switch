@@ -1,7 +1,7 @@
 # slide-switch
 
 slide-switch translates slide switch position changes into normal button
-presses and releases for OpenWrt / LEDE devices.
+presses and releases for OpenWrt devices.
 
 ## Usage
 
@@ -58,9 +58,9 @@ snapshots.
 | TP-Link TL-WR810N       | mode         | router-ap / repeater / client  | :heavy_check_mark: | v1.1 (EU) and v2 (unverified) |
 | TP-Link TL-WR902AC      | mode         | share-eth / share-hotspot / ap | :heavy_check_mark: | v1 and v3 |
 
-Data for these devices was initially collected from the OpenWrt wiki and
-from OpenWrt / LEDE source code. Devices where the switch data has been
-verified correct is noted in the Verified column.
+For most devices, switch data is initially collected from the OpenWrt
+wiki and from OpenWrt's source code. The Verified column indicates cases
+where the switch data has been tested and verified correct by users.
 
 ## Changelog
 
