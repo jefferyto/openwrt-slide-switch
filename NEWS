@@ -1,5 +1,7 @@
 # News
 
+## 0.9.5-dev - Unreleased
+
 ## 0.9.4 - 2019-04-23
 * Merged platform data to make the package architecture-independent
 * Minify switch data file during installation
