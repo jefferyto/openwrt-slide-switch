@@ -29,7 +29,7 @@ package=@PACKAGE@
 version=@VERSION@
 
 data_dir=@pkgdatadir@
-run_dir=@runstatedir@/@PACKAGE@
+run_dir=@localstatedir@/run/@PACKAGE@
 lock_dir=@localstatedir@/lock/@PACKAGE@
 initd_dir=@sysconfdir@/init.d
 
