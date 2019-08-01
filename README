@@ -45,7 +45,7 @@ snapshots.
 | Buffalo WZR-HP-G300NH   | router       | on / off / auto                | :heavy_check_mark: |       |
 | GLI (GL.iNet) GL-AR150  | switch       | left / center / right          |                    |       |
 | GLI (GL.iNet) GL-AR300M | switch       | left / center / right          | :heavy_check_mark: |       |
-| GLI (GL.iNet) GL-AR750  | switch       | left / right                   |                    |       |
+| GLI (GL.iNet) GL-AR750  | switch       | left / right                   | :heavy_check_mark: |       |
 | GLI (GL.iNet) GL-AR750S | switch       | left / right                   |                    |       |
 | GLI (GL.iNet) GL-MT300A | switch       | left / center / right          |                    |       |
 | GLI (GL.iNet) GL-MT300N | switch       | left / center / right          |                    | v1 and v2 |
