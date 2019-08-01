@@ -279,6 +279,15 @@ load_switch_data() {
 	[ -n "$board" ] || error "missing board name" || return $ex_dataerr
 	[ -f "$switch_data_file" ] || error "cannot find switch data file \"$switch_data_file\"" || return $ex_noinput
 
+	[ -n "${board##*,*}" ] && {
+		case $board in
+			gl-*)	board="glinet,$board" ;;
+			ht-*)	board="hootoo,$board" ;;
+			tl-*)	board="tplink,$board" ;;
+			wzr-*)	board="buffalo,$board" ;;
+		esac
+	}
+
 	debug "attempting to load switch data for $board from $switch_data_file"
 
 	jsonfilter -q -i "$switch_data_file" -t "@" > /dev/null
