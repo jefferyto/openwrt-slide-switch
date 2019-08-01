@@ -41,7 +41,6 @@ SUFFIXES = -cut -in
 	 -e 's,[@]sysconfdir[@],$(sysconfdir),g' \
 	 -e 's,[@]sharedstatedir[@],$(sharedstatedir),g' \
 	 -e 's,[@]localstatedir[@],$(localstatedir),g' \
-	 -e 's,[@]runstatedir[@],$(runstatedir),g' \
 	 -e 's,[@]pkgdatadir[@],$(pkgdatadir),g' \
 	 -e 's,[@]PACKAGE[@],$(PACKAGE),g' \
 	 -e 's,[@]VERSION[@],$(VERSION),g' \

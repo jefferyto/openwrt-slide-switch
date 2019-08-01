@@ -1,6 +1,8 @@
 # News
 
 ## 0.9.5-dev - Unreleased
+* Fixed state files stored in /slide-switch instead of
+  /var/run/slide-switch (#14)
 
 ## 0.9.4 - 2019-04-23
 * Merged platform data to make the package architecture-independent
