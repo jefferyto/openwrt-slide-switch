@@ -1,5 +1,7 @@
 # News
 
+## 0.9.6-dev - Unreleased
+
 ## 0.9.5 - 2019-08-02
 * Fixed state files stored in /slide-switch instead of
   /var/run/slide-switch (#14)
