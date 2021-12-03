@@ -101,6 +101,16 @@
 			}
 		}
 	},
+	"glinet,gl-ar750s-nor-nand": {
+		"switch": {
+			"gpios": [ 8 ],
+			"codes": [ "BTN_0" ],
+			"positions": {
+				"lo": "left",
+				"hi": "right"
+			}
+		}
+	},
 	"glinet,gl-mt300a": {
 		"switch": {
 			"gpios": [ 1, 2 ],
