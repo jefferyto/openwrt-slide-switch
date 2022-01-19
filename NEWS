@@ -1,6 +1,7 @@
 # News
 
 ## 0.9.6-dev - Unreleased
+* Check button values using GPIO labels instead of GPIO numbers
 * Added support for:
   * GL.iNet GL-E750 (#20)
 

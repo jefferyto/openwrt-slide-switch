@@ -123,15 +123,15 @@ list_contains() {
 
 
 get_gpio_info() {
-	local gpio="$1"
-	local row="$(grep -e "^ *gpio-$gpio\b" "$gpio_table")"
+	local label="$1"
+	local row="$(grep -m 1 -e "|$label *) in  " "$gpio_table")"
 
 	echo "${row##*)}"
 }
 
 get_gpio_value() {
-	local gpio="$1"
-	local info="$(get_gpio_info "$gpio")"
+	local label="$1"
+	local info="$(get_gpio_info "$label")"
 	local value="lo"
 
 	list_contains "$info" hi && value=hi
@@ -159,11 +159,11 @@ check_json_type() {
 	json_is_a "$key" "$type" || error "\"$key_name\" is not $article $type in $switch_data_file"
 }
 
-check_input_gpio() {
-	local gpio="$1"
-	local info="$(get_gpio_info "$gpio")"
+check_input_gpio_label() {
+	local label="$1"
+	local info="$(get_gpio_info "$label")"
 
-	list_contains "$info" "in" || error "\"$gpio\" is not a valid input gpio"
+	[ -n "$info" ] || error "\"$label\" is not the label of a valid input gpio"
 }
 
 check_position_string() {
@@ -207,8 +207,8 @@ check_position_code() {
 validate_switch_data() {
 	local switches
 	local switch
-	local gpios
-	local gpio
+	local labels
+	local label
 	local codes
 	local positions
 	local position
@@ -228,18 +228,18 @@ validate_switch_data() {
 
 		json_select "$switch"
 
-		check_json_type gpios array "$switch.gpios" &&
+		check_json_type labels array "$switch.labels" &&
 		check_json_type codes array "$switch.codes" &&
 		check_json_type positions object "$switch.positions" || return
 
-		json_get_values gpios gpios
+		json_get_values labels labels
 		json_get_values codes codes
 
-		[ -n "$gpios" ] || warning "no gpios defined for switch \"$switch\""
+		[ -n "$labels" ] || warning "no labels defined for switch \"$switch\""
 		[ -n "$codes" ] || warning "no codes defined for switch \"$switch\""
 
-		for gpio in $gpios; do
-			check_input_gpio "$gpio" || return
+		for label in $labels; do
+			check_input_gpio_label "$label" || return
 		done
 
 		json_select positions
@@ -369,21 +369,20 @@ get_switch_for_button() {
 
 get_current_position() {
 	local switch="$1"
-	local gpios
-	local gpio
+	local labels
+	local label
 	local position
 
 	json_set_namespace switches
 	json_select
 	json_select "$switch"
 
-	json_get_values gpios gpios
-	for gpio in $gpios; do
-		position="${position}_$(get_gpio_value "$gpio")"
+	json_get_values labels labels
+	for label in $labels; do
+		position="${position}_$(get_gpio_value "$label")"
 	done
-	position=${position#_}
 
-	echo "$position"
+	echo "${position#_}"
 }
 
 get_position_name() {
