@@ -6,15 +6,15 @@ presses and releases for OpenWrt devices.
 ## Usage
 
 After installing slide-switch, follow the instructions in the [OpenWrt
-User Guide][button howto] to add scripts for each switch position. Both
-procd scripts (in `/etc/rc.button`) and hotplug scripts (in
+User Guide][] to add scripts for each switch position. Both procd
+scripts (in `/etc/rc.button`) and hotplug scripts (in
 `/etc/hotplug.d/button`) are supported.
 
 Each switch position has a corresponding button name in the form
 `<switch name>-<switch position>`. For example, the TP-Link TL-MR3020
 has a switch named *mode* with positions "3g", "wisp" and "ap"; button
 names for the positions would be `mode-3g`, `mode-wisp` and `mode-ap`.
-See [Supported Devices](#supported-devices) for a list of switch names
+See [Supported Devices][] for a list of switch names
 and positions.
 
 slide-switch will trigger both button presses and releases. For example,
@@ -26,6 +26,9 @@ Note that the timeout action is not supported at this time.
 On boot, slide-switch will also trigger a button press for the active
 position of each switch. To disable or re-enable this behaviour, run
 `slide-switch boot disable` or `slide-switch boot enable`, respectively.
+
+[OpenWrt User Guide]: https://openwrt.org/docs/guide-user/hardware/hardware.button
+[Supported Devices]: #supported-devices
 
 ## Supported Platforms
 
@@ -66,6 +69,8 @@ where the switch data has been tested and verified correct by users.
 
 See [NEWS][].
 
+[NEWS]: NEWS
+
 ## Contributing
 
 Beyond code for bug fixes or new features, any help to verify switch
@@ -87,7 +92,3 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with slide-switch.  If not, see <http://www.gnu.org/licenses/>.
-
-
-[button howto]: https://openwrt.org/docs/guide-user/hardware/hardware.button
-[NEWS]: NEWS
