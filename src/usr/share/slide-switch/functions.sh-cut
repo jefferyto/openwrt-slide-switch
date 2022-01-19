@@ -149,14 +149,14 @@ get_position_code() {
 check_json_type() {
 	local key="$1"
 	local type="$2"
-	local label="${3:-$key}"
+	local key_name="${3:-$key}"
 	local article="a"
 
 	case $type in
 		[aeiou]*) article=an ;;
 	esac
 
-	json_is_a "$key" "$type" || error "\"$label\" is not $article $type in $switch_data_file"
+	json_is_a "$key" "$type" || error "\"$key_name\" is not $article $type in $switch_data_file"
 }
 
 check_input_gpio() {
@@ -183,16 +183,16 @@ check_position_string() {
 
 check_nonempty_string() {
 	local str="$1"
-	local label="$2"
+	local str_name="$2"
 
-	[ -n "$str" ] || error "$label cannot be an empty string"
+	[ -n "$str" ] || error "$str_name cannot be an empty string"
 }
 
 check_safe_string() {
 	local str="$1"
-	local label="$2"
+	local str_name="$2"
 
-	[ "x${str%[!0-9A-Za-z_-]*}" = "x$str" ] || error "$label \"$str\" must contain letters, digits, underscores and/or hyphens only"
+	[ "x${str%[!0-9A-Za-z_-]*}" = "x$str" ] || error "$str_name \"$str\" must contain letters, digits, underscores and/or hyphens only"
 }
 
 check_position_code() {
