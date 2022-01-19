@@ -102,12 +102,12 @@
 		}
 	},
 	"glinet,gl-e750": {
-		"switch": {
+		"mode": {
 			"gpios": [ 1 ],
 			"codes": [ "BTN_0" ],
 			"positions": {
-				"lo": "left",
-				"hi": "right"
+				"lo": "dot",
+				"hi": "clear"
 			}
 		}
 	},

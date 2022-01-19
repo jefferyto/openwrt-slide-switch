@@ -1,6 +1,8 @@
 # News
 
 ## 0.9.6-dev - Unreleased
+* Added support for:
+  * GL.iNet GL-E750 (#20)
 
 ## 0.9.5 - 2019-08-02
 * Fixed state files stored in /slide-switch instead of
