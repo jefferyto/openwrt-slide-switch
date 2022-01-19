@@ -70,7 +70,7 @@ log() {
 	local level="$1"
 	local message="$2"
 
-	[ "$level" -le "$VERBOSITY" ] && logger -t "$package[$$]" -p "user.$level" "$message"
+	[ "$level" -le "$VERBOSITY" ] && logger -t "${package}[$$]" -p "user.$level" "$message"
 
 	return 0
 }
@@ -104,7 +104,7 @@ board_name() {
 }
 
 get_epoch() {
-	echo "$(date -u +%s)"
+	date -u +%s
 }
 
 get_json_value() {
@@ -455,14 +455,14 @@ save_state() {
 
 	json_set_namespace state
 	mkdir -p "$(dirname "$state_file")"
-	echo "$(json_dump)" > "$state_file"
+	json_dump > "$state_file"
 }
 
 
 get_state_position() {
 	json_set_namespace state
 	json_select
-	echo "$(get_json_value position)"
+	get_json_value position
 }
 
 set_state_position() {
@@ -479,7 +479,7 @@ get_state_seen() {
 	json_set_namespace state
 	json_select
 	json_select seen
-	echo "$(get_json_value "$position")"
+	get_json_value "$position"
 }
 
 set_state_seen() {
@@ -563,7 +563,7 @@ trigger_button_event() {
 	set_state_seen "$position" "$now"
 
 	button=$(get_position_code "$switch" "$position_name")
-	seen=$(($now - $before))
+	seen=$((now - before))
 
 	(
 		export BUTTON="$button"
@@ -697,7 +697,7 @@ do_position() {
 	local position
 	local position_names
 
-	debug "do_position \"$required\""
+	debug "do_position \"$requested\""
 
 	load_switch_data || return
 
