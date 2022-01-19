@@ -42,12 +42,12 @@ LEDE 17.01 (Reboot).
 | Buffalo WZR-HP-AG300H   | router       | on / off / auto                |                    |       |
 | Buffalo WZR-HP-G300NH   | movie-engine | on / off                       | :heavy_check_mark: |       |
 | Buffalo WZR-HP-G300NH   | router       | on / off / auto                | :heavy_check_mark: |       |
-| GLI (GL.iNet) GL-AR150  | switch       | left / center / right          |                    |       |
-| GLI (GL.iNet) GL-AR300M | switch       | left / center / right          | :heavy_check_mark: |       |
-| GLI (GL.iNet) GL-AR750  | switch       | left / right                   | :heavy_check_mark: |       |
-| GLI (GL.iNet) GL-AR750S | switch       | left / right                   |                    |       |
-| GLI (GL.iNet) GL-MT300A | switch       | left / center / right          | :heavy_check_mark: |       |
-| GLI (GL.iNet) GL-MT300N | switch       | left / center / right          | :heavy_check_mark: | v1 (unverified) and v2 |
+| GL.iNet GL-AR150        | switch       | left / center / right          |                    |       |
+| GL.iNet GL-AR300M       | switch       | left / center / right          | :heavy_check_mark: |       |
+| GL.iNet GL-AR750        | switch       | left / right                   | :heavy_check_mark: |       |
+| GL.iNet GL-AR750S       | switch       | left / right                   |                    |       |
+| GL.iNet GL-MT300A       | switch       | left / center / right          | :heavy_check_mark: |       |
+| GL.iNet GL-MT300N       | switch       | left / center / right          | :heavy_check_mark: | v1 (unverified) and v2 |
 | HooToo HT-TM02          | mode         | wired / wireless               | :heavy_check_mark: |       |
 | TP-Link TL-MR12U        | mode         | 3g / router / ap               |                    |       |
 | TP-Link TL-MR13U        | mode         | 3g / router / ap               |                    |       |
