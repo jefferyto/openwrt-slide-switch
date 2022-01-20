@@ -38,9 +38,9 @@
 			}
 		}
 	},
-	"buffalo,wzr-hp-g300nh": {
+	"buffalo,wzr-hp-g300nh-rb": {
 		"movie-engine": {
-			"gpios": [ 35, 39 ],
+			"labels": [ "movie_off", "movie_on" ],
 			"codes": [ "BTN_3", "BTN_4" ],
 			"positions": {
 				"lo_hi": "on",
@@ -48,7 +48,7 @@
 			}
 		},
 		"router": {
-			"gpios": [ 34, 38 ],
+			"labels": [ "router_on", "router_auto" ],
 			"codes": [ "BTN_5", "BTN_6" ],
 			"positions": {
 				"lo_lo": "on",
@@ -57,6 +57,7 @@
 			}
 		}
 	},
+	"buffalo,wzr-hp-g300nh-s": "buffalo,wzr-hp-g300nh-rb",
 	"glinet,gl-ar150": {
 		"switch": {
 			"gpios": [ 7, 8 ],
