@@ -83,7 +83,7 @@
 	"glinet,gl-ar300m-nor": "glinet,gl-ar300m-nand",
 	"glinet,gl-ar750": {
 		"switch": {
-			"gpios": [ 0 ],
+			"labels": [ "mode" ],
 			"codes": [ "BTN_0" ],
 			"positions": {
 				"lo": "left",
