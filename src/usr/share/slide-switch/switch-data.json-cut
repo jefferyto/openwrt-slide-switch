@@ -105,7 +105,7 @@
 	},
 	"glinet,gl-mt300a": {
 		"switch": {
-			"gpios": [ 1, 2 ],
+			"labels": [ "BTN_0", "BTN_1" ],
 			"codes": [ "BTN_0", "BTN_1" ],
 			"positions": {
 				"lo_hi": "left",
