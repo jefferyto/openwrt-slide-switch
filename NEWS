@@ -4,6 +4,8 @@
 * Check button values using GPIO labels instead of GPIO numbers
 * Added support for:
   * GL.iNet GL-E750 (#20)
+* Removed support for Buffalo WZR-HP-AG300H, as its buttons currently do
+  not have GPIO labels
 
 ## 0.9.5 - 2019-08-02
 * Fixed state files stored in /slide-switch instead of

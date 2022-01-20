@@ -41,8 +41,6 @@ LEDE 17.01 (Reboot).
 
 | Device                         | Switch Name  | Switch Positions               | Verified           | Notes |
 | ------------------------------ | :----------: | :----------------------------: | :----------------: | ----- |
-| Buffalo WZR-HP-AG300H   | movie-engine | on / off                       |                    |       |
-| Buffalo WZR-HP-AG300H   | router       | on / off / auto                |                    |       |
 | [Buffalo WZR-HP-G300NH][]      | movie-engine | on / off                       | :heavy_check_mark: |       |
 | [Buffalo WZR-HP-G300NH][]      | router       | on / off / auto                | :heavy_check_mark: |       |
 | [GL.iNet GL-AR150][]           | switch       | left / center / right          |                    |       |
