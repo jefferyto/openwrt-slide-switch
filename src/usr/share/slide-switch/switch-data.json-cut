@@ -182,18 +182,18 @@
 			}
 		}
 	},
-	"tplink,tl-wr810n": {
+	"tplink,tl-wr810n-v1": {
 		"mode": {
-			"gpios": [ 0, 1 ],
-			"codes": [ "BTN_1", "BTN_0" ],
+			"labels": [ "switch_b0", "switch_b1" ],
+			"codes": [ "BTN_0", "BTN_1" ],
 			"positions": {
-				"lo_hi": "router-ap",
-				"hi_lo": "repeater",
+				"hi_lo": "router-ap",
+				"lo_hi": "repeater",
 				"hi_hi": "client"
 			}
 		}
 	},
-	"tplink,tl-wr810n-v2": "tplink,tl-wr810n",
+	"tplink,tl-wr810n-v2": "tplink,tl-wr810n-v1",
 	"tplink,tl-wr902ac-v1": {
 		"mode": {
 			"gpios": [ 14, 17 ],
