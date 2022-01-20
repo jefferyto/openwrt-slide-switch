@@ -95,7 +95,7 @@
 	"glinet,gl-ar750s-nor-nand": "glinet,gl-ar750",
 	"glinet,gl-e750": {
 		"mode": {
-			"gpios": [ 1 ],
+			"labels": [ "switch" ],
 			"codes": [ "BTN_0" ],
 			"positions": {
 				"lo": "dot",
