@@ -84,6 +84,16 @@
 			}
 		}
 	},
+	"glinet,gl-mt1300": {
+		"mode": {
+			"labels": [ "switch" ],
+			"codes": [ "BTN_0" ],
+			"positions": {
+				"hi": "dot",
+				"lo": "clear"
+			}
+		}
+	},
 	"glinet,gl-mt300a": {
 		"switch": {
 			"labels": [ "BTN_0", "BTN_1" ],
