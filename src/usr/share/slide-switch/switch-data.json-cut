@@ -91,16 +91,8 @@
 			}
 		}
 	},
-	"glinet,gl-ar750s": {
-		"switch": {
-			"gpios": [ 8 ],
-			"codes": [ "BTN_0" ],
-			"positions": {
-				"lo": "left",
-				"hi": "right"
-			}
-		}
-	},
+	"glinet,gl-ar750s-nor": "glinet,gl-ar750",
+	"glinet,gl-ar750s-nor-nand": "glinet,gl-ar750",
 	"glinet,gl-e750": {
 		"mode": {
 			"gpios": [ 1 ],
