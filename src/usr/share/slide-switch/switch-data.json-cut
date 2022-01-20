@@ -170,17 +170,7 @@
 			}
 		}
 	},
-	"tplink,tl-mr3040-v2": {
-		"mode": {
-			"gpios": [ 19, 20 ],
-			"codes": [ "BTN_0", "BTN_1" ],
-			"positions": {
-				"lo_hi": "3g",
-				"hi_lo": "wisp",
-				"hi_hi": "ap"
-			}
-		}
-	},
+	"tplink,tl-mr3040-v2": "tplink,tl-mr3020-v3",
 	"tplink,tl-wr720n-v3": {
 		"mode": {
 			"gpios": [ 18, 20 ],
