@@ -148,9 +148,9 @@
 		}
 	},
 	"tplink,tl-mr13u": "tplink,tl-mr12u",
-	"tplink,tl-mr3020": {
+	"tplink,tl-mr3020-v1": {
 		"mode": {
-			"gpios": [ 18, 20 ],
+			"labels": [ "sw1", "sw2" ],
 			"codes": [ "BTN_0", "BTN_1" ],
 			"positions": {
 				"hi_lo": "3g",
@@ -161,7 +161,7 @@
 	},
 	"tplink,tl-mr3020-v3": {
 		"mode": {
-			"gpios": [ 41, 42 ],
+			"labels": [ "sw1", "sw2" ],
 			"codes": [ "BTN_0", "BTN_1" ],
 			"positions": {
 				"lo_hi": "3g",
