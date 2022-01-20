@@ -196,18 +196,18 @@
 	"tplink,tl-wr810n-v2": "tplink,tl-wr810n-v1",
 	"tplink,tl-wr902ac-v1": {
 		"mode": {
-			"gpios": [ 14, 17 ],
-			"codes": [ "BTN_1", "BTN_0" ],
+			"labels": [ "Mode switch 1", "Mode switch 2" ],
+			"codes": [ "BTN_0", "BTN_1" ],
 			"positions": {
-				"lo_hi": "share-eth",
-				"hi_lo": "share-hotspot",
+				"hi_lo": "share-eth",
+				"lo_hi": "share-hotspot",
 				"hi_hi": "ap"
 			}
 		}
 	},
 	"tplink,tl-wr902ac-v3": {
 		"mode": {
-			"gpios": [ 2, 3 ],
+			"labels": [ "sw1", "sw2" ],
 			"codes": [ "BTN_0", "BTN_1" ],
 			"positions": {
 				"lo_hi": "share-eth",

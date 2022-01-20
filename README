@@ -62,7 +62,8 @@ LEDE 17.01 (Reboot).
 | TP-Link TL-WR720N       | mode         | ap / 3g / router               |                    | v3 and v4 (Chinese version) |
 | [TP-Link TL-WR810N(EU) v1.1][] | mode         | router-ap / repeater / client  | :heavy_check_mark: |       |
 | [TP-Link TL-WR810N(EU) v2][]   | mode         | router-ap / repeater / client  |                    |       |
-| TP-Link TL-WR902AC      | mode         | share-eth / share-hotspot / ap | :heavy_check_mark: | v1 and v3 |
+| [TP-Link TL-WR902AC v1][]      | mode         | share-eth / share-hotspot / ap | :heavy_check_mark: |       |
+| [TP-Link TL-WR902AC v3][]      | mode         | share-eth / share-hotspot / ap | :heavy_check_mark: |       |
 
 For most devices, switch data is initially collected from the OpenWrt
 wiki and from OpenWrt's source code. The Verified column indicates cases
@@ -83,6 +84,8 @@ where the switch data has been tested and verified correct by users.
 [TP-Link TL-MR3040 v2]: https://openwrt.org/toh/tp-link/tl-mr3040
 [TP-Link TL-WR810N(EU) v1.1]: https://openwrt.org/toh/tp-link/tl-wr810n
 [TP-Link TL-WR810N(EU) v2]: https://openwrt.org/toh/tp-link/tl-wr810n
+[TP-Link TL-WR902AC v1]: https://openwrt.org/toh/tp-link/tl-wr902ac_v1
+[TP-Link TL-WR902AC v3]: https://openwrt.org/toh/tp-link/tl-wr902ac_v3
 
 ## Changelog
 
