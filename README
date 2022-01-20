@@ -45,7 +45,7 @@ LEDE 17.01 (Reboot).
 | Buffalo WZR-HP-AG300H   | router       | on / off / auto                |                    |       |
 | [Buffalo WZR-HP-G300NH][]      | movie-engine | on / off                       | :heavy_check_mark: |       |
 | [Buffalo WZR-HP-G300NH][]      | router       | on / off / auto                | :heavy_check_mark: |       |
-| GL.iNet GL-AR150        | switch       | left / center / right          |                    |       |
+| [GL.iNet GL-AR150][]           | switch       | left / center / right          |                    |       |
 | GL.iNet GL-AR300M       | switch       | left / center / right          | :heavy_check_mark: |       |
 | GL.iNet GL-AR750        | switch       | left / right                   | :heavy_check_mark: |       |
 | GL.iNet GL-AR750S       | switch       | left / right                   |                    |       |
@@ -66,6 +66,7 @@ wiki and from OpenWrt's source code. The Verified column indicates cases
 where the switch data has been tested and verified correct by users.
 
 [Buffalo WZR-HP-G300NH]: https://openwrt.org/toh/buffalo/wzr-hp-g300h
+[GL.iNet GL-AR150]: https://openwrt.org/toh/gl.inet/gl-ar150
 
 ## Changelog
 

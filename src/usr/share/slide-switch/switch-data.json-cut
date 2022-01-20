@@ -60,7 +60,7 @@
 	"buffalo,wzr-hp-g300nh-s": "buffalo,wzr-hp-g300nh-rb",
 	"glinet,gl-ar150": {
 		"switch": {
-			"gpios": [ 7, 8 ],
+			"labels": [ "manual", "auto" ],
 			"codes": [ "BTN_7", "BTN_8" ],
 			"positions": {
 				"lo_hi": "left",
