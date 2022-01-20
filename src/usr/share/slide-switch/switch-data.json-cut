@@ -50,6 +50,17 @@
 			}
 		}
 	},
+	"glinet,gl-ar300m-lite": {
+		"mode": {
+			"labels": [ "button right", "button left" ],
+			"codes": [ "BTN_0", "BTN_1" ],
+			"positions": {
+				"lo_hi": "left",
+				"lo_lo": "center",
+				"hi_lo": "right"
+			}
+		}
+	},
 	"glinet,gl-ar300m-nand": {
 		"switch": {
 			"labels": [ "button right", "button left" ],
@@ -62,6 +73,7 @@
 		}
 	},
 	"glinet,gl-ar300m-nor": "glinet,gl-ar300m-nand",
+	"glinet,gl-ar300m16": "glinet,gl-ar300m-lite",
 	"glinet,gl-ar750": {
 		"switch": {
 			"labels": [ "mode" ],
