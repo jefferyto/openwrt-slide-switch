@@ -116,7 +116,7 @@
 	},
 	"glinet,gl-mt300n": {
 		"switch": {
-			"gpios": [ 42, 43 ],
+			"labels": [ "BTN_0", "BTN_1" ],
 			"codes": [ "BTN_0", "BTN_1" ],
 			"positions": {
 				"hi_lo": "left",
@@ -125,17 +125,7 @@
 			}
 		}
 	},
-	"glinet,gl-mt300n-v2": {
-		"switch": {
-			"gpios": [ 0, 3 ],
-			"codes": [ "BTN_0", "BTN_1" ],
-			"positions": {
-				"hi_lo": "left",
-				"lo_lo": "center",
-				"lo_hi": "right"
-			}
-		}
-	},
+	"glinet,gl-mt300n-v2": "glinet,gl-mt300n",
 	"hootoo,ht-tm02": {
 		"mode": {
 			"gpios": [ 14 ],
