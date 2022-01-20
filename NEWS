@@ -6,6 +6,10 @@
   * GL.iNet GL-E750 (#20)
 * Removed support for Buffalo WZR-HP-AG300H, as its buttons currently do
   not have GPIO labels
+* Removed support for devices no longer supported by OpenWrt 21.02:
+  * TP-Link TL-MR12U
+  * TP-Link TL-MR13U
+  * TP-Link TL-WR720N
 
 ## 0.9.5 - 2019-08-02
 * Fixed state files stored in /slide-switch instead of

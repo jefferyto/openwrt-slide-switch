@@ -117,18 +117,6 @@
 			}
 		}
 	},
-	"tplink,tl-mr12u": {
-		"mode": {
-			"gpios": [ 6, 7 ],
-			"codes": [ "BTN_0", "BTN_1" ],
-			"positions": {
-				"lo_hi": "3g",
-				"hi_lo": "router",
-				"hi_hi": "ap"
-			}
-		}
-	},
-	"tplink,tl-mr13u": "tplink,tl-mr12u",
 	"tplink,tl-mr3020-v1": {
 		"mode": {
 			"labels": [ "sw1", "sw2" ],
@@ -152,17 +140,6 @@
 		}
 	},
 	"tplink,tl-mr3040-v2": "tplink,tl-mr3020-v3",
-	"tplink,tl-wr720n-v3": {
-		"mode": {
-			"gpios": [ 18, 20 ],
-			"codes": [ "BTN_0", "BTN_1" ],
-			"positions": {
-				"hi_hi": "ap",
-				"hi_lo": "3g",
-				"lo_hi": "router"
-			}
-		}
-	},
 	"tplink,tl-wr810n-v1": {
 		"mode": {
 			"labels": [ "switch_b0", "switch_b1" ],
