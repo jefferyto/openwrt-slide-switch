@@ -71,7 +71,7 @@
 	},
 	"glinet,gl-ar300m-nand": {
 		"switch": {
-			"gpios": [ 0, 1 ],
+			"labels": [ "button right", "button left" ],
 			"codes": [ "BTN_0", "BTN_1" ],
 			"positions": {
 				"lo_hi": "left",
@@ -81,7 +81,6 @@
 		}
 	},
 	"glinet,gl-ar300m-nor": "glinet,gl-ar300m-nand",
-	"glinet,gl-ar300m": "glinet,gl-ar300m-nand",
 	"glinet,gl-ar750": {
 		"switch": {
 			"gpios": [ 0 ],
