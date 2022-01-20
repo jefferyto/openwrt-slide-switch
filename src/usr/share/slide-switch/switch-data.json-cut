@@ -128,7 +128,7 @@
 	"glinet,gl-mt300n-v2": "glinet,gl-mt300n",
 	"hootoo,ht-tm02": {
 		"mode": {
-			"gpios": [ 14 ],
+			"labels": [ "modeswitch" ],
 			"codes": [ "BTN_0" ],
 			"positions": {
 				"lo": "wired",
