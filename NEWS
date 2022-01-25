@@ -7,6 +7,7 @@
   * GL.iNet GL-AR300M16
   * GL.iNet GL-E750 (#20)
   * GL.iNet GL-MT1300
+  * GL.iNet GL-MV1000
 * Removed support for Buffalo WZR-HP-AG300H, as its buttons currently do
   not have GPIO labels
 * Removed support for devices no longer supported by OpenWrt 21.02:

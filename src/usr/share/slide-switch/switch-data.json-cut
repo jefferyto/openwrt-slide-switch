@@ -129,6 +129,7 @@
 		}
 	},
 	"glinet,gl-mt300n-v2": "glinet,gl-mt300n",
+	"glinet,gl-mv1000": "glinet,gl-mt1300",
 	"hootoo,ht-tm02": {
 		"mode": {
 			"labels": [ "modeswitch" ],

@@ -54,6 +54,7 @@ LEDE 17.01 (Reboot).
 | [GL.iNet GL-MT300A][]          | switch       | left / center / right          | :heavy_check_mark: |       |
 | [GL.iNet GL-MT300N v1][]       | switch       | left / center / right          |                    |       |
 | [GL.iNet GL-MT300N v2][]       | switch       | left / center / right          | :heavy_check_mark: |       |
+| [GL.iNet GL-MV1000][]          | mode         | dot / clear                    |                    |       |
 | [HooToo HT-TM02][]             | mode         | wired / wireless               | :heavy_check_mark: |       |
 | [TP-Link TL-MR3020 v1][]       | mode         | 3g / wisp / ap                 | :heavy_check_mark: |       |
 | [TP-Link TL-MR3020 v3][]       | mode         | 3g / wisp / ap                 | :heavy_check_mark: |       |
@@ -79,6 +80,7 @@ where the switch data has been tested and verified correct by users.
 [GL.iNet GL-MT300A]: https://openwrt.org/toh/gl.inet/gl-mt300a
 [GL.iNet GL-MT300N v1]: https://openwrt.org/toh/gl.inet/gl-mt300n_v1
 [GL.iNet GL-MT300N v2]: https://openwrt.org/toh/gl.inet/gl-mt300n_v2
+[GL.iNet GL-MV1000]: https://openwrt.org/toh/gl.inet/gl-mv1000
 [HooToo HT-TM02]: https://openwrt.org/toh/hootoo/tripmate-nano
 [TP-Link TL-MR3020 v1]: https://openwrt.org/toh/tp-link/tl-mr3020
 [TP-Link TL-MR3020 v3]: https://openwrt.org/toh/tp-link/tl-mr3020_v3
