@@ -718,6 +718,21 @@ do_position() {
 	echo "${position_names# }"
 }
 
+do_clean() {
+	{
+		rm -f "$switches_cache"
+
+		rm -f "$state_dir"/*
+		rmdir "$state_dir"
+
+		rmdir "$lock_dir"/*
+
+		rmdir "$run_dir" "$lock_dir"
+	} 2>/dev/null
+
+	return 0
+}
+
 do_boot() {
 	local action="$1"
 

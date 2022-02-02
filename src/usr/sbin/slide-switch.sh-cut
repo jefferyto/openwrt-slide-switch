@@ -45,6 +45,9 @@ case $1 in
 		# $2 optional: switch name
 		do_position "$2"
 		;;
+	clean)
+		do_clean
+		;;
 	boot)
 		# $2 required: "enable" or "disable"
 		do_boot "$2"
