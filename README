@@ -30,13 +30,6 @@ position of each switch. To disable or re-enable this behaviour, run
 [OpenWrt User Guide]: https://openwrt.org/docs/guide-user/hardware/hardware.button
 [Supported Devices]: #supported-devices
 
-## Supported Platforms
-
-slide-switch 0.9.0 has been tested with OpenWrt 15.05 (Chaos Calmer) and
-LEDE 17.01 (Reboot).
-
-0.9.1 and higher should work with OpenWrt 18.06 and newer.
-
 ## Supported Devices
 
 | Device                         | Switch Name  | Switch Positions               | Verified           | Notes |
