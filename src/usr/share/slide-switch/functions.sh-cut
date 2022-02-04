@@ -70,7 +70,7 @@ log() {
 	local level="$1"
 	local message="$2"
 
-	[ "$level" -le "$VERBOSITY" ] && logger -t "$package[$$]" -p "user.$level" "$message"
+	[ "$level" -le "$VERBOSITY" ] && logger -t "${package}[$$]" -p "user.$level" "$message"
 
 	return 0
 }
@@ -104,7 +104,7 @@ board_name() {
 }
 
 get_epoch() {
-	echo "$(date -u +%s)"
+	date -u +%s
 }
 
 get_json_value() {
@@ -123,15 +123,15 @@ list_contains() {
 
 
 get_gpio_info() {
-	local gpio="$1"
-	local row="$(grep -e "^ *gpio-$gpio\b" "$gpio_table")"
+	local label="$1"
+	local row="$(grep -m 1 -e "|$label *) in  " "$gpio_table")"
 
 	echo "${row##*)}"
 }
 
 get_gpio_value() {
-	local gpio="$1"
-	local info="$(get_gpio_info "$gpio")"
+	local label="$1"
+	local info="$(get_gpio_info "$label")"
 	local value="lo"
 
 	list_contains "$info" hi && value=hi
@@ -149,21 +149,21 @@ get_position_code() {
 check_json_type() {
 	local key="$1"
 	local type="$2"
-	local label="${3:-$key}"
+	local key_name="${3:-$key}"
 	local article="a"
 
 	case $type in
 		[aeiou]*) article=an ;;
 	esac
 
-	json_is_a "$key" "$type" || error "\"$label\" is not $article $type in $switch_data_file"
+	json_is_a "$key" "$type" || error "\"$key_name\" is not $article $type in $switch_data_file"
 }
 
-check_input_gpio() {
-	local gpio="$1"
-	local info="$(get_gpio_info "$gpio")"
+check_input_gpio_label() {
+	local label="$1"
+	local info="$(get_gpio_info "$label")"
 
-	list_contains "$info" "in" || error "\"$gpio\" is not a valid input gpio"
+	[ -n "$info" ] || error "\"$label\" is not the label of a valid input gpio"
 }
 
 check_position_string() {
@@ -183,16 +183,16 @@ check_position_string() {
 
 check_nonempty_string() {
 	local str="$1"
-	local label="$2"
+	local str_name="$2"
 
-	[ -n "$str" ] || error "$label cannot be an empty string"
+	[ -n "$str" ] || error "$str_name cannot be an empty string"
 }
 
 check_safe_string() {
 	local str="$1"
-	local label="$2"
+	local str_name="$2"
 
-	[ "x${str%[!0-9A-Za-z_-]*}" = "x$str" ] || error "$label \"$str\" must contain letters, digits, underscores and/or hyphens only"
+	[ "x${str%[!0-9A-Za-z_-]*}" = "x$str" ] || error "$str_name \"$str\" must contain letters, digits, underscores and/or hyphens only"
 }
 
 check_position_code() {
@@ -207,8 +207,8 @@ check_position_code() {
 validate_switch_data() {
 	local switches
 	local switch
-	local gpios
-	local gpio
+	local labels
+	local label
 	local codes
 	local positions
 	local position
@@ -228,18 +228,18 @@ validate_switch_data() {
 
 		json_select "$switch"
 
-		check_json_type gpios array "$switch.gpios" &&
+		check_json_type labels array "$switch.labels" &&
 		check_json_type codes array "$switch.codes" &&
 		check_json_type positions object "$switch.positions" || return
 
-		json_get_values gpios gpios
+		json_get_values labels labels
 		json_get_values codes codes
 
-		[ -n "$gpios" ] || warning "no gpios defined for switch \"$switch\""
+		[ -n "$labels" ] || warning "no labels defined for switch \"$switch\""
 		[ -n "$codes" ] || warning "no codes defined for switch \"$switch\""
 
-		for gpio in $gpios; do
-			check_input_gpio "$gpio" || return
+		for label in $labels; do
+			check_input_gpio_label "$label" || return
 		done
 
 		json_select positions
@@ -369,21 +369,20 @@ get_switch_for_button() {
 
 get_current_position() {
 	local switch="$1"
-	local gpios
-	local gpio
+	local labels
+	local label
 	local position
 
 	json_set_namespace switches
 	json_select
 	json_select "$switch"
 
-	json_get_values gpios gpios
-	for gpio in $gpios; do
-		position="${position}_$(get_gpio_value "$gpio")"
+	json_get_values labels labels
+	for label in $labels; do
+		position="${position}_$(get_gpio_value "$label")"
 	done
-	position=${position#_}
 
-	echo "$position"
+	echo "${position#_}"
 }
 
 get_position_name() {
@@ -455,14 +454,14 @@ save_state() {
 
 	json_set_namespace state
 	mkdir -p "$(dirname "$state_file")"
-	echo "$(json_dump)" > "$state_file"
+	json_dump > "$state_file"
 }
 
 
 get_state_position() {
 	json_set_namespace state
 	json_select
-	echo "$(get_json_value position)"
+	get_json_value position
 }
 
 set_state_position() {
@@ -479,7 +478,7 @@ get_state_seen() {
 	json_set_namespace state
 	json_select
 	json_select seen
-	echo "$(get_json_value "$position")"
+	get_json_value "$position"
 }
 
 set_state_seen() {
@@ -563,7 +562,7 @@ trigger_button_event() {
 	set_state_seen "$position" "$now"
 
 	button=$(get_position_code "$switch" "$position_name")
-	seen=$(($now - $before))
+	seen=$((now - before))
 
 	(
 		export BUTTON="$button"
@@ -697,7 +696,7 @@ do_position() {
 	local position
 	local position_names
 
-	debug "do_position \"$required\""
+	debug "do_position \"$requested\""
 
 	load_switch_data || return
 
@@ -717,6 +716,21 @@ do_position() {
 	done
 
 	echo "${position_names# }"
+}
+
+do_clean() {
+	{
+		rm -f "$switches_cache"
+
+		rm -f "$state_dir"/*
+		rmdir "$state_dir"
+
+		rmdir "$lock_dir"/*
+
+		rmdir "$run_dir" "$lock_dir"
+	} 2>/dev/null
+
+	return 0
 }
 
 do_boot() {

@@ -1,8 +1,24 @@
 # News
 
 ## 0.9.6-dev - Unreleased
+* Requires OpenWrt 21.02 or newer
+* Check button values using GPIO labels instead of GPIO numbers
+* Fixed support for (#18):
+  * GL.iNet GL-MT300N v2
+  * TP-Link TL-MR3020 v3
+  * TP-Link TL-WR902AC v3
 * Added support for:
+  * GL.iNet GL-AR300M-Lite
+  * GL.iNet GL-AR300M16
   * GL.iNet GL-E750 (#20)
+  * GL.iNet GL-MT1300
+  * GL.iNet GL-MV1000
+* Removed support for Buffalo WZR-HP-AG300H, as its buttons currently do
+  not have GPIO labels
+* Removed support for devices no longer supported by OpenWrt 21.02:
+  * TP-Link TL-MR12U
+  * TP-Link TL-MR13U
+  * TP-Link TL-WR720N
 
 ## 0.9.5 - 2019-08-02
 * Fixed state files stored in /slide-switch instead of

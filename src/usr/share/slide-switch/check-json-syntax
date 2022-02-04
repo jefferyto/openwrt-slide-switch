@@ -19,4 +19,4 @@
 # along with slide-switch.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-python -m json.tool switch-data.json
+python3 -m json.tool switch-data.json

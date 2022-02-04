@@ -19,28 +19,9 @@
  *
  * --8<---- CUT HERE */
 {
-	"buffalo,wzr-hp-ag300h": {
+	"buffalo,wzr-hp-g300nh-rb": {
 		"movie-engine": {
-			"gpios": [ 8 ],
-			"codes": [ "BTN_7" ],
-			"positions": {
-				"lo": "on",
-				"hi": "off"
-			}
-		},
-		"router": {
-			"gpios": [ 6, 7 ],
-			"codes": [ "BTN_6", "BTN_5" ],
-			"positions": {
-				"hi_hi": "on",
-				"hi_lo": "off",
-				"lo_hi": "auto"
-			}
-		}
-	},
-	"buffalo,wzr-hp-g300nh": {
-		"movie-engine": {
-			"gpios": [ 35, 39 ],
+			"labels": [ "movie_off", "movie_on" ],
 			"codes": [ "BTN_3", "BTN_4" ],
 			"positions": {
 				"lo_hi": "on",
@@ -48,7 +29,7 @@
 			}
 		},
 		"router": {
-			"gpios": [ 34, 38 ],
+			"labels": [ "router_on", "router_auto" ],
 			"codes": [ "BTN_5", "BTN_6" ],
 			"positions": {
 				"lo_lo": "on",
@@ -57,10 +38,22 @@
 			}
 		}
 	},
+	"buffalo,wzr-hp-g300nh-s": "buffalo,wzr-hp-g300nh-rb",
 	"glinet,gl-ar150": {
 		"switch": {
-			"gpios": [ 7, 8 ],
+			"labels": [ "manual", "auto" ],
 			"codes": [ "BTN_7", "BTN_8" ],
+			"positions": {
+				"lo_hi": "left",
+				"lo_lo": "center",
+				"hi_lo": "right"
+			}
+		}
+	},
+	"glinet,gl-ar300m-lite": {
+		"mode": {
+			"labels": [ "button right", "button left" ],
+			"codes": [ "BTN_0", "BTN_1" ],
 			"positions": {
 				"lo_hi": "left",
 				"lo_lo": "center",
@@ -70,7 +63,7 @@
 	},
 	"glinet,gl-ar300m-nand": {
 		"switch": {
-			"gpios": [ 0, 1 ],
+			"labels": [ "button right", "button left" ],
 			"codes": [ "BTN_0", "BTN_1" ],
 			"positions": {
 				"lo_hi": "left",
@@ -80,10 +73,10 @@
 		}
 	},
 	"glinet,gl-ar300m-nor": "glinet,gl-ar300m-nand",
-	"glinet,gl-ar300m": "glinet,gl-ar300m-nand",
+	"glinet,gl-ar300m16": "glinet,gl-ar300m-lite",
 	"glinet,gl-ar750": {
 		"switch": {
-			"gpios": [ 0 ],
+			"labels": [ "mode" ],
 			"codes": [ "BTN_0" ],
 			"positions": {
 				"lo": "left",
@@ -91,19 +84,11 @@
 			}
 		}
 	},
-	"glinet,gl-ar750s": {
-		"switch": {
-			"gpios": [ 8 ],
-			"codes": [ "BTN_0" ],
-			"positions": {
-				"lo": "left",
-				"hi": "right"
-			}
-		}
-	},
+	"glinet,gl-ar750s-nor": "glinet,gl-ar750",
+	"glinet,gl-ar750s-nor-nand": "glinet,gl-ar750",
 	"glinet,gl-e750": {
 		"mode": {
-			"gpios": [ 1 ],
+			"labels": [ "switch" ],
 			"codes": [ "BTN_0" ],
 			"positions": {
 				"lo": "dot",
@@ -111,9 +96,19 @@
 			}
 		}
 	},
+	"glinet,gl-mt1300": {
+		"mode": {
+			"labels": [ "switch" ],
+			"codes": [ "BTN_0" ],
+			"positions": {
+				"hi": "dot",
+				"lo": "clear"
+			}
+		}
+	},
 	"glinet,gl-mt300a": {
 		"switch": {
-			"gpios": [ 1, 2 ],
+			"labels": [ "BTN_0", "BTN_1" ],
 			"codes": [ "BTN_0", "BTN_1" ],
 			"positions": {
 				"lo_hi": "left",
@@ -124,7 +119,7 @@
 	},
 	"glinet,gl-mt300n": {
 		"switch": {
-			"gpios": [ 42, 43 ],
+			"labels": [ "BTN_0", "BTN_1" ],
 			"codes": [ "BTN_0", "BTN_1" ],
 			"positions": {
 				"hi_lo": "left",
@@ -133,20 +128,11 @@
 			}
 		}
 	},
-	"glinet,gl-mt300n-v2": {
-		"switch": {
-			"gpios": [ 0, 3 ],
-			"codes": [ "BTN_0", "BTN_1" ],
-			"positions": {
-				"hi_lo": "left",
-				"lo_lo": "center",
-				"lo_hi": "right"
-			}
-		}
-	},
+	"glinet,gl-mt300n-v2": "glinet,gl-mt300n",
+	"glinet,gl-mv1000": "glinet,gl-mt1300",
 	"hootoo,ht-tm02": {
 		"mode": {
-			"gpios": [ 14 ],
+			"labels": [ "modeswitch" ],
 			"codes": [ "BTN_0" ],
 			"positions": {
 				"lo": "wired",
@@ -154,21 +140,9 @@
 			}
 		}
 	},
-	"tplink,tl-mr12u": {
+	"tplink,tl-mr3020-v1": {
 		"mode": {
-			"gpios": [ 6, 7 ],
-			"codes": [ "BTN_0", "BTN_1" ],
-			"positions": {
-				"lo_hi": "3g",
-				"hi_lo": "router",
-				"hi_hi": "ap"
-			}
-		}
-	},
-	"tplink,tl-mr13u": "tplink,tl-mr12u",
-	"tplink,tl-mr3020": {
-		"mode": {
-			"gpios": [ 18, 20 ],
+			"labels": [ "sw1", "sw2" ],
 			"codes": [ "BTN_0", "BTN_1" ],
 			"positions": {
 				"hi_lo": "3g",
@@ -179,7 +153,7 @@
 	},
 	"tplink,tl-mr3020-v3": {
 		"mode": {
-			"gpios": [ 41, 42 ],
+			"labels": [ "sw1", "sw2" ],
 			"codes": [ "BTN_0", "BTN_1" ],
 			"positions": {
 				"lo_hi": "3g",
@@ -188,54 +162,33 @@
 			}
 		}
 	},
-	"tplink,tl-mr3040-v2": {
+	"tplink,tl-mr3040-v2": "tplink,tl-mr3020-v3",
+	"tplink,tl-wr810n-v1": {
 		"mode": {
-			"gpios": [ 19, 20 ],
+			"labels": [ "switch_b0", "switch_b1" ],
 			"codes": [ "BTN_0", "BTN_1" ],
 			"positions": {
-				"lo_hi": "3g",
-				"hi_lo": "wisp",
-				"hi_hi": "ap"
-			}
-		}
-	},
-	"tplink,tl-wr720n-v3": {
-		"mode": {
-			"gpios": [ 18, 20 ],
-			"codes": [ "BTN_0", "BTN_1" ],
-			"positions": {
-				"hi_hi": "ap",
-				"hi_lo": "3g",
-				"lo_hi": "router"
-			}
-		}
-	},
-	"tplink,tl-wr810n": {
-		"mode": {
-			"gpios": [ 0, 1 ],
-			"codes": [ "BTN_1", "BTN_0" ],
-			"positions": {
-				"lo_hi": "router-ap",
-				"hi_lo": "repeater",
+				"hi_lo": "router-ap",
+				"lo_hi": "repeater",
 				"hi_hi": "client"
 			}
 		}
 	},
-	"tplink,tl-wr810n-v2": "tplink,tl-wr810n",
+	"tplink,tl-wr810n-v2": "tplink,tl-wr810n-v1",
 	"tplink,tl-wr902ac-v1": {
 		"mode": {
-			"gpios": [ 14, 17 ],
-			"codes": [ "BTN_1", "BTN_0" ],
+			"labels": [ "Mode switch 1", "Mode switch 2" ],
+			"codes": [ "BTN_0", "BTN_1" ],
 			"positions": {
-				"lo_hi": "share-eth",
-				"hi_lo": "share-hotspot",
+				"hi_lo": "share-eth",
+				"lo_hi": "share-hotspot",
 				"hi_hi": "ap"
 			}
 		}
 	},
 	"tplink,tl-wr902ac-v3": {
 		"mode": {
-			"gpios": [ 2, 3 ],
+			"labels": [ "sw1", "sw2" ],
 			"codes": [ "BTN_0", "BTN_1" ],
 			"positions": {
 				"lo_hi": "share-eth",
