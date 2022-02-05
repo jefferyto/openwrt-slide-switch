@@ -1,6 +1,7 @@
 # News
 
 ## [0.9.8-dev][Unreleased] - Unreleased
+* Removed compatibility with older (model-only) board names
 
 ## [0.9.7] - 2022-02-18
 * Fixed support for models with spaces in their GPIO labels:
