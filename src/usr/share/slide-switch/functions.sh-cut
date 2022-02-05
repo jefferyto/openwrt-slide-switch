@@ -61,7 +61,6 @@ ex_usage=64
 ex_dataerr=65
 ex_noinput=66
 ex_unavailable=69
-ex_tempfail=75
 
 locks=
 
