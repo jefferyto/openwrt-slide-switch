@@ -27,6 +27,6 @@
 # slide-switch is free software, licensed under the GNU General Public License v2.
 #
 
-"@sbindir@/slide-switch" update "$BUTTON" &
+"@sbindir@/slide-switch" --log=syslog update "$BUTTON" &
 
 return 0

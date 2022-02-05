@@ -62,6 +62,8 @@ ex_dataerr=65
 ex_noinput=66
 ex_unavailable=69
 
+log_stderr=
+log_syslog=
 locks=
 
 
@@ -93,9 +95,12 @@ log() {
 	local message="$2"
 	local level_num
 
-	log_level_to_num level_num "$level" || return 0
+	log_level_to_num level_num "$level" &&
+	[ "$level_num" -le "$VERBOSITY" ] || return 0
 
-	[ "$level_num" -le "$VERBOSITY" ] && logger -t "${package}[$$]" -p "user.$level" "$message"
+	[ -n "$log_stderr" ] && echo "[$level] $message" >&2
+
+	[ -n "$log_syslog" ] && logger -t "${package}[$$]" -p "user.$level" "$message"
 
 	return 0
 }
@@ -639,6 +644,21 @@ trigger_button_event() {
 
 	return 0
 }
+
+
+set_log() {
+	local value="$1"
+
+	case $value in
+		none)   log_stderr= ; log_syslog=  ;;
+		stderr) log_stderr=1; log_syslog=  ;;
+		syslog) log_stderr= ; log_syslog=1 ;;
+		all)    log_stderr=1; log_syslog=1 ;;
+
+		*)      error "invalid log value \"$value\""; return $ex_usage ;;
+	esac
+}
+
 
 do_init() {
 	local force="$1"

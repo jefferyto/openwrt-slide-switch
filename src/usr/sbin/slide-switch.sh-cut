@@ -29,6 +29,30 @@
 
 . "@pkgdatadir@/functions.sh"
 
+optarg=
+
+
+set_log "${SLIDE_SWITCH_LOG:-stderr}"
+
+while true; do
+	case $1 in
+		--log=*)
+			optarg=${1#--log=}
+			shift
+
+			[ -n "$optarg" ] || {
+				error "missing --log argument"
+				exit $ex_usage
+			}
+
+			set_log "$optarg" || exit
+			;;
+
+		*)
+			break
+			;;
+	esac
+done
 
 info "$me $version"
 
