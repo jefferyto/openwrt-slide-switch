@@ -155,14 +155,14 @@ check_json_type() {
 		[aeiou]*) article=an ;;
 	esac
 
-	json_is_a "$key" "$type" || error "\"$key_name\" is not $article $type in $switch_data_file"
+	json_is_a "$key" "$type" || error "check_json_type: \"$key_name\" is not $article $type in $switch_data_file"
 }
 
 check_input_gpio_label() {
 	local label="$1"
 	local info="$(get_gpio_info "$label")"
 
-	[ -n "$info" ] || error "\"$label\" is not the label of a valid input gpio"
+	[ -n "$info" ] || error "check_input_gpio_label: \"$label\" is not the label of a valid input gpio"
 }
 
 check_position_string() {
@@ -177,21 +177,21 @@ check_position_string() {
 		str=${str%_lo}
 	done
 
-	[ "x$str" = xhi ] || [ "x$str" = xlo ] || warning "position \"$position\" is not in the format \"(hi|lo)(_(hi|lo))*\""
+	[ "x$str" = xhi ] || [ "x$str" = xlo ] || warning "check_position_string: position \"$position\" is not in the format \"(hi|lo)(_(hi|lo))*\""
 }
 
 check_nonempty_string() {
 	local str="$1"
 	local str_name="$2"
 
-	[ -n "$str" ] || error "$str_name cannot be an empty string"
+	[ -n "$str" ] || error "check_nonempty_string: $str_name cannot be an empty string"
 }
 
 check_safe_string() {
 	local str="$1"
 	local str_name="$2"
 
-	[ "x${str%[!0-9A-Za-z_-]*}" = "x$str" ] || error "$str_name \"$str\" must contain letters, digits, underscores and/or hyphens only"
+	[ "x${str%[!0-9A-Za-z_-]*}" = "x$str" ] || error "check_safe_string: $str_name \"$str\" must contain letters, digits, underscores and/or hyphens only"
 }
 
 check_position_code() {
@@ -200,7 +200,7 @@ check_position_code() {
 	local codes="$3"
 	local code="$(get_position_code "$switch" "$position_name")"
 
-	! list_contains "$codes" "$code" || error "switch \"$switch\" cannot have both a position name \"$position_name\" and a code \"$code\""
+	! list_contains "$codes" "$code" || error "check_position_code: switch \"$switch\" cannot have both a position name \"$position_name\" and a code \"$code\""
 }
 
 validate_switch_data() {
@@ -219,7 +219,7 @@ validate_switch_data() {
 
 	json_get_keys switches
 
-	[ -n "$switches" ] || warning "no switches defined"
+	[ -n "$switches" ] || warning "validate_switch_data: no switches defined"
 
 	for switch in $switches; do
 		check_nonempty_string "$switch" "switch name" &&
@@ -235,8 +235,8 @@ validate_switch_data() {
 		json_get_keys labels_indices labels
 		json_get_values codes codes
 
-		[ -n "$labels_indices" ] || warning "no labels defined for switch \"$switch\""
-		[ -n "$codes" ] || warning "no codes defined for switch \"$switch\""
+		[ -n "$labels_indices" ] || warning "validate_switch_data: no labels defined for switch \"$switch\""
+		[ -n "$codes" ] || warning "validate_switch_data: no codes defined for switch \"$switch\""
 
 		json_select labels
 
@@ -251,7 +251,7 @@ validate_switch_data() {
 
 		json_get_keys positions
 
-		[ -n "$positions" ] || warning "no positions defined for switch \"$switch\""
+		[ -n "$positions" ] || warning "validate_switch_data: no positions defined for switch \"$switch\""
 
 		for position in $positions; do
 			check_position_string "$position" || continue
@@ -275,42 +275,42 @@ load_switch_data() {
 	local data
 
 	[ -f "$switches_cache" ] && {
-		debug "loading switch data from $switches_cache"
+		debug "load_switch_data: loading switch data from $switches_cache"
 		json_set_namespace switches
 		json_load "$(cat "$switches_cache")"
 		return
 	}
 
-	[ -n "$board" ] || error "missing board name" || return $ex_dataerr
-	[ -f "$switch_data_file" ] || error "cannot find switch data file \"$switch_data_file\"" || return $ex_noinput
+	[ -n "$board" ] || error "load_switch_data: missing board name" || return $ex_dataerr
+	[ -f "$switch_data_file" ] || error "load_switch_data: cannot find switch data file \"$switch_data_file\"" || return $ex_noinput
 
-	debug "attempting to load switch data for $board from $switch_data_file"
+	debug "load_switch_data: attempting to load switch data for $board from $switch_data_file"
 
 	jsonfilter -q -i "$switch_data_file" -t "@" > /dev/null
-	[ "$?" -ne 126 ] || error "failed to parse $switch_data_file" || return $ex_dataerr
+	[ "$?" -ne 126 ] || error "load_switch_data: failed to parse $switch_data_file" || return $ex_dataerr
 
 	type=$(jsonfilter -i "$switch_data_file" -t "@[\"$board\"]")
 
 	[ "x$type" = xstring ] && {
-		debug "$board shares switch data with another board, loading alternate board name"
+		debug "load_switch_data: $board shares switch data with another board, loading alternate board name"
 		board=$(jsonfilter -i "$switch_data_file" -e "@[\"$board\"]")
 
-		[ -n "$board" ] || error "missing alternate board name" || return $ex_dataerr
+		[ -n "$board" ] || error "load_switch_data: missing alternate board name" || return $ex_dataerr
 
 		type=$(jsonfilter -i "$switch_data_file" -t "@[\"$board\"]")
 	}
 
 	case $type in
 		object)
-			debug "loading switch data for $board from $switch_data_file"
+			debug "load_switch_data: loading switch data for $board from $switch_data_file"
 			data=$(jsonfilter -i "$switch_data_file" -e "@[\"$board\"]")
 			;;
 		'')
-			warning "\"$board\" not found in $switch_data_file"
+			warning "load_switch_data: \"$board\" not found in $switch_data_file"
 			return $ex_unavailable
 			;;
 		*)
-			error "\"$board\" is not an object in $switch_data_file"
+			error "load_switch_data: \"$board\" is not an object in $switch_data_file"
 			return $ex_dataerr
 			;;
 	esac
@@ -320,7 +320,7 @@ load_switch_data() {
 
 	validate_switch_data || return $ex_dataerr
 
-	debug "caching switch data to $switches_cache"
+	debug "load_switch_data: caching switch data to $switches_cache"
 	mkdir -p "$(dirname "$switches_cache")"
 	echo "$data" > "$switches_cache"
 }
@@ -351,7 +351,7 @@ get_switch_for_button() {
 		json_get_values codes codes
 
 		list_contains "$codes" "$button" && {
-			debug "found switch \"$switch\" for button \"$button\""
+			debug "get_switch_for_button: found switch \"$switch\" for button \"$button\""
 			echo "$switch"
 			return
 		}
@@ -359,7 +359,7 @@ get_switch_for_button() {
 		json_select ..
 	done
 
-	debug "no switches found for button \"$button\""
+	debug "get_switch_for_button: no switches found for button \"$button\""
 	return 1
 }
 
@@ -394,7 +394,7 @@ get_position_name() {
 	json_select "$switch"
 	json_select positions
 
-	json_get_var position_name "$position" || warning "position \"$position\" for switch \"$switch\" does not have a position name" || return
+	json_get_var position_name "$position" || warning "get_position_name: position \"$position\" for switch \"$switch\" does not have a position name" || return
 
 	echo "$position_name"
 }
@@ -412,7 +412,7 @@ init_state() {
 	local positions
 	local position
 
-	debug "initializing state for switch \"$switch\""
+	debug "init_state: initializing state for switch \"$switch\""
 
 	json_set_namespace switches
 	json_select
@@ -420,7 +420,7 @@ init_state() {
 	json_get_keys positions positions
 
 	position=$(get_current_position "$switch")
-	debug "setting \"$position\" as initial position for switch \"$switch\""
+	debug "init_state: setting \"$position\" as initial position for switch \"$switch\""
 
 	json_set_namespace state
 	json_init
@@ -436,10 +436,10 @@ load_state() {
 	local switch="$1"
 	local state_file="$(get_state_file "$switch")"
 
-	debug "attempting to load state for switch \"$switch\" from $state_file"
+	debug "load_state: attempting to load state for switch \"$switch\" from $state_file"
 
 	[ -f "$state_file" ] && {
-		debug "loading state from $state_file"
+		debug "load_state: loading state from $state_file"
 		json_set_namespace state
 		json_load "$(cat "$state_file")"
 	}
@@ -449,7 +449,7 @@ save_state() {
 	local switch="$1"
 	local state_file="$(get_state_file "$switch")"
 
-	debug "saving state for switch \"$switch\" to $state_file"
+	debug "save_state: saving state for switch \"$switch\" to $state_file"
 
 	json_set_namespace state
 	mkdir -p "$(dirname "$state_file")"
@@ -503,9 +503,9 @@ cleanup_locks() {
 
 	for switch in $locks; do
 		dir="$(get_lock_dir "$switch")"
-		debug "attempting to remove $dir"
+		debug "cleanup_locks: attempting to remove $dir"
 		[ -d "$dir" ] && {
-			debug "removing $dir"
+			debug "cleanup_locks: removing $dir"
 			rm -rf "$dir"
 		}
 	done
@@ -520,7 +520,7 @@ get_lock() {
 	mkdir -p "$lock_dir"
 
 	mkdir "$dir" 2>/dev/null || {
-		debug "failed to get lock for switch \"$switch\" ($dir)"
+		debug "get_lock: failed to get lock for switch \"$switch\" ($dir)"
 		return 1
 	}
 
@@ -532,11 +532,11 @@ get_lock() {
 	trap 'exit 131' QUIT
 	trap 'exit 143' TERM
 
-	debug "got lock for $switch ($dir)"
+	debug "get_lock: got lock for $switch ($dir)"
 }
 
 release_locks() {
-	debug "releasing locks"
+	debug "release_locks: releasing locks"
 
 	cleanup_locks
 
@@ -554,7 +554,7 @@ trigger_button_event() {
 	local button
 	local seen
 
-	[ -n "$position_name" ] || warning "could not get position name for switch \"$switch\" and position \"$position\"" || return
+	[ -n "$position_name" ] || warning "trigger_button_event: could not get position name for switch \"$switch\" and position \"$position\"" || return
 
 	before=$(get_state_seen "$position")
 	[ -n "$now" ] || now=$before
@@ -568,12 +568,12 @@ trigger_button_event() {
 		export ACTION="$action"
 		export SEEN="$seen"
 
-		debug "triggering button event with BUTTON=\"$button\" ACTION=\"$action\" SEEN=\"$seen\""
+		debug "trigger_button_event: triggering button event with BUTTON=\"$button\" ACTION=\"$action\" SEEN=\"$seen\""
 
-		debug "attempting to call $hotplug_call"
+		debug "trigger_button_event: attempting to call $hotplug_call"
 		[ -x "$hotplug_call" ] && "$hotplug_call" button
 
-		debug "attempting to call $rc_button/$button"
+		debug "trigger_button_event: attempting to call $rc_button/$button"
 		[ -x "$rc_button/$button" ] && "$rc_button/$button"
 	)
 
@@ -586,12 +586,12 @@ do_init() {
 	local switch
 	local position
 
-	debug "do_init \"$force\""
+	debug "init: do_init \"$force\""
 
 	case $force in
-		'')	debug "not forcing init" ;;
-		force)	debug "forcing init" ;;
-		*)	error "invalid option \"$force\"" || return $ex_usage ;;
+		'')	debug "init: not forcing init" ;;
+		force)	debug "init: forcing init" ;;
+		*)	error "init: invalid option \"$force\"" || return $ex_usage ;;
 	esac
 
 	load_switch_data || return
@@ -599,10 +599,10 @@ do_init() {
 	switches=$(get_switches)
 
 	for switch in $switches; do
-		debug "attempting to init switch \"$switch\""
+		debug "init: attempting to init switch \"$switch\""
 
 		[ "x$force" = "xforce" ] || ! load_state "$switch" || {
-			debug "switch \"$switch\" already init"
+			debug "init: switch \"$switch\" already init"
 			continue
 		}
 
@@ -627,7 +627,7 @@ do_update() {
 	local current
 	local previous
 
-	debug "do_update \"$button\""
+	debug "update: do_update \"$button\""
 
 	load_switch_data || return
 
@@ -642,7 +642,7 @@ do_update() {
 	done
 
 	[ -n "$locked" ] || {
-		debug "no switches to update"
+		debug "update: no switches to update"
 		return
 	}
 
@@ -653,18 +653,18 @@ do_update() {
 	for switch in $locked; do
 		if load_state "$switch"; then
 			previous=$(get_state_position)
-			debug "previous position for switch \"$switch\" is \"$previous\""
+			debug "update: previous position for switch \"$switch\" is \"$previous\""
 		else
 			init_state "$switch"
 			previous=
-			debug "no previous position for switch \"$switch\""
+			debug "update: no previous position for switch \"$switch\""
 		fi
 
 		current=$(get_current_position "$switch")
-		debug "current position for switch \"$switch\" is \"$current\""
+		debug "update: current position for switch \"$switch\" is \"$current\""
 
 		[ "x$current" != "x$previous" ] || {
-			debug "switch \"$switch\" position unchanged"
+			debug "update: switch \"$switch\" position unchanged"
 			continue
 		}
 
@@ -695,7 +695,7 @@ do_position() {
 	local position
 	local position_names
 
-	debug "do_position \"$requested\""
+	debug "position: do_position \"$requested\""
 
 	load_switch_data || return
 
@@ -703,7 +703,7 @@ do_position() {
 
 	if [ -n "$requested" ]; then
 		for switch in $requested; do
-			list_contains "$switches" "$switch" || error "\"$switch\" is not a valid switch" || return $ex_usage
+			list_contains "$switches" "$switch" || error "position: \"$switch\" is not a valid switch" || return $ex_usage
 		done
 	else
 		requested=$switches
@@ -735,14 +735,14 @@ do_clean() {
 do_boot() {
 	local action="$1"
 
-	debug "do_boot \"$action\""
+	debug "boot: do_boot \"$action\""
 
-	[ -x "$initd_script" ] || error "init.d script \"$initd_script\" not found" || return $ex_unavailable
+	[ -x "$initd_script" ] || error "boot: init.d script \"$initd_script\" not found" || return $ex_unavailable
 
 	case $action in
-		enable)		debug "enabling init on boot" ;;
-		disable)	debug "disabling init on boot" ;;
-		*)		error "invalid option \"$action\"" || return $ex_usage ;;
+		enable)		debug "boot: enabling init on boot" ;;
+		disable)	debug "boot: disabling init on boot" ;;
+		*)		error "boot: invalid option \"$action\"" || return $ex_usage ;;
 	esac
 
 	"$initd_script" "$action"
