@@ -65,38 +65,53 @@ ex_unavailable=69
 locks=
 
 
+log_level_to_num() {
+	local _var="$1"
+	local _level="$2"
+	local _num
+
+	case $_level in
+		emerg|panic)  _num=0 ;;
+		alert)        _num=1 ;;
+		crit)         _num=2 ;;
+		err|error)    _num=3 ;;
+		warning|warn) _num=4 ;;
+		notice)       _num=5 ;;
+		info)         _num=6 ;;
+		debug)        _num=7 ;;
+
+		*[!0-9]*)     return 1 ;;
+
+		*)            _num=$_level ;;
+	esac
+
+	_set_var "$_var" "$_num"
+}
+
 log() {
 	local level="$1"
 	local message="$2"
+	local level_num
 
-	[ "$level" -le "$VERBOSITY" ] && logger -t "${package}[$$]" -p "user.$level" "$message"
+	log_level_to_num level_num "$level" || return 0
+
+	[ "$level_num" -le "$VERBOSITY" ] && logger -t "${package}[$$]" -p "user.$level" "$message"
 
 	return 0
 }
 
 error() {
-	local message="$1"
-	local returnTrue="$2"
-
-	log 3 "$message"
-
-	[ -n "$returnTrue" ]
+	log err "$@"
 }
 
 warning() {
-	local message="$1"
-	local returnTrue="$2"
-
-	log 4 "$message"
-
-	[ -n "$returnTrue" ]
+	log warning "$@"
 }
 
 debug() {
-	local message="$1"
-
-	log 7 "$message"
+	log debug "$@"
 }
+
 
 board_name() {
 	[ -e /tmp/sysinfo/board_name ] && cat /tmp/sysinfo/board_name || echo "generic"
@@ -155,14 +170,20 @@ check_json_type() {
 		[aeiou]*) article=an ;;
 	esac
 
-	json_is_a "$key" "$type" || error "check_json_type: \"$key_name\" is not $article $type in $switch_data_file"
+	json_is_a "$key" "$type" || {
+		error "check_json_type: \"$key_name\" is not $article $type in $switch_data_file"
+		return 1
+	}
 }
 
 check_input_gpio_label() {
 	local label="$1"
 	local info="$(get_gpio_info "$label")"
 
-	[ -n "$info" ] || error "check_input_gpio_label: \"$label\" is not the label of a valid input gpio"
+	[ -n "$info" ] || {
+		error "check_input_gpio_label: \"$label\" is not the label of a valid input gpio"
+		return 1
+	}
 }
 
 check_position_string() {
@@ -177,21 +198,30 @@ check_position_string() {
 		str=${str%_lo}
 	done
 
-	[ "x$str" = xhi ] || [ "x$str" = xlo ] || warning "check_position_string: position \"$position\" is not in the format \"(hi|lo)(_(hi|lo))*\""
+	[ "x$str" = xhi ] || [ "x$str" = xlo ] || {
+		warning "check_position_string: position \"$position\" is not in the format \"(hi|lo)(_(hi|lo))*\""
+		return 1
+	}
 }
 
 check_nonempty_string() {
 	local str="$1"
 	local str_name="$2"
 
-	[ -n "$str" ] || error "check_nonempty_string: $str_name cannot be an empty string"
+	[ -n "$str" ] || {
+		error "check_nonempty_string: $str_name cannot be an empty string"
+		return 1
+	}
 }
 
 check_safe_string() {
 	local str="$1"
 	local str_name="$2"
 
-	[ "x${str%[!0-9A-Za-z_-]*}" = "x$str" ] || error "check_safe_string: $str_name \"$str\" must contain letters, digits, underscores and/or hyphens only"
+	[ "x${str%[!0-9A-Za-z_-]*}" = "x$str" ] || {
+		error "check_safe_string: $str_name \"$str\" must contain letters, digits, underscores and/or hyphens only"
+		return 1
+	}
 }
 
 check_position_code() {
@@ -200,7 +230,10 @@ check_position_code() {
 	local codes="$3"
 	local code="$(get_position_code "$switch" "$position_name")"
 
-	! list_contains "$codes" "$code" || error "check_position_code: switch \"$switch\" cannot have both a position name \"$position_name\" and a code \"$code\""
+	! list_contains "$codes" "$code" || {
+		error "check_position_code: switch \"$switch\" cannot have both a position name \"$position_name\" and a code \"$code\""
+		return 1
+	}
 }
 
 validate_switch_data() {
@@ -281,13 +314,23 @@ load_switch_data() {
 		return
 	}
 
-	[ -n "$board" ] || error "load_switch_data: missing board name" || return $ex_dataerr
-	[ -f "$switch_data_file" ] || error "load_switch_data: cannot find switch data file \"$switch_data_file\"" || return $ex_noinput
+	[ -n "$board" ] || {
+		error "load_switch_data: missing board name"
+		return $ex_dataerr
+	}
+
+	[ -f "$switch_data_file" ] || {
+		error "load_switch_data: cannot find switch data file \"$switch_data_file\""
+		return $ex_noinput
+	}
 
 	debug "load_switch_data: attempting to load switch data for $board from $switch_data_file"
 
 	jsonfilter -q -i "$switch_data_file" -t "@" > /dev/null
-	[ "$?" -ne 126 ] || error "load_switch_data: failed to parse $switch_data_file" || return $ex_dataerr
+	[ "$?" -ne 126 ] || {
+		error "load_switch_data: failed to parse $switch_data_file"
+		return $ex_dataerr
+	}
 
 	type=$(jsonfilter -i "$switch_data_file" -t "@[\"$board\"]")
 
@@ -295,7 +338,10 @@ load_switch_data() {
 		debug "load_switch_data: $board shares switch data with another board, loading alternate board name"
 		board=$(jsonfilter -i "$switch_data_file" -e "@[\"$board\"]")
 
-		[ -n "$board" ] || error "load_switch_data: missing alternate board name" || return $ex_dataerr
+		[ -n "$board" ] || {
+			error "load_switch_data: missing alternate board name"
+			return $ex_dataerr
+		}
 
 		type=$(jsonfilter -i "$switch_data_file" -t "@[\"$board\"]")
 	}
@@ -394,7 +440,10 @@ get_position_name() {
 	json_select "$switch"
 	json_select positions
 
-	json_get_var position_name "$position" || warning "get_position_name: position \"$position\" for switch \"$switch\" does not have a position name" || return
+	json_get_var position_name "$position" || {
+		warning "get_position_name: position \"$position\" for switch \"$switch\" does not have a position name"
+		return 1
+	}
 
 	echo "$position_name"
 }
@@ -554,7 +603,10 @@ trigger_button_event() {
 	local button
 	local seen
 
-	[ -n "$position_name" ] || warning "trigger_button_event: could not get position name for switch \"$switch\" and position \"$position\"" || return
+	[ -n "$position_name" ] || {
+		warning "trigger_button_event: could not get position name for switch \"$switch\" and position \"$position\""
+		return 1
+	}
 
 	before=$(get_state_seen "$position")
 	[ -n "$now" ] || now=$before
@@ -563,12 +615,12 @@ trigger_button_event() {
 	button=$(get_position_code "$switch" "$position_name")
 	seen=$((now - before))
 
+	debug "trigger_button_event: triggering button event with BUTTON=\"$button\" ACTION=\"$action\" SEEN=\"$seen\""
+
 	(
 		export BUTTON="$button"
 		export ACTION="$action"
 		export SEEN="$seen"
-
-		debug "trigger_button_event: triggering button event with BUTTON=\"$button\" ACTION=\"$action\" SEEN=\"$seen\""
 
 		debug "trigger_button_event: attempting to call $hotplug_call"
 		[ -x "$hotplug_call" ] && "$hotplug_call" button
@@ -591,7 +643,7 @@ do_init() {
 	case $force in
 		'')	debug "init: not forcing init" ;;
 		force)	debug "init: forcing init" ;;
-		*)	error "init: invalid option \"$force\"" || return $ex_usage ;;
+		*)	error "init: invalid option \"$force\""; return $ex_usage ;;
 	esac
 
 	load_switch_data || return
@@ -703,7 +755,10 @@ do_position() {
 
 	if [ -n "$requested" ]; then
 		for switch in $requested; do
-			list_contains "$switches" "$switch" || error "position: \"$switch\" is not a valid switch" || return $ex_usage
+			list_contains "$switches" "$switch" || {
+				error "position: \"$switch\" is not a valid switch"
+				return $ex_usage
+			}
 		done
 	else
 		requested=$switches
@@ -737,12 +792,15 @@ do_boot() {
 
 	debug "boot: do_boot \"$action\""
 
-	[ -x "$initd_script" ] || error "boot: init.d script \"$initd_script\" not found" || return $ex_unavailable
+	[ -x "$initd_script" ] || {
+		error "boot: init.d script \"$initd_script\" not found"
+		return $ex_unavailable
+	}
 
 	case $action in
 		enable)		debug "boot: enabling init on boot" ;;
 		disable)	debug "boot: disabling init on boot" ;;
-		*)		error "boot: invalid option \"$action\"" || return $ex_usage ;;
+		*)		error "boot: invalid option \"$action\""; return $ex_usage ;;
 	esac
 
 	"$initd_script" "$action"
