@@ -345,11 +345,13 @@ save_switch_data_to_cache() {
 }
 
 load_switch_data() {
+	local no_load_from_cache="$1"
+	local no_save_to_cache="$2"
 	local board
 	local type
 	local data
 
-	load_switch_data_from_cache && return
+	[ -z "$no_load_from_cache" ] && load_switch_data_from_cache && return
 
 	get_board board && [ -n "$board" ] || {
 		error "load_switch_data: missing board name"
@@ -403,7 +405,9 @@ load_switch_data() {
 
 	validate_switch_data || return
 
-	save_switch_data_to_cache
+	[ -z "$no_save_to_cache" ] && save_switch_data_to_cache
+
+	return 0
 }
 
 
