@@ -33,6 +33,7 @@ optarg=
 
 
 set_log "${SLIDE_SWITCH_LOG:-stderr}"
+set_verbosity "${SLIDE_SWITCH_VERBOSITY:-notice}"
 
 while true; do
 	case $1 in
@@ -46,6 +47,18 @@ while true; do
 			}
 
 			set_log "$optarg" || exit
+			;;
+
+		--verbosity=*)
+			optarg=${1#--verbosity=}
+			shift
+
+			[ -n "$optarg" ] || {
+				error "missing --verbosity argument"
+				exit $ex_usage
+			}
+
+			set_verbosity "$optarg" || exit
 			;;
 
 		*)

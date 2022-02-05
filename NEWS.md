@@ -4,6 +4,7 @@
 * Added logging to standard error
 * Added command-line option to select logging to standard error
   (default), syslog, all (both standard error and syslog) or none
+* Added command-line option to select logging verbosity
 * Removed compatibility with older (model-only) board names
 
 ## [0.9.7] - 2022-02-18

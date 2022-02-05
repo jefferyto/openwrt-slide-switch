@@ -44,19 +44,6 @@ initd_script=$initd_dir/zzz-slide-switch
 
 . /usr/share/libubox/jshn.sh
 
-case $VERBOSITY in
-	emerg)		VERBOSITY=0 ;;
-	alert)		VERBOSITY=1 ;;
-	crit)		VERBOSITY=2 ;;
-	err)		VERBOSITY=3 ;;
-	warning)	VERBOSITY=4 ;;
-	notice)		VERBOSITY=5 ;;
-	info)		VERBOSITY=6 ;;
-	debug)		VERBOSITY=7 ;;
-
-	''|*[!0-9]*)	VERBOSITY=4 ;;
-esac
-
 ex_usage=64
 ex_dataerr=65
 ex_noinput=66
@@ -64,6 +51,7 @@ ex_unavailable=69
 
 log_stderr=
 log_syslog=
+verbosity=
 locks=
 
 
@@ -96,7 +84,7 @@ log() {
 	local level_num
 
 	log_level_to_num level_num "$level" &&
-	[ "$level_num" -le "$VERBOSITY" ] || return 0
+	[ "$level_num" -le "$verbosity" ] || return 0
 
 	[ -n "$log_stderr" ] && echo "[$level] $message" >&2
 
@@ -657,6 +645,15 @@ set_log() {
 
 		*)      error "invalid log value \"$value\""; return $ex_usage ;;
 	esac
+}
+
+set_verbosity() {
+	local value="$1"
+
+	log_level_to_num verbosity "$value" || {
+		error "invalid verbosity value \"$value\""
+		return $ex_usage
+	}
 }
 
 
