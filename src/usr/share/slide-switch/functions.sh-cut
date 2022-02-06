@@ -260,6 +260,7 @@ validate_switch_data() {
 		check_safe_string "$switch" "switch name" &&
 		check_json_type "$switch" object || return
 
+		json_select
 		json_select "$switch"
 
 		check_json_type labels array "$switch.labels" &&
@@ -298,8 +299,6 @@ validate_switch_data() {
 			check_safe_string "$position_name" "position name" &&
 			check_position_code "$switch" "$position_name" "$codes" || return
 		done
-
-		json_select
 	done
 }
 
@@ -380,6 +379,7 @@ get_switches() {
 	json_select
 
 	json_get_keys switches
+
 	echo "$switches"
 }
 
@@ -393,8 +393,11 @@ get_switch_for_button() {
 	json_select
 
 	json_get_keys switches
+
 	for switch in $switches; do
+		json_select
 		json_select "$switch"
+
 		json_get_values codes codes
 
 		list_contains "$codes" "$button" && {
@@ -402,8 +405,6 @@ get_switch_for_button() {
 			echo "$switch"
 			return
 		}
-
-		json_select ..
 	done
 
 	debug "get_switch_for_button: no switches found for button \"$button\""
@@ -423,6 +424,7 @@ get_current_position() {
 	json_select labels
 
 	json_get_keys labels_indices
+
 	for i in $labels_indices; do
 		json_get_var label "$i"
 		position="${position}_$(get_gpio_value "$label")"
@@ -467,6 +469,7 @@ init_state() {
 	json_set_namespace switches
 	json_select
 	json_select "$switch"
+
 	json_get_keys positions positions
 
 	position=$(get_current_position "$switch")
@@ -474,7 +477,9 @@ init_state() {
 
 	json_set_namespace state
 	json_init
+
 	json_add_string position "$position"
+
 	json_add_object seen
 	for position in $positions; do
 		json_add_int "$position" "$now"
@@ -510,6 +515,7 @@ save_state() {
 get_state_position() {
 	json_set_namespace state
 	json_select
+
 	get_json_value position
 }
 
@@ -518,6 +524,7 @@ set_state_position() {
 
 	json_set_namespace state
 	json_select
+
 	json_add_string position "$position"
 }
 
@@ -527,6 +534,7 @@ get_state_seen() {
 	json_set_namespace state
 	json_select
 	json_select seen
+
 	get_json_value "$position"
 }
 
@@ -537,6 +545,7 @@ set_state_seen() {
 	json_set_namespace state
 	json_select
 	json_select seen
+
 	json_add_int "$position" "$seen"
 }
 
