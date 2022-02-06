@@ -505,7 +505,7 @@ get_state_file() {
 
 init_state() {
 	local switch="$1"
-	local now
+	local now="$2"
 	local positions
 	local position
 
@@ -517,8 +517,8 @@ init_state() {
 
 	json_get_keys positions positions
 
-	get_epoch now || return
 	get_current_position position "$switch" || return
+
 	debug "init_state: setting \"$position\" as initial position for switch \"$switch\""
 
 	json_set_namespace state
@@ -742,10 +742,12 @@ set_verbosity() {
 do_init() {
 	local switches
 	local switch
+	local now
 
 	load_switch_data no_load_from_cache || return
 
 	get_switches switches
+	get_epoch now || return
 
 	for switch in $switches; do
 		get_lock "$switch" || {
@@ -755,7 +757,7 @@ do_init() {
 
 		debug "init: initializing switch \"$switch\""
 
-		init_state "$switch" || return
+		init_state "$switch" "$now" || return
 		save_state "$switch"
 	done
 
