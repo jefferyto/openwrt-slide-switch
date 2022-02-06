@@ -829,12 +829,15 @@ do_update() {
 
 do_switch() {
 	local switches
+	local switch
 
-	load_switch_data || return
+	load_switch_data '' no_save_to_cache || return
 
 	get_switches switches
 
-	echo "${switches# }"
+	for switch in $switches; do
+		echo "$switch"
+	done
 }
 
 do_position() {

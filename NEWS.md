@@ -6,6 +6,9 @@
   (default), syslog, all (both standard error and syslog) or none
 * Added command-line option to select logging verbosity
 * Removed compatibility with older (model-only) board names
+* `switch` command:
+  * Separate switch names with newlines instead of spaces, i.e. print
+    one switch name per line
 * `position` command:
   * Require exactly one switch name argument
 
