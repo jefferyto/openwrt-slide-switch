@@ -883,19 +883,17 @@ do_clean() {
 do_boot() {
 	local action="$1"
 
-	debug "boot: do_boot \"$action\""
-
 	[ -x "$initd_script" ] || {
-		error "boot: init.d script \"$initd_script\" not found"
+		error "boot: init.d script $initd_script not found or not executable"
 		return $ex_unavailable
 	}
 
-	case $action in
-		enable)		debug "boot: enabling init on boot" ;;
-		disable)	debug "boot: disabling init on boot" ;;
-		*)		error "boot: invalid option \"$action\""; return $ex_usage ;;
-	esac
+	[ "x$action" = xenable ] || [ "x$action" = xdisable ] || {
+		error "boot: invalid argument \"$action\""
+		return $ex_usage
+	}
 
+	debug "boot: calling $initd_script $action"
 	"$initd_script" "$action"
 }
 
