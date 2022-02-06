@@ -144,6 +144,12 @@ list_contains() {
 	[ -z "${list##*$item*}" ]
 }
 
+is_safe_string() {
+	local str="$1"
+
+	[ -n "${str##*[!0-9A-Za-z_-]*}" ]
+}
+
 
 get_gpio_value() {
 	local __var="$1"
@@ -213,7 +219,7 @@ check_safe_string() {
 	local str="$1"
 	local str_name="$2"
 
-	[ -n "${str##*[!0-9A-Za-z_-]*}" ] || {
+	is_safe_string "$str" || {
 		error "check_safe_string: $str_name \"$str\" must contain letters, digits, underscores and/or hyphens only"
 		return $ex_dataerr
 	}
@@ -832,37 +838,34 @@ do_switch() {
 }
 
 do_position() {
-	local requested="$1"
+	local switch="$1"
 	local switches
-	local switch
 	local position
-	local position_names
 	local position_name
 
-	debug "position: do_position \"$requested\""
-
-	load_switch_data || return
+	load_switch_data '' no_save_to_cache || return
 
 	get_switches switches
 
-	if [ -n "$requested" ]; then
-		for switch in $requested; do
-			list_contains "$switches" "$switch" || {
-				error "position: \"$switch\" is not a valid switch"
-				return $ex_usage
-			}
-		done
-	else
-		requested=$switches
-	fi
+	[ -n "$switch" ] || {
+		error "position: missing switch name"
+		return $ex_usage
+	}
 
-	for switch in $requested; do
-		get_current_position position "$switch" || return
-		get_position_name position_name "$switch" "$position"
-		position_names="$position_names $position_name"
-	done
+	is_safe_string "$switch" || {
+		error "position: \"$switch\" is not a valid switch name"
+		return $ex_usage
+	}
 
-	echo "${position_names# }"
+	list_contains "$switches" "$switch" || {
+		error "position: cannot find switch \"$switch\""
+		return $ex_usage
+	}
+
+	get_current_position position "$switch" || return
+	get_position_name position_name "$switch" "$position"
+
+	echo "$position_name"
 }
 
 do_clean() {

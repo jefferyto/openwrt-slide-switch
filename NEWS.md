@@ -6,6 +6,8 @@
   (default), syslog, all (both standard error and syslog) or none
 * Added command-line option to select logging verbosity
 * Removed compatibility with older (model-only) board names
+* `position` command:
+  * Require exactly one switch name argument
 
 ## [0.9.7] - 2022-02-18
 * Fixed support for models with spaces in their GPIO labels:
