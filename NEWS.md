@@ -19,6 +19,9 @@
     one switch name per line
 * `position` command:
   * Require exactly one switch name argument
+* `clean` command:
+  * Avoid removing files or directories placed in slide-switch's working
+    directories by other processes
 
 ## [0.9.7] - 2022-02-18
 * Fixed support for models with spaces in their GPIO labels:

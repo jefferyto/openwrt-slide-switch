@@ -921,16 +921,31 @@ do_position() {
 }
 
 do_clean() {
-	{
-		rm -f "$switches_cache"
+	local switches
+	local switch
+	local state_file
+	local switch_lock_dir
 
-		rm -f "$state_dir"/*
-		rmdir "$state_dir"
+	load_switch_data no_load_from_cache no_save_to_cache || return
 
-		rmdir "$lock_dir"/*
+	get_switches switches
 
-		rmdir "$run_dir" "$lock_dir"
-	} 2>/dev/null
+	for switch in $switches; do
+		get_state_file state_file "$switch"
+		get_lock_dir switch_lock_dir "$switch"
+
+		debug "clean: removing state for switch \"$switch\" ($state_file)"
+		rm -f "$state_file"
+
+		debug "clean: removing lock for switch \"$switch\" ($switch_lock_dir)"
+		[ -d "$switch_lock_dir" ] && rmdir --ignore-fail-on-non-empty "$switch_lock_dir"
+	done
+
+	debug "clean: removing $switches_cache"
+	rm -f "$switches_cache"
+
+	debug "clean: removing $state_dir, $run_dir, $lock_dir"
+	rmdir --ignore-fail-on-non-empty "$state_dir" "$run_dir" "$lock_dir" 2>/dev/null
 
 	return 0
 }
