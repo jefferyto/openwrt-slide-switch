@@ -6,6 +6,10 @@
   (default), syslog, all (both standard error and syslog) or none
 * Added command-line option to select logging verbosity
 * Removed compatibility with older (model-only) board names
+* `update` command:
+  * Accept multiple switch name and/or button arguments
+  * Added command-line option to perform a forced update (trigger button
+    pressed events for all switches)
 * `switch` command:
   * Separate switch names with newlines instead of spaces, i.e. print
     one switch name per line

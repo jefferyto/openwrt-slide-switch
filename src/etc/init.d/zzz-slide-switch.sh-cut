@@ -30,5 +30,5 @@
 START=99
 
 boot() {
-	"@sbindir@/slide-switch" --log=syslog init
+	"@sbindir@/slide-switch" --log=syslog update --force
 }

@@ -75,8 +75,8 @@ case $1 in
 		do_init "$2"
 		;;
 	update)
-		# $2 optional: button name from button event
-		do_update "$2"
+		shift
+		do_update "$@"
 		;;
 	switch)
 		do_switch

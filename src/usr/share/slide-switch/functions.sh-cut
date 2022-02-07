@@ -768,26 +768,69 @@ do_init() {
 }
 
 do_update() {
-	local button="$1"
 	local switches
 	local switch
+	local force
+	local has_requested
+	local requested
 	local locked
 	local now
 	local current
 	local previous
-
-	debug "update: do_update \"$button\""
+	local arg
 
 	load_switch_data || return
 
-	if [ -n "$button" ]; then
-		get_switch_for_button switches "$button"
-	else
-		get_switches switches
-	fi
+	get_switches switches
 
-	for switch in $switches; do
-		get_lock "$switch" && locked="$locked $switch"
+	for arg in "$@"; do
+		case $arg in
+			-f|--force)
+				debug "update: given --force option"
+				force=1
+				continue
+				;;
+		esac
+
+		is_safe_string "$arg" || {
+			error "update: \"$arg\" is not a valid switch name or button"
+			return $ex_usage
+		}
+
+		has_requested=1
+		switch=
+
+		list_contains "$switches" "$arg" && {
+			debug "update: \"$arg\" is a switch name"
+			switch=$arg
+		}
+
+		[ -z "$switch" ] && {
+			get_switch_for_button switch "$arg" &&
+			[ -n "$switch" ] &&
+			debug "update: \"$arg\" is a button for switch \"$switch\""
+		}
+
+		[ -n "$switch" ] || {
+			debug "update: \"$arg\" is not a switch name or button"
+			continue
+		}
+
+		! list_contains "$requested" "$switch" && requested="$requested $switch"
+	done
+
+	[ -z "$has_requested" ] && {
+		notice "update: no switch names or buttons given, updating all switches"
+		requested=$switches
+	}
+
+	for switch in $requested; do
+		get_lock "$switch" || {
+			debug "update: cannot get lock for switch \"$switch\""
+			continue
+		}
+
+		locked="$locked $switch"
 	done
 
 	[ -n "$locked" ] || {
@@ -810,7 +853,13 @@ do_update() {
 		fi
 
 		get_current_position current "$switch" || return
+
 		debug "update: current position for switch \"$switch\" is \"$current\""
+
+		[ -n "$force" ] && [ "x$current" = "x$previous" ] && {
+			debug "update: forcing update for switch \"$switch\""
+			previous=
+		}
 
 		[ "x$current" != "x$previous" ] || {
 			debug "update: switch \"$switch\" position unchanged"
