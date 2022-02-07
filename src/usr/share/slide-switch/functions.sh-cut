@@ -588,11 +588,14 @@ cleanup_locks() {
 
 	for switch in $locks; do
 		get_lock_dir switch_lock_dir "$switch"
-		debug "cleanup_locks: attempting to remove $switch_lock_dir"
-		[ -d "$switch_lock_dir" ] && {
-			debug "cleanup_locks: removing $switch_lock_dir"
-			rm -rf "$switch_lock_dir"
+
+		[ -d "$switch_lock_dir" ] || {
+			warning "cleanup_locks: cannot find lock for switch \"$switch\" ($switch_lock_dir)"
+			continue
 		}
+
+		debug "cleanup_locks: removing lock for switch \"$switch\" ($switch_lock_dir)"
+		rmdir --ignore-fail-on-non-empty "$switch_lock_dir"
 	done
 
 	locks=
