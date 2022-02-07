@@ -682,7 +682,6 @@ trigger_button_event() {
 	}
 
 	get_state_seen before "$position"
-	[ -n "$now" ] || now=$before
 	set_state_seen "$position" "$now"
 
 	get_position_code button "$switch" "$position_name"
@@ -730,41 +729,26 @@ set_verbosity() {
 
 
 do_init() {
-	local force="$1"
 	local switches
 	local switch
-	local position
 
-	debug "init: do_init \"$force\""
-
-	case $force in
-		'')	debug "init: not forcing init" ;;
-		force)	debug "init: forcing init" ;;
-		*)	error "init: invalid option \"$force\""; return $ex_usage ;;
-	esac
-
-	load_switch_data || return
+	load_switch_data no_load_from_cache || return
 
 	get_switches switches
 
 	for switch in $switches; do
-		debug "init: attempting to init switch \"$switch\""
-
-		[ "x$force" = "xforce" ] || ! load_state "$switch" || {
-			debug "init: switch \"$switch\" already init"
+		get_lock "$switch" || {
+			warning "init: cannot get lock for switch \"$switch\""
 			continue
 		}
 
-		get_lock "$switch" || continue
+		debug "init: initializing switch \"$switch\""
 
 		init_state "$switch" || return
-
-		get_state_position position
-		trigger_button_event "$switch" "$position" pressed
-
 		save_state "$switch"
-		release_locks
 	done
+
+	release_locks
 }
 
 do_update() {

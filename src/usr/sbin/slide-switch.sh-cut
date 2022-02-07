@@ -71,8 +71,7 @@ info "$me $version"
 
 case $1 in
 	init)
-		# $2 optional: "force" to force init
-		do_init "$2"
+		do_init
 		;;
 	update)
 		shift

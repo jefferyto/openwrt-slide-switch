@@ -6,6 +6,9 @@
   (default), syslog, all (both standard error and syslog) or none
 * Added command-line option to select logging verbosity
 * Removed compatibility with older (model-only) board names
+* `init` command:
+  * Initialize switch states only, without triggering button pressed
+    events
 * `update` command:
   * Accept multiple switch name and/or button arguments
   * Added command-line option to perform a forced update (trigger button
