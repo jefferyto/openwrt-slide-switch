@@ -1,6 +1,8 @@
 # News
 
 ## [0.9.8-dev][Unreleased] - Unreleased
+* Require user to be root for commands/actions that trigger button
+  events or have other side effects
 * Added logging to standard error
 * Added command-line option to select logging to standard error
   (default), syslog, all (both standard error and syslog) or none

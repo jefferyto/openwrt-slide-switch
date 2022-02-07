@@ -53,10 +53,12 @@ ex_noinput=66
 ex_unavailable=69
 ex_oserr=71
 ex_osfile=72
+ex_noperm=77
 
 log_stderr=
 log_syslog=
 verbosity=
+is_root_result=
 locks=
 
 
@@ -118,6 +120,24 @@ debug() {
 	log debug "$@"
 }
 
+
+is_root() {
+	local uid
+
+	[ -n "$is_root_result" ] || {
+		uid=$(id -u) && [ "$uid" -eq 0 ]
+		is_root_result=$?
+	}
+
+	return $is_root_result
+}
+
+require_root() {
+	is_root || {
+		error "require_root: user must be root"
+		return $ex_noperm
+	}
+}
 
 get_board() {
 	local _var="$1"
@@ -361,6 +381,11 @@ load_switch_data_from_cache() {
 }
 
 save_switch_data_to_cache() {
+	is_root || {
+		debug "save_switch_data_to_cache: user must be root"
+		return
+	}
+
 	debug "save_switch_data_to_cache: caching switch data to $switches_cache"
 
 	mkdir -p "${switches_cache%/*}"
@@ -758,6 +783,7 @@ do_init() {
 	local now
 
 	check_prerequisites &&
+	require_root &&
 	load_switch_data no_load_from_cache || return
 
 	get_switches switches
@@ -791,6 +817,7 @@ do_update() {
 	local arg
 
 	check_prerequisites &&
+	require_root &&
 	load_switch_data || return
 
 	get_switches switches
@@ -944,6 +971,7 @@ do_clean() {
 	local switch_lock_dir
 
 	check_prerequisites &&
+	require_root &&
 	load_switch_data no_load_from_cache no_save_to_cache || return
 
 	get_switches switches
@@ -970,6 +998,8 @@ do_clean() {
 
 do_boot() {
 	local action="$1"
+
+	require_root || return
 
 	[ -x "$update_initd_script" ] || {
 		error "boot: init.d script $update_initd_script not found or not executable"
