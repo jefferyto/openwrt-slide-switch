@@ -1,25 +1,25 @@
 # News
 
-## 0.9.8-dev - Unreleased
+## [0.9.8-dev][Unreleased] - Unreleased
 
-## 0.9.7 - 2022-02-18
+## [0.9.7] - 2022-02-18
 * Fixed support for models with spaces in their GPIO labels:
   * GL.iNet GL-AR300M
   * GL.iNet GL-AR300M-Lite
   * GL.iNet GL-AR300M16
   * TP-Link TL-WR902AC v1
 
-## 0.9.6 - 2022-02-04
+## [0.9.6] - 2022-02-04
 * Requires OpenWrt 21.02 or newer
 * Check button values using GPIO labels instead of GPIO numbers
-* Fixed support for (#18):
+* Fixed support for ([#18][GH-18]):
   * GL.iNet GL-MT300N v2
   * TP-Link TL-MR3020 v3
   * TP-Link TL-WR902AC v3
 * Added support for:
   * GL.iNet GL-AR300M-Lite
   * GL.iNet GL-AR300M16
-  * GL.iNet GL-E750 (#20)
+  * GL.iNet GL-E750 ([#20][GH-20])
   * GL.iNet GL-MT1300
   * GL.iNet GL-MV1000
 * Removed support for Buffalo WZR-HP-AG300H, as its buttons currently do
@@ -29,17 +29,18 @@
   * TP-Link TL-MR13U
   * TP-Link TL-WR720N
 
-## 0.9.5 - 2019-08-02
+## [0.9.5] - 2019-08-02
 * Fixed state files stored in /slide-switch instead of
-  /var/run/slide-switch (#14)
-* Fixed compatibility with board names in the form "vendor,model" (#14)
+  /var/run/slide-switch ([#14][GH-14])
+* Fixed compatibility with board names in the form "vendor,model"
+  ([#14][GH-14])
 
-## 0.9.4 - 2019-04-23
+## [0.9.4] - 2019-04-23
 * Merged platform data to make the package architecture-independent
 * Minify switch data file during installation
 * Added support for TP-Link TL-MR3020 v3
 
-## 0.9.3 - 2018-12-10
+## [0.9.3] - 2018-12-10
 * Added support for routers with two-way switches:
   * GLI (GL.iNet) GL-AR750
   * GLI (GL.iNet) GL-AR750S
@@ -48,10 +49,10 @@
   * Buffalo WZR-HP-AG300H
   * Buffalo WZR-HP-G300NH
 
-## 0.9.2 - 2018-07-18
+## [0.9.2] - 2018-07-18
 * Added support for TP-Link TL-WR902AC v3
 
-## 0.9.1 - 2018-01-05
+## [0.9.1] - 2018-01-05
 * Added support for:
   * GLI (GL.iNet) GL-MT300N v2
   * TP-Link TL-WR810N v2 (unverified)
@@ -61,3 +62,16 @@
 
 ## 0.9.0 - 2016-09-04
 * Initial beta release
+
+[Unreleased]: https://github.com/jefferyto/openwrt-slide-switch/compare/0.9.7...main
+[0.9.7]: https://github.com/jefferyto/openwrt-slide-switch/compare/0.9.6...0.9.7
+[0.9.6]: https://github.com/jefferyto/openwrt-slide-switch/compare/0.9.5...0.9.6
+[0.9.5]: https://github.com/jefferyto/openwrt-slide-switch/compare/0.9.4...0.9.5
+[0.9.4]: https://github.com/jefferyto/openwrt-slide-switch/compare/0.9.3...0.9.4
+[0.9.3]: https://github.com/jefferyto/openwrt-slide-switch/compare/0.9.2...0.9.3
+[0.9.2]: https://github.com/jefferyto/openwrt-slide-switch/compare/0.9.1...0.9.2
+[0.9.1]: https://github.com/jefferyto/openwrt-slide-switch/compare/0.9.0...0.9.1
+
+[GH-14]: https://github.com/jefferyto/openwrt-slide-switch/issues/14
+[GH-18]: https://github.com/jefferyto/openwrt-slide-switch/issues/18
+[GH-20]: https://github.com/jefferyto/openwrt-slide-switch/pull/20
