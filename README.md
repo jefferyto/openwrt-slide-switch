@@ -87,7 +87,7 @@ where the switch data has been tested and verified correct by users.
 
 See [NEWS][].
 
-[NEWS]: NEWS
+[NEWS]: NEWS.md
 
 ## Contributing
 
