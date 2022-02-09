@@ -1,6 +1,9 @@
 # News
 
 ## [0.9.8-dev][Unreleased] - Unreleased
+* Added support for loading switch data from
+  /etc/slide-switch/switch-data.json; if this file exists, it will be
+  checked for switch data before the default data file
 * Require user to be root for commands/actions that trigger button
   events or have other side effects
 * Added logging to standard error

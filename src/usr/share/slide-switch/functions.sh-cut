@@ -31,6 +31,7 @@ version=@VERSION@
 data_dir=@pkgdatadir@
 run_dir=@localstatedir@/run/@PACKAGE@
 lock_dir=@localstatedir@/lock/@PACKAGE@
+conf_dir=@sysconfdir@/@PACKAGE@
 initd_dir=@sysconfdir@/init.d
 
 board_name=/tmp/sysinfo/board_name
@@ -38,6 +39,7 @@ gpio_table=/sys/kernel/debug/gpio
 hotplug_call=/sbin/hotplug-call
 rc_button=/etc/rc.button
 
+custom_switch_data_file=$conf_dir/switch-data.json
 switch_data_file=$data_dir/switch-data.json
 switches_cache=$run_dir/switches
 state_dir=$run_dir/state
@@ -492,6 +494,26 @@ load_switch_data() {
 	get_board board && [ -n "$board" ] || {
 		error "load_switch_data: missing board name"
 		return $ex_dataerr
+	}
+
+	[ -f "$custom_switch_data_file" ] && [ -r "$custom_switch_data_file" ] && {
+		info "load_switch_data: attempting to load switch data for board \"$board\" from $custom_switch_data_file"
+
+		load_switch_data_from_file final_board "$custom_switch_data_file" "$board"
+		result=$?
+
+		[ "$result" -ne 0 ] && {
+			[ "$result" -ne "$ex_unavailable" ] && return $result
+
+			notice "load_switch_data: board \"$final_board\" not found in $custom_switch_data_file"
+
+			[ "x$final_board" != "x$board" ] && {
+				board=$final_board
+				no_alt_board_name=1
+			}
+
+			result=
+		}
 	}
 
 	[ -z "$result" ] && {
