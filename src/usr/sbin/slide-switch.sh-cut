@@ -43,6 +43,7 @@ while true; do
 
 			[ -n "$optarg" ] || {
 				error "missing --log argument"
+				show_usage
 				exit $ex_usage
 			}
 
@@ -55,6 +56,7 @@ while true; do
 
 			[ -n "$optarg" ] || {
 				error "missing --verbosity argument"
+				show_usage
 				exit $ex_usage
 			}
 
@@ -77,5 +79,7 @@ case $1 in
 	clean)     do_clean ;;
 	boot)      do_boot "$2" ;;
 	--version) do_version ;;
-	*)         error "invalid command \"$1\""; exit $ex_usage ;;
+	--help)    show_usage ;;
+
+	*)         error "invalid command \"$1\""; show_usage; exit $ex_usage ;;
 esac

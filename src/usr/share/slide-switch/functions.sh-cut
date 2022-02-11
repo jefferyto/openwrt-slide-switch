@@ -834,6 +834,41 @@ trigger_button_event() {
 }
 
 
+show_usage() {
+	cat <<- EOF
+	Usage: $me [OPTION]... COMMAND [ARGUMENT]...
+	Print slide switch information, or trigger button presses and releases
+
+	Options:
+	  --log=WHERE                  output logging messages to WHERE:
+	                                 'stderr', 'syslog', 'all', 'none'
+	                                 (default: 'stderr')
+	  --verbosity=LEVEL            output logging messages at LEVEL or higher;
+	                                 LEVEL is a syslog level keyword or value
+	                                 (default: 'notice')
+	  --help                       display this help and exit
+	  --version                    output version information and exit
+
+	Commands:
+	  init                         initialize slide switch state information
+	  update [ARGUMENT]...         trigger button presses and releases for the
+	                                 listed switch names and/or buttons, or for
+	                                 all slide switches if no names given;
+	                                 include '-f' or '--force' to trigger button
+	                                 presses even when no switch position changes
+	                                 have occurred
+	  switch                       print list of slide switches for this device
+	  position NAME                print current position of slide switch NAME
+	  clean                        remove slide switch state information
+	  boot STATUS                  whether to trigger button presses on boot;
+	                                 STATUS is 'enable' or 'disable'
+	                                 (default: 'enable')
+
+	$package home page: <https://github.com/jefferyto/openwrt-slide-switch>
+	EOF
+}
+
+
 set_log() {
 	local value="$1"
 
@@ -843,7 +878,7 @@ set_log() {
 		syslog) log_stderr= ; log_syslog=1 ;;
 		all)    log_stderr=1; log_syslog=1 ;;
 
-		*)      error "invalid log value \"$value\""; return $ex_usage ;;
+		*)      error "invalid log value \"$value\""; show_usage; return $ex_usage ;;
 	esac
 }
 
@@ -852,6 +887,7 @@ set_verbosity() {
 
 	log_level_to_num verbosity "$value" || {
 		error "invalid verbosity value \"$value\""
+		show_usage
 		return $ex_usage
 	}
 }
@@ -913,6 +949,7 @@ do_update() {
 
 		is_safe_string "$arg" || {
 			error "update: \"$arg\" is not a valid switch name or button"
+			show_usage
 			return $ex_usage
 		}
 
@@ -1025,16 +1062,19 @@ do_position() {
 
 	[ -n "$switch" ] || {
 		error "position: missing switch name"
+		show_usage
 		return $ex_usage
 	}
 
 	is_safe_string "$switch" || {
 		error "position: \"$switch\" is not a valid switch name"
+		show_usage
 		return $ex_usage
 	}
 
 	list_contains "$switches" "$switch" || {
 		error "position: cannot find switch \"$switch\""
+		show_usage
 		return $ex_usage
 	}
 
@@ -1088,6 +1128,7 @@ do_boot() {
 
 	[ "x$action" = xenable ] || [ "x$action" = xdisable ] || {
 		error "boot: invalid argument \"$action\""
+		show_usage
 		return $ex_usage
 	}
 
