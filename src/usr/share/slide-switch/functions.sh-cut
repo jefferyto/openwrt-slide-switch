@@ -466,20 +466,19 @@ load_switch_data() {
 		get_switch_data_file_board_data_type type "$switch_data_file" "$board"
 	}
 
-	case $type in
-		object)
-			info "load_switch_data: loading switch data for board \"$board\" from $switch_data_file"
-			get_switch_data_file_board_data data "$switch_data_file" "$board"
-			;;
-		'')
-			warning "load_switch_data: board \"$board\" not found in $switch_data_file"
-			return $ex_unavailable
-			;;
-		*)
-			error "load_switch_data: \"$board\" is not an object in $switch_data_file"
-			return $ex_dataerr
-			;;
-	esac
+	[ -n "$type" ] || {
+		warning "load_switch_data: board \"$board\" not found in $switch_data_file"
+		return $ex_unavailable
+	}
+
+	[ "x$type" = xobject ] || {
+		error "load_switch_data: \"$board\" is not an object in $switch_data_file"
+		return $ex_dataerr
+	}
+
+	info "load_switch_data: loading switch data for board \"$board\" from $switch_data_file"
+
+	get_switch_data_file_board_data data "$switch_data_file" "$board"
 
 	json_set_namespace switches
 	json_load "$data"
