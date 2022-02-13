@@ -10,6 +10,7 @@
   * Initialize switch states only, without triggering button pressed
     events
 * `update` command:
+  * Require `init` command to be called beforehand
   * Accept multiple switch name and/or button arguments
   * Added command-line option to perform a forced update (trigger button
     pressed events for all switches)

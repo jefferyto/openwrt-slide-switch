@@ -41,7 +41,7 @@ rc_button=/etc/rc.button
 switch_data_file=$data_dir/switch-data.json
 switches_cache=$run_dir/switches
 state_dir=$run_dir/state
-initd_script=$initd_dir/zzz-slide-switch
+update_initd_script=$initd_dir/zzz-slide-switch-update
 
 . /usr/share/libubox/jshn.sh
 
@@ -533,19 +533,30 @@ init_state() {
 	json_close_object
 }
 
-load_state() {
+has_state() {
 	local switch="$1"
 	local state_file
 
 	get_state_file state_file "$switch"
 
-	debug "load_state: attempting to load state for switch \"$switch\" from $state_file"
+	[ -f "$state_file" ] && [ -r "$state_file" ]
+}
 
-	[ -f "$state_file" ] && {
-		debug "load_state: loading state from $state_file"
-		json_set_namespace state
-		json_load_file "$state_file"
+load_state() {
+	local switch="$1"
+	local state_file
+
+	has_state "$switch" || {
+		debug "load_state: state for switch \"$switch\" has not been initialized"
+		return 1
 	}
+
+	get_state_file state_file "$switch"
+
+	debug "load_state: loading state for switch \"$switch\" from $state_file"
+
+	json_set_namespace state
+	json_load_file "$state_file"
 }
 
 save_state() {
@@ -809,6 +820,11 @@ do_update() {
 	}
 
 	for switch in $requested; do
+		has_state "$switch" || {
+			debug "update: state for switch \"$switch\" has not been initialized"
+			continue
+		}
+
 		get_lock "$switch" || {
 			debug "update: cannot get lock for switch \"$switch\""
 			continue
@@ -827,17 +843,15 @@ do_update() {
 	get_epoch now || return
 
 	for switch in $locked; do
-		if load_state "$switch"; then
-			get_state_position previous
-			debug "update: previous position for switch \"$switch\" is \"$previous\""
-		else
-			init_state "$switch" || return
-			previous=
-			debug "update: no previous position for switch \"$switch\""
-		fi
+		load_state "$switch" || {
+			warning "update: cannot load state for switch \"$switch\""
+			continue
+		}
 
+		get_state_position previous
 		get_current_position current "$switch" || return
 
+		debug "update: previous position for switch \"$switch\" is \"$previous\""
 		debug "update: current position for switch \"$switch\" is \"$current\""
 
 		[ -n "$force" ] && [ "x$current" = "x$previous" ] && {
@@ -922,8 +936,8 @@ do_clean() {
 do_boot() {
 	local action="$1"
 
-	[ -x "$initd_script" ] || {
-		error "boot: init.d script $initd_script not found or not executable"
+	[ -x "$update_initd_script" ] || {
+		error "boot: init.d script $update_initd_script not found or not executable"
 		return $ex_unavailable
 	}
 
@@ -932,8 +946,8 @@ do_boot() {
 		return $ex_usage
 	}
 
-	debug "boot: calling $initd_script $action"
-	"$initd_script" "$action"
+	debug "boot: calling $update_initd_script $action"
+	"$update_initd_script" "$action"
 }
 
 do_version() {
