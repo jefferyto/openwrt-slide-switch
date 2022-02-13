@@ -238,7 +238,7 @@ check_json_type() {
 	esac
 
 	json_is_a "$key" "$type" || {
-		error "check_json_type: \"$key_name\" is not $article $type in $switch_data_file"
+		error "check_json_type: \"$key_name\" is not $article $type"
 		return $ex_dataerr
 	}
 }
@@ -324,6 +324,8 @@ validate_switch_data() {
 	[ -n "$switches" ] || warning "validate_switch_data: no switches defined"
 
 	for switch in $switches; do
+		debug "validate_switch_data: checking data for switch \"$switch\""
+
 		check_nonempty_string "$switch" "switch name" &&
 		check_safe_string "$switch" "switch name" &&
 		check_json_type "$switch" object || return
@@ -400,6 +402,7 @@ load_switch_data() {
 	local no_save_to_cache="$2"
 	local board
 	local type
+	local alt_board
 	local data
 
 	[ -z "$no_load_from_cache" ] && load_switch_data_from_cache && return
@@ -409,7 +412,7 @@ load_switch_data() {
 		return $ex_dataerr
 	}
 
-	debug "load_switch_data: attempting to load switch data for $board from $switch_data_file"
+	debug "load_switch_data: attempting to load switch data for board \"$board\" from $switch_data_file"
 
 	jsonfilter -q -i "$switch_data_file" -t "@" > /dev/null
 	[ "$?" -ne 126 ] || {
@@ -420,24 +423,28 @@ load_switch_data() {
 	type=$(jsonfilter -i "$switch_data_file" -t "@[\"$board\"]")
 
 	[ "x$type" = xstring ] && {
-		debug "load_switch_data: $board shares switch data with another board, loading alternate board name"
-		board=$(jsonfilter -i "$switch_data_file" -e "@[\"$board\"]")
+		debug "load_switch_data: board \"$board\" shares switch data with another model, loading alternate board name"
 
-		[ -n "$board" ] || {
-			error "load_switch_data: missing alternate board name"
+		alt_board=$(jsonfilter -i "$switch_data_file" -e "@[\"$board\"]")
+
+		[ -n "$alt_board" ] || {
+			error "load_switch_data: missing alternate board name for board \"$board\" in $switch_data_file"
 			return $ex_dataerr
 		}
 
+		info "load_switch_data: using alternate board name \"$alt_board\" for board \"$board\""
+
+		board=$alt_board
 		type=$(jsonfilter -i "$switch_data_file" -t "@[\"$board\"]")
 	}
 
 	case $type in
 		object)
-			info "load_switch_data: loading switch data for $board from $switch_data_file"
+			info "load_switch_data: loading switch data for board \"$board\" from $switch_data_file"
 			data=$(jsonfilter -i "$switch_data_file" -e "@[\"$board\"]")
 			;;
 		'')
-			warning "load_switch_data: \"$board\" not found in $switch_data_file"
+			warning "load_switch_data: board \"$board\" not found in $switch_data_file"
 			return $ex_unavailable
 			;;
 		*)
