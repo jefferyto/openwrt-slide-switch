@@ -368,7 +368,7 @@ load_switch_data() {
 	validate_switch_data || return $ex_dataerr
 
 	debug "load_switch_data: caching switch data to $switches_cache"
-	mkdir -p "$(dirname "$switches_cache")"
+	mkdir -p "${switches_cache%/*}"
 	echo "$data" > "$switches_cache"
 }
 
@@ -502,7 +502,7 @@ save_state() {
 	debug "save_state: saving state for switch \"$switch\" to $state_file"
 
 	json_set_namespace state
-	mkdir -p "$(dirname "$state_file")"
+	mkdir -p "${state_file%/*}"
 	json_dump > "$state_file"
 }
 
@@ -567,7 +567,7 @@ get_lock() {
 	local switch="$1"
 	local dir="$(get_lock_dir "$switch")"
 
-	mkdir -p "$lock_dir"
+	mkdir -p "${dir%/*}"
 
 	mkdir "$dir" 2>/dev/null || {
 		debug "get_lock: failed to get lock for switch \"$switch\" ($dir)"
