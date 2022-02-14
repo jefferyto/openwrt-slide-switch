@@ -45,6 +45,8 @@ initd_script=$initd_dir/zzz-slide-switch
 
 . /usr/share/libubox/jshn.sh
 
+me=${0##*/}
+
 ex_usage=64
 ex_dataerr=65
 ex_noinput=66
@@ -90,7 +92,7 @@ log() {
 
 	[ -n "$log_stderr" ] && echo "[$level] $message" >&2
 
-	[ -n "$log_syslog" ] && logger -t "${package}[$$]" -p "user.$level" "$message"
+	[ -n "$log_syslog" ] && logger -t "${me}[$$]" -p "user.$level" "$message"
 
 	return 0
 }
@@ -898,5 +900,5 @@ do_boot() {
 }
 
 do_version() {
-	echo "$package $version"
+	echo "$me $version"
 }
