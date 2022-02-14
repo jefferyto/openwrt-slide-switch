@@ -29,6 +29,9 @@
 
 . "@pkgdatadir@/functions.sh"
 
+
+info "$me $version"
+
 case $1 in
 	init)
 		# $2 optional: "force" to force init

@@ -108,6 +108,14 @@ warning() {
 	log warning "$@"
 }
 
+notice() {
+	log notice "$@"
+}
+
+info() {
+	log info "$@"
+}
+
 debug() {
 	log debug "$@"
 }
@@ -308,7 +316,7 @@ load_switch_data() {
 	local data
 
 	[ -f "$switches_cache" ] && {
-		debug "load_switch_data: loading switch data from $switches_cache"
+		info "load_switch_data: loading switch data from $switches_cache"
 		json_set_namespace switches
 		json_load "$(cat "$switches_cache")"
 		return
@@ -348,7 +356,7 @@ load_switch_data() {
 
 	case $type in
 		object)
-			debug "load_switch_data: loading switch data for $board from $switch_data_file"
+			info "load_switch_data: loading switch data for $board from $switch_data_file"
 			data=$(jsonfilter -i "$switch_data_file" -e "@[\"$board\"]")
 			;;
 		'')
@@ -615,7 +623,7 @@ trigger_button_event() {
 	button=$(get_position_code "$switch" "$position_name")
 	seen=$((now - before))
 
-	debug "trigger_button_event: triggering button event with BUTTON=\"$button\" ACTION=\"$action\" SEEN=\"$seen\""
+	notice "trigger_button_event: triggering button event with BUTTON=\"$button\" ACTION=\"$action\" SEEN=\"$seen\""
 
 	(
 		export BUTTON="$button"
