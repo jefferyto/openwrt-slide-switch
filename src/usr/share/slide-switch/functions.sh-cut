@@ -143,30 +143,33 @@ list_contains() {
 }
 
 
-get_gpio_info() {
-	local ___var="$1"
-	local ___label="$2"
-	local ___row
-
-	___row="$(grep -m 1 -e "|$___label *) in  " "$gpio_table" 2>/dev/null)" || return
-
-	_set_var "$___var" "${___row##*)}"
-}
-
 get_gpio_value() {
 	local __var="$1"
 	local __label="$2"
-	local __value="lo"
-	local __info
+	local __allow_no_matches="$3"
+	local __pattern
+	local __match
+	local __result
 
-	get_gpio_info __info "$__label" || {
-		error "get_gpio_value: failed to get value for label \"$__label\""
+	__pattern=$(printf '|%-20.20s) in  \(hi\|lo\)' "$__label") || {
+		error "get_gpio_value: failed to get search pattern for label \"$__label\""
 		return $ex_oserr
 	}
 
-	list_contains "$__info" hi && __value=hi
+	__match="$(grep -m 1 -o -e "$__pattern" "$gpio_table" 2>/dev/null)"
+	__result=$?
 
-	_set_var "$__var" "$__value"
+	[ "$__result" -eq 0 ] || {
+		[ "$__result" -eq 1 ] && {
+			[ -z "$__allow_no_matches" ] && error "get_gpio_value: cannot find label \"$__label\" in $gpio_table"
+			return $ex_dataerr
+		}
+
+		error "get_gpio_value: failed to search $gpio_table for label \"$__label\""
+		return $ex_oserr
+	}
+
+	_set_var "$__var" "${__match##*) in  }"
 }
 
 get_position_code() {
@@ -196,9 +199,9 @@ check_json_type() {
 
 check_input_gpio_label() {
 	local label="$1"
-	local info
+	local value
 
-	get_gpio_info info "$label" && [ -n "$info" ] || {
+	get_gpio_value value "$label" allow_no_matches && [ -n "$value" ] || {
 		error "check_input_gpio_label: \"$label\" is not the label of a valid input gpio"
 		return 1
 	}
