@@ -197,6 +197,26 @@ check_json_type() {
 	}
 }
 
+check_nonempty_string() {
+	local str="$1"
+	local str_name="$2"
+
+	[ -n "$str" ] || {
+		error "check_nonempty_string: $str_name cannot be an empty string"
+		return 1
+	}
+}
+
+check_safe_string() {
+	local str="$1"
+	local str_name="$2"
+
+	[ -n "${str##*[!0-9A-Za-z_-]*}" ] || {
+		error "check_safe_string: $str_name \"$str\" must contain letters, digits, underscores and/or hyphens only"
+		return 1
+	}
+}
+
 check_input_gpio_label() {
 	local label="$1"
 	local value
@@ -221,26 +241,6 @@ check_position_string() {
 
 	[ "x$str" = xhi ] || [ "x$str" = xlo ] || {
 		warning "check_position_string: position \"$position\" is not in the format \"(hi|lo)(_(hi|lo))*\""
-		return 1
-	}
-}
-
-check_nonempty_string() {
-	local str="$1"
-	local str_name="$2"
-
-	[ -n "$str" ] || {
-		error "check_nonempty_string: $str_name cannot be an empty string"
-		return 1
-	}
-}
-
-check_safe_string() {
-	local str="$1"
-	local str_name="$2"
-
-	[ -n "${str##*[!0-9A-Za-z_-]*}" ] || {
-		error "check_safe_string: $str_name \"$str\" must contain letters, digits, underscores and/or hyphens only"
 		return 1
 	}
 }
