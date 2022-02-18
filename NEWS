@@ -1,6 +1,11 @@
 # News
 
 ## 0.9.7-dev - Unreleased
+* Fixed support for models with spaces in their GPIO labels:
+  * GL.iNet GL-AR300M
+  * GL.iNet GL-AR300M-Lite
+  * GL.iNet GL-AR300M16
+  * TP-Link TL-WR902AC v1
 
 ## 0.9.6 - 2021-02-04
 * Requires OpenWrt 21.02 or newer
