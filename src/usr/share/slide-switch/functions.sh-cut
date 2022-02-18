@@ -122,13 +122,6 @@ get_epoch() {
 	date -u +%s
 }
 
-get_json_value() {
-	local key="$1"
-	local var
-
-	json_get_var var "$key" && echo "$var"
-}
-
 list_contains() {
 	local list=" $1 "
 	local item=" $2 "
@@ -513,10 +506,14 @@ save_state() {
 
 
 get_state_position() {
+	local position
+
 	json_set_namespace state
 	json_select
 
-	get_json_value position
+	json_get_var position position
+
+	echo "$position"
 }
 
 set_state_position() {
@@ -530,12 +527,15 @@ set_state_position() {
 
 get_state_seen() {
 	local position="$1"
+	local seen
 
 	json_set_namespace state
 	json_select
 	json_select seen
 
-	get_json_value "$position"
+	json_get_var seen "$position"
+
+	echo "$seen"
 }
 
 set_state_seen() {
