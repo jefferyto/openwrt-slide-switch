@@ -1,6 +1,6 @@
 # News
 
-## 0.9.7-dev - Unreleased
+## 0.9.7 - 2021-02-18
 * Fixed support for models with spaces in their GPIO labels:
   * GL.iNet GL-AR300M
   * GL.iNet GL-AR300M-Lite
