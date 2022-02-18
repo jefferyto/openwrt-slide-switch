@@ -2,14 +2,14 @@
 
 ## 0.9.8-dev - Unreleased
 
-## 0.9.7 - 2021-02-18
+## 0.9.7 - 2022-02-18
 * Fixed support for models with spaces in their GPIO labels:
   * GL.iNet GL-AR300M
   * GL.iNet GL-AR300M-Lite
   * GL.iNet GL-AR300M16
   * TP-Link TL-WR902AC v1
 
-## 0.9.6 - 2021-02-04
+## 0.9.6 - 2022-02-04
 * Requires OpenWrt 21.02 or newer
 * Check button values using GPIO labels instead of GPIO numbers
 * Fixed support for (#18):
