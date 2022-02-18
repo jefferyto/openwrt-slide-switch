@@ -207,12 +207,13 @@ check_position_code() {
 validate_switch_data() {
 	local switches
 	local switch
-	local labels
+	local labels_indices
 	local label
 	local codes
 	local positions
 	local position
 	local position_name
+	local i
 
 	json_set_namespace switches
 	json_select
@@ -232,15 +233,20 @@ validate_switch_data() {
 		check_json_type codes array "$switch.codes" &&
 		check_json_type positions object "$switch.positions" || return
 
-		json_get_values labels labels
+		json_get_keys labels_indices labels
 		json_get_values codes codes
 
-		[ -n "$labels" ] || warning "no labels defined for switch \"$switch\""
+		[ -n "$labels_indices" ] || warning "no labels defined for switch \"$switch\""
 		[ -n "$codes" ] || warning "no codes defined for switch \"$switch\""
 
-		for label in $labels; do
+		json_select labels
+
+		for i in $labels_indices; do
+			json_get_var label "$i"
 			check_input_gpio_label "$label" || return
 		done
+
+		json_select ..
 
 		json_select positions
 
@@ -369,16 +375,19 @@ get_switch_for_button() {
 
 get_current_position() {
 	local switch="$1"
-	local labels
+	local labels_indices
 	local label
 	local position
+	local i
 
 	json_set_namespace switches
 	json_select
 	json_select "$switch"
+	json_select labels
 
-	json_get_values labels labels
-	for label in $labels; do
+	json_get_keys labels_indices
+	for i in $labels_indices; do
+		json_get_var label "$i"
 		position="${position}_$(get_gpio_value "$label")"
 	done
 
