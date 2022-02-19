@@ -311,7 +311,7 @@ load_switch_data() {
 	[ -f "$switches_cache" ] && {
 		info "load_switch_data: loading switch data from $switches_cache"
 		json_set_namespace switches
-		json_load "$(cat "$switches_cache")"
+		json_load_file "$switches_cache"
 		return
 	}
 
@@ -491,7 +491,7 @@ load_state() {
 	[ -f "$state_file" ] && {
 		debug "load_state: loading state from $state_file"
 		json_set_namespace state
-		json_load "$(cat "$state_file")"
+		json_load_file "$state_file"
 	}
 }
 
