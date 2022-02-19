@@ -140,26 +140,37 @@ list_contains() {
 
 
 get_gpio_info() {
-	local label="$1"
-	local row="$(grep -m 1 -e "|$label *) in  " "$gpio_table")"
+	local ___var="$1"
+	local ___label="$2"
+	local ___row
 
-	echo "${row##*)}"
+	___row="$(grep -m 1 -e "|$___label *) in  " "$gpio_table" 2>/dev/null)" || return
+
+	_set_var "$___var" "${___row##*)}"
 }
 
 get_gpio_value() {
-	local label="$1"
-	local info="$(get_gpio_info "$label")"
-	local value="lo"
+	local __var="$1"
+	local __label="$2"
+	local __value="lo"
+	local __info
 
-	list_contains "$info" hi && value=hi
-	echo "$value"
+	get_gpio_info __info "$__label" || {
+		error "get_gpio_value: failed to get value for label \"$__label\""
+		return $ex_oserr
+	}
+
+	list_contains "$__info" hi && __value=hi
+
+	_set_var "$__var" "$__value"
 }
 
 get_position_code() {
-	local switch="$1"
-	local position_name="$2"
+	local _var="$1"
+	local _switch="$2"
+	local _position_name="$3"
 
-	echo "${switch}-$position_name"
+	_set_var "$_var" "${_switch}-$_position_name"
 }
 
 
@@ -181,9 +192,9 @@ check_json_type() {
 
 check_input_gpio_label() {
 	local label="$1"
-	local info="$(get_gpio_info "$label")"
+	local info
 
-	[ -n "$info" ] || {
+	get_gpio_info info "$label" && [ -n "$info" ] || {
 		error "check_input_gpio_label: \"$label\" is not the label of a valid input gpio"
 		return 1
 	}
@@ -231,7 +242,9 @@ check_position_code() {
 	local switch="$1"
 	local position_name="$2"
 	local codes="$3"
-	local code="$(get_position_code "$switch" "$position_name")"
+	local code
+
+	get_position_code code "$switch" "$position_name"
 
 	! list_contains "$codes" "$code" || {
 		error "check_position_code: switch \"$switch\" cannot have both a position name \"$position_name\" and a code \"$code\""
@@ -417,6 +430,7 @@ get_current_position() {
 	local switch="$1"
 	local labels_indices
 	local label
+	local value
 	local position
 	local i
 
@@ -429,7 +443,8 @@ get_current_position() {
 
 	for i in $labels_indices; do
 		json_get_var label "$i"
-		position="${position}_$(get_gpio_value "$label")"
+		get_gpio_value value "$label" || return
+		position="${position}_$value"
 	done
 
 	echo "${position#_}"
@@ -475,7 +490,7 @@ init_state() {
 	json_get_keys positions positions
 
 	get_epoch now || return
-	position=$(get_current_position "$switch")
+	position=$(get_current_position "$switch") || return
 	debug "init_state: setting \"$position\" as initial position for switch \"$switch\""
 
 	json_set_namespace state
@@ -632,7 +647,7 @@ trigger_button_event() {
 	[ -n "$now" ] || now=$before
 	set_state_seen "$position" "$now"
 
-	button=$(get_position_code "$switch" "$position_name")
+	get_position_code button "$switch" "$position_name"
 	seen=$((now - before))
 
 	notice "trigger_button_event: triggering button event with BUTTON=\"$button\" ACTION=\"$action\" SEEN=\"$seen\""
@@ -756,7 +771,7 @@ do_update() {
 			debug "update: no previous position for switch \"$switch\""
 		fi
 
-		current=$(get_current_position "$switch")
+		current=$(get_current_position "$switch") || return
 		debug "update: current position for switch \"$switch\" is \"$current\""
 
 		[ "x$current" != "x$previous" ] || {
@@ -809,7 +824,7 @@ do_position() {
 	fi
 
 	for switch in $requested; do
-		position=$(get_current_position "$switch")
+		position=$(get_current_position "$switch") || return
 		position_names="$position_names $(get_position_name "$switch" "$position")"
 	done
 
