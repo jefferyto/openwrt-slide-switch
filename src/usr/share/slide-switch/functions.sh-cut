@@ -33,6 +33,7 @@ run_dir=@localstatedir@/run/@PACKAGE@
 lock_dir=@localstatedir@/lock/@PACKAGE@
 initd_dir=@sysconfdir@/init.d
 
+board_name=/tmp/sysinfo/board_name
 gpio_table=/sys/kernel/debug/gpio
 hotplug_call=/sbin/hotplug-call
 rc_button=/etc/rc.button
@@ -115,8 +116,11 @@ debug() {
 }
 
 
-board_name() {
-	[ -e /tmp/sysinfo/board_name ] && cat /tmp/sysinfo/board_name || echo "generic"
+get_board() {
+	local _var="$1"
+	local _board
+
+	[ -e "$board_name" ] && _board=$(cat "$board_name") && _set_var "$_var" "$_board"
 }
 
 get_epoch() {
@@ -318,7 +322,7 @@ validate_switch_data() {
 }
 
 load_switch_data() {
-	local board="$(board_name)"
+	local board
 	local type
 	local data
 
@@ -329,7 +333,7 @@ load_switch_data() {
 		return
 	}
 
-	[ -n "$board" ] || {
+	get_board board && [ -n "$board" ] || {
 		error "load_switch_data: missing board name"
 		return $ex_dataerr
 	}
