@@ -48,6 +48,7 @@ ex_usage=64
 ex_dataerr=65
 ex_noinput=66
 ex_unavailable=69
+ex_oserr=71
 
 log_stderr=
 log_syslog=
@@ -119,7 +120,15 @@ board_name() {
 }
 
 get_epoch() {
-	date -u +%s
+	local _var="$1"
+	local _epoch
+
+	_epoch=$(date +%s) || {
+		error "get_epoch: failed to get date"
+		return $ex_oserr
+	}
+
+	_set_var "$_var" "$_epoch"
 }
 
 list_contains() {
@@ -453,7 +462,7 @@ get_state_file() {
 
 init_state() {
 	local switch="$1"
-	local now="$(get_epoch)"
+	local now
 	local positions
 	local position
 
@@ -465,6 +474,7 @@ init_state() {
 
 	json_get_keys positions positions
 
+	get_epoch now || return
 	position=$(get_current_position "$switch")
 	debug "init_state: setting \"$position\" as initial position for switch \"$switch\""
 
@@ -694,7 +704,7 @@ do_init() {
 
 		get_lock "$switch" || continue
 
-		init_state "$switch"
+		init_state "$switch" || return
 
 		position=$(get_state_position)
 		trigger_button_event "$switch" "$position" pressed
@@ -734,14 +744,14 @@ do_update() {
 
 	sleep 1
 
-	now="$(get_epoch)"
+	get_epoch now || return
 
 	for switch in $locked; do
 		if load_state "$switch"; then
 			previous=$(get_state_position)
 			debug "update: previous position for switch \"$switch\" is \"$previous\""
 		else
-			init_state "$switch"
+			init_state "$switch" || return
 			previous=
 			debug "update: no previous position for switch \"$switch\""
 		fi
