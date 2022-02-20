@@ -465,9 +465,10 @@ get_position_name() {
 
 
 get_state_file() {
-	local switch="$1"
+	local _var="$1"
+	local _switch="$2"
 
-	echo "$state_dir/$switch"
+	_set_var "$_var" "$state_dir/$_switch"
 }
 
 init_state() {
@@ -502,7 +503,9 @@ init_state() {
 
 load_state() {
 	local switch="$1"
-	local state_file="$(get_state_file "$switch")"
+	local state_file
+
+	get_state_file state_file "$switch"
 
 	debug "load_state: attempting to load state for switch \"$switch\" from $state_file"
 
@@ -515,7 +518,9 @@ load_state() {
 
 save_state() {
 	local switch="$1"
-	local state_file="$(get_state_file "$switch")"
+	local state_file
+
+	get_state_file state_file "$switch"
 
 	debug "save_state: saving state for switch \"$switch\" to $state_file"
 
@@ -526,14 +531,12 @@ save_state() {
 
 
 get_state_position() {
-	local position
+	local _var="$1"
 
 	json_set_namespace state
 	json_select
 
-	json_get_var position position
-
-	echo "$position"
+	json_get_var "$_var" position
 }
 
 set_state_position() {
@@ -546,16 +549,14 @@ set_state_position() {
 }
 
 get_state_seen() {
-	local position="$1"
-	local seen
+	local _var="$1"
+	local _position="$2"
 
 	json_set_namespace state
 	json_select
 	json_select seen
 
-	json_get_var seen "$position"
-
-	echo "$seen"
+	json_get_var "$_var" "$_position"
 }
 
 set_state_seen() {
@@ -640,7 +641,7 @@ trigger_button_event() {
 		return 1
 	}
 
-	before=$(get_state_seen "$position")
+	get_state_seen before "$position"
 	[ -n "$now" ] || now=$before
 	set_state_seen "$position" "$now"
 
@@ -718,7 +719,7 @@ do_init() {
 
 		init_state "$switch" || return
 
-		position=$(get_state_position)
+		get_state_position position
 		trigger_button_event "$switch" "$position" pressed
 
 		save_state "$switch"
@@ -760,7 +761,7 @@ do_update() {
 
 	for switch in $locked; do
 		if load_state "$switch"; then
-			previous=$(get_state_position)
+			get_state_position previous
 			debug "update: previous position for switch \"$switch\" is \"$previous\""
 		else
 			init_state "$switch" || return
