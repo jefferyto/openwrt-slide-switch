@@ -133,7 +133,7 @@ list_contains() {
 	local list=" $1 "
 	local item=" $2 "
 
-	[ "x${list%$item*}" != "x$list" ]
+	[ -z "${list##*$item*}" ]
 }
 
 
@@ -219,7 +219,7 @@ check_safe_string() {
 	local str="$1"
 	local str_name="$2"
 
-	[ "x${str%[!0-9A-Za-z_-]*}" = "x$str" ] || {
+	[ -n "${str##*[!0-9A-Za-z_-]*}" ] || {
 		error "check_safe_string: $str_name \"$str\" must contain letters, digits, underscores and/or hyphens only"
 		return 1
 	}
