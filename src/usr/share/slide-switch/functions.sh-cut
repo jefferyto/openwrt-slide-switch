@@ -388,84 +388,79 @@ load_switch_data() {
 
 
 get_switches() {
-	local switches
+	local _var="$1"
 
 	json_set_namespace switches
 	json_select
 
-	json_get_keys switches
-
-	echo "$switches"
+	json_get_keys "$_var"
 }
 
 get_switch_for_button() {
-	local button="$1"
-	local switches
-	local switch
-	local codes
+	local _var="$1"
+	local _button="$2"
+	local _switches
+	local _switch
+	local _codes
 
 	json_set_namespace switches
 	json_select
 
-	json_get_keys switches
+	json_get_keys _switches
 
-	for switch in $switches; do
+	for _switch in $_switches; do
 		json_select
-		json_select "$switch"
+		json_select "$_switch"
 
-		json_get_values codes codes
+		json_get_values _codes codes
 
-		list_contains "$codes" "$button" && {
-			debug "get_switch_for_button: found switch \"$switch\" for button \"$button\""
-			echo "$switch"
+		list_contains "$_codes" "$_button" && {
+			debug "get_switch_for_button: found switch \"$_switch\" for button \"$_button\""
+			_set_var "$_var" "$_switch"
 			return
 		}
 	done
 
-	debug "get_switch_for_button: no switches found for button \"$button\""
+	debug "get_switch_for_button: no switches found for button \"$_button\""
 	return 1
 }
 
 get_current_position() {
-	local switch="$1"
-	local labels_indices
-	local label
-	local value
-	local position
-	local i
+	local _var="$1"
+	local _switch="$2"
+	local _labels_indices
+	local _label
+	local _value
+	local _position
+	local _i
 
 	json_set_namespace switches
 	json_select
-	json_select "$switch"
+	json_select "$_switch"
 	json_select labels
 
-	json_get_keys labels_indices
+	json_get_keys _labels_indices
 
-	for i in $labels_indices; do
-		json_get_var label "$i"
-		get_gpio_value value "$label" || return
-		position="${position}_$value"
+	for _i in $_labels_indices; do
+		json_get_var _label "$_i"
+		get_gpio_value _value "$_label" || return
+		_position="${_position}_$_value"
 	done
 
-	echo "${position#_}"
+	_set_var "$_var" "${_position#_}"
 }
 
 get_position_name() {
-	local switch="$1"
-	local position="$2"
-	local position_name
+	local _var="$1"
+	local _switch="$2"
+	local _position="$3"
 
 	json_set_namespace switches
 	json_select
-	json_select "$switch"
+	json_select "$_switch"
 	json_select positions
 
-	json_get_var position_name "$position" || {
-		warning "get_position_name: position \"$position\" for switch \"$switch\" does not have a position name"
-		return 1
-	}
-
-	echo "$position_name"
+	json_get_var "$_var" "$_position"
 }
 
 
@@ -490,7 +485,7 @@ init_state() {
 	json_get_keys positions positions
 
 	get_epoch now || return
-	position=$(get_current_position "$switch") || return
+	get_current_position position "$switch" || return
 	debug "init_state: setting \"$position\" as initial position for switch \"$switch\""
 
 	json_set_namespace state
@@ -633,10 +628,12 @@ trigger_button_event() {
 	local position="$2"
 	local action="$3"
 	local now="$4"
-	local position_name="$(get_position_name "$switch" "$position")"
+	local position_name
 	local before
 	local button
 	local seen
+
+	get_position_name position_name "$switch" "$position"
 
 	[ -n "$position_name" ] || {
 		warning "trigger_button_event: could not get position name for switch \"$switch\" and position \"$position\""
@@ -707,7 +704,7 @@ do_init() {
 
 	load_switch_data || return
 
-	switches=$(get_switches)
+	get_switches switches
 
 	for switch in $switches; do
 		debug "init: attempting to init switch \"$switch\""
@@ -743,9 +740,9 @@ do_update() {
 	load_switch_data || return
 
 	if [ -n "$button" ]; then
-		switches=$(get_switch_for_button "$button")
+		get_switch_for_button switches "$button"
 	else
-		switches=$(get_switches)
+		get_switches switches
 	fi
 
 	for switch in $switches; do
@@ -771,7 +768,7 @@ do_update() {
 			debug "update: no previous position for switch \"$switch\""
 		fi
 
-		current=$(get_current_position "$switch") || return
+		get_current_position current "$switch" || return
 		debug "update: current position for switch \"$switch\" is \"$current\""
 
 		[ "x$current" != "x$previous" ] || {
@@ -794,7 +791,7 @@ do_switch() {
 
 	load_switch_data || return
 
-	switches=$(get_switches)
+	get_switches switches
 
 	echo "${switches# }"
 }
@@ -805,12 +802,13 @@ do_position() {
 	local switch
 	local position
 	local position_names
+	local position_name
 
 	debug "position: do_position \"$requested\""
 
 	load_switch_data || return
 
-	switches=$(get_switches)
+	get_switches switches
 
 	if [ -n "$requested" ]; then
 		for switch in $requested; do
@@ -824,8 +822,9 @@ do_position() {
 	fi
 
 	for switch in $requested; do
-		position=$(get_current_position "$switch") || return
-		position_names="$position_names $(get_position_name "$switch" "$position")"
+		get_current_position position "$switch" || return
+		get_position_name position_name "$switch" "$position"
+		position_names="$position_names $position_name"
 	done
 
 	echo "${position_names# }"
