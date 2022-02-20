@@ -572,9 +572,10 @@ set_state_seen() {
 
 
 get_lock_dir() {
-	local switch="$1"
+	local _var="$1"
+	local _switch="$2"
 
-	echo "$lock_dir/$switch"
+	_set_var "$_var" "$lock_dir/$_switch"
 }
 
 cleanup_locks() {
@@ -582,7 +583,7 @@ cleanup_locks() {
 	local dir
 
 	for switch in $locks; do
-		dir="$(get_lock_dir "$switch")"
+		get_lock_dir dir "$switch"
 		debug "cleanup_locks: attempting to remove $dir"
 		[ -d "$dir" ] && {
 			debug "cleanup_locks: removing $dir"
@@ -595,7 +596,9 @@ cleanup_locks() {
 
 get_lock() {
 	local switch="$1"
-	local dir="$(get_lock_dir "$switch")"
+	local dir
+
+	get_lock_dir dir "$switch"
 
 	mkdir -p "${dir%/*}"
 
