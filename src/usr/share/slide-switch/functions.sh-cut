@@ -584,14 +584,14 @@ get_lock_dir() {
 
 cleanup_locks() {
 	local switch
-	local dir
+	local switch_lock_dir
 
 	for switch in $locks; do
-		get_lock_dir dir "$switch"
-		debug "cleanup_locks: attempting to remove $dir"
-		[ -d "$dir" ] && {
-			debug "cleanup_locks: removing $dir"
-			rm -rf "$dir"
+		get_lock_dir switch_lock_dir "$switch"
+		debug "cleanup_locks: attempting to remove $switch_lock_dir"
+		[ -d "$switch_lock_dir" ] && {
+			debug "cleanup_locks: removing $switch_lock_dir"
+			rm -rf "$switch_lock_dir"
 		}
 	done
 
@@ -600,14 +600,14 @@ cleanup_locks() {
 
 get_lock() {
 	local switch="$1"
-	local dir
+	local switch_lock_dir
 
-	get_lock_dir dir "$switch"
+	get_lock_dir switch_lock_dir "$switch"
 
-	mkdir -p "${dir%/*}"
+	mkdir -p "${switch_lock_dir%/*}"
 
-	mkdir "$dir" 2>/dev/null || {
-		debug "get_lock: failed to get lock for switch \"$switch\" ($dir)"
+	mkdir "$switch_lock_dir" 2>/dev/null || {
+		debug "get_lock: failed to get lock for switch \"$switch\" ($switch_lock_dir)"
 		return 1
 	}
 
@@ -619,7 +619,7 @@ get_lock() {
 	trap 'exit 131' QUIT
 	trap 'exit 143' TERM
 
-	debug "get_lock: got lock for $switch ($dir)"
+	debug "get_lock: got lock for $switch ($switch_lock_dir)"
 }
 
 release_locks() {
