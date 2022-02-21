@@ -528,8 +528,10 @@ save_state() {
 
 	debug "save_state: saving state for switch \"$switch\" to $state_file"
 
-	json_set_namespace state
 	mkdir -p "${state_file%/*}"
+
+	json_set_namespace state
+	json_select
 	json_dump > "$state_file"
 }
 
