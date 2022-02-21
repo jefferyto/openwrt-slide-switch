@@ -321,17 +321,35 @@ validate_switch_data() {
 	done
 }
 
+
+load_switch_data_from_cache() {
+	[ -f "$switches_cache" ] && [ -r "$switches_cache" ] || {
+		debug "load_switch_data_from_cache: cannot read $switches_cache"
+		return 1
+	}
+
+	info "load_switch_data_from_cache: loading switch data from $switches_cache"
+
+	json_set_namespace switches
+	json_load_file "$switches_cache"
+}
+
+save_switch_data_to_cache() {
+	debug "save_switch_data_to_cache: caching switch data to $switches_cache"
+
+	mkdir -p "${switches_cache%/*}"
+
+	json_set_namespace switches
+	json_select
+	json_dump > "$switches_cache"
+}
+
 load_switch_data() {
 	local board
 	local type
 	local data
 
-	[ -f "$switches_cache" ] && {
-		info "load_switch_data: loading switch data from $switches_cache"
-		json_set_namespace switches
-		json_load_file "$switches_cache"
-		return
-	}
+	load_switch_data_from_cache && return
 
 	get_board board && [ -n "$board" ] || {
 		error "load_switch_data: missing board name"
@@ -385,9 +403,7 @@ load_switch_data() {
 
 	validate_switch_data || return
 
-	debug "load_switch_data: caching switch data to $switches_cache"
-	mkdir -p "${switches_cache%/*}"
-	echo "$data" > "$switches_cache"
+	save_switch_data_to_cache
 }
 
 
