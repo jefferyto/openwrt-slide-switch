@@ -427,19 +427,10 @@ save_switch_data_to_cache() {
 }
 
 load_switch_data_from_file() {
-	local no_load_from_cache="$1"
-	local no_save_to_cache="$2"
-	local board
+	local board="$1"
 	local type
 	local alt_board
 	local data
-
-	[ -z "$no_load_from_cache" ] && load_switch_data_from_cache && return
-
-	get_board board && [ -n "$board" ] || {
-		error "load_switch_data_from_file: missing board name"
-		return $ex_dataerr
-	}
 
 	debug "load_switch_data_from_file: attempting to load switch data for board \"$board\" from $switch_data_file"
 
@@ -482,21 +473,25 @@ load_switch_data_from_file() {
 
 	json_set_namespace switches
 	json_load "$data"
-
-	validate_switch_data || return
-
-	[ -z "$no_save_to_cache" ] && save_switch_data_to_cache
-
-	return 0
 }
 
 load_switch_data() {
+	local no_load_from_cache="$1"
+	local no_save_to_cache="$2"
+	local board
 	local result
+
+	[ -z "$no_load_from_cache" ] && load_switch_data_from_cache && return
+
+	get_board board && [ -n "$board" ] || {
+		error "load_switch_data: missing board name"
+		return $ex_dataerr
+	}
 
 	[ -z "$result" ] && {
 		debug "load_switch_data: attempting to load switch data for board \"$board\" from $switch_data_file"
 
-		load_switch_data_from_file "$@"
+		load_switch_data_from_file "$board"
 		result=$?
 
 		[ "$result" -ne 0 ] && {
@@ -505,6 +500,12 @@ load_switch_data() {
 			return $result
 		}
 	}
+
+	validate_switch_data || return
+
+	[ -z "$no_save_to_cache" ] && save_switch_data_to_cache
+
+	return 0
 }
 
 
