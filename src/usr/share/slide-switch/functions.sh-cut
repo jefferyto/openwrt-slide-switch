@@ -427,8 +427,10 @@ save_switch_data_to_cache() {
 }
 
 load_switch_data_from_file() {
-	local _data_file="$1"
-	local _board="$2"
+	local _var="$1"
+	local _data_file="$2"
+	local _board="$3"
+	local _no_alt_board_name="$4"
 	local _type
 	local _alt_board
 	local _data
@@ -442,7 +444,7 @@ load_switch_data_from_file() {
 
 	get_switch_data_file_board_data_type _type "$_data_file" "$_board"
 
-	[ "x$_type" = xstring ] && {
+	[ -z "$_no_alt_board_name" ] && [ "x$_type" = xstring ] && {
 		debug "load_switch_data_from_file: board \"$_board\" shares switch data with another model, loading alternate board name"
 
 		get_switch_data_file_board_data _alt_board "$_data_file" "$_board"
@@ -460,6 +462,7 @@ load_switch_data_from_file() {
 
 	[ -n "$_type" ] || {
 		debug "load_switch_data_from_file: board \"$_board\" not found in $_data_file"
+		_set_var "$_var" "$_board"
 		return $ex_unavailable
 	}
 
@@ -480,7 +483,9 @@ load_switch_data() {
 	local no_load_from_cache="$1"
 	local no_save_to_cache="$2"
 	local board
+	local final_board
 	local result
+	local no_alt_board_name
 
 	[ -z "$no_load_from_cache" ] && load_switch_data_from_cache && return
 
@@ -492,11 +497,11 @@ load_switch_data() {
 	[ -z "$result" ] && {
 		debug "load_switch_data: attempting to load switch data for board \"$board\" from $switch_data_file"
 
-		load_switch_data_from_file "$switch_data_file" "$board"
+		load_switch_data_from_file final_board "$switch_data_file" "$board" "$no_alt_board_name"
 		result=$?
 
 		[ "$result" -ne 0 ] && {
-			[ "$result" -eq "$ex_unavailable" ] && warning "load_switch_data: board \"$board\" not found in $switch_data_file"
+			[ "$result" -eq "$ex_unavailable" ] && warning "load_switch_data: board \"$final_board\" not found in $switch_data_file"
 
 			return $result
 		}
