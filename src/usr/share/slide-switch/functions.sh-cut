@@ -427,49 +427,50 @@ save_switch_data_to_cache() {
 }
 
 load_switch_data_from_file() {
-	local board="$1"
+	local data_file="$1"
+	local board="$2"
 	local type
 	local alt_board
 	local data
 
-	debug "load_switch_data_from_file: attempting to load switch data for board \"$board\" from $switch_data_file"
+	debug "load_switch_data_from_file: attempting to load switch data for board \"$board\" from $data_file"
 
-	is_valid_switch_data_file "$switch_data_file" || {
-		error "load_switch_data_from_file: failed to parse $switch_data_file"
+	is_valid_switch_data_file "$data_file" || {
+		error "load_switch_data_from_file: failed to parse $data_file"
 		return $ex_dataerr
 	}
 
-	get_switch_data_file_board_data_type type "$switch_data_file" "$board"
+	get_switch_data_file_board_data_type type "$data_file" "$board"
 
 	[ "x$type" = xstring ] && {
 		debug "load_switch_data_from_file: board \"$board\" shares switch data with another model, loading alternate board name"
 
-		get_switch_data_file_board_data alt_board "$switch_data_file" "$board"
+		get_switch_data_file_board_data alt_board "$data_file" "$board"
 
 		[ -n "$alt_board" ] || {
-			error "load_switch_data_from_file: missing alternate board name for board \"$board\" in $switch_data_file"
+			error "load_switch_data_from_file: missing alternate board name for board \"$board\" in $data_file"
 			return $ex_dataerr
 		}
 
 		info "load_switch_data_from_file: using alternate board name \"$alt_board\" for board \"$board\""
 
 		board=$alt_board
-		get_switch_data_file_board_data_type type "$switch_data_file" "$board"
+		get_switch_data_file_board_data_type type "$data_file" "$board"
 	}
 
 	[ -n "$type" ] || {
-		debug "load_switch_data_from_file: board \"$board\" not found in $switch_data_file"
+		debug "load_switch_data_from_file: board \"$board\" not found in $data_file"
 		return $ex_unavailable
 	}
 
 	[ "x$type" = xobject ] || {
-		error "load_switch_data_from_file: \"$board\" is not an object in $switch_data_file"
+		error "load_switch_data_from_file: \"$board\" is not an object in $data_file"
 		return $ex_dataerr
 	}
 
-	info "load_switch_data_from_file: loading switch data for board \"$board\" from $switch_data_file"
+	info "load_switch_data_from_file: loading switch data for board \"$board\" from $data_file"
 
-	get_switch_data_file_board_data data "$switch_data_file" "$board"
+	get_switch_data_file_board_data data "$data_file" "$board"
 
 	json_set_namespace switches
 	json_load "$data"
@@ -491,7 +492,7 @@ load_switch_data() {
 	[ -z "$result" ] && {
 		debug "load_switch_data: attempting to load switch data for board \"$board\" from $switch_data_file"
 
-		load_switch_data_from_file "$board"
+		load_switch_data_from_file "$switch_data_file" "$board"
 		result=$?
 
 		[ "$result" -ne 0 ] && {
