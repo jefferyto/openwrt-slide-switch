@@ -52,6 +52,7 @@ ex_dataerr=65
 ex_noinput=66
 ex_unavailable=69
 ex_oserr=71
+ex_osfile=72
 
 log_stderr=
 log_syslog=
@@ -122,7 +123,7 @@ get_board() {
 	local _var="$1"
 	local _board
 
-	[ -e "$board_name" ] && _board=$(cat "$board_name") && _set_var "$_var" "$_board"
+	_board=$(cat "$board_name") && _set_var "$_var" "$_board"
 }
 
 get_epoch() {
@@ -148,6 +149,23 @@ is_safe_string() {
 	local str="$1"
 
 	[ -n "${str##*[!0-9A-Za-z_-]*}" ]
+}
+
+
+check_prerequisites() {
+	local file
+
+	for file in "$board_name" "$gpio_table"; do
+		[ -f "$file" ] && [ -r "$file" ] || {
+			error "check_prerequisites: cannot read $file"
+			return $ex_osfile
+		}
+	done
+
+	[ -f "$switch_data_file" ] && [ -r "$switch_data_file" ] || {
+		error "check_prerequisites: cannot read $switch_data_file"
+		return $ex_noinput
+	}
 }
 
 
@@ -364,11 +382,6 @@ load_switch_data() {
 	get_board board && [ -n "$board" ] || {
 		error "load_switch_data: missing board name"
 		return $ex_dataerr
-	}
-
-	[ -f "$switch_data_file" ] || {
-		error "load_switch_data: cannot find switch data file \"$switch_data_file\""
-		return $ex_noinput
 	}
 
 	debug "load_switch_data: attempting to load switch data for $board from $switch_data_file"
@@ -744,6 +757,7 @@ do_init() {
 	local switch
 	local now
 
+	check_prerequisites &&
 	load_switch_data no_load_from_cache || return
 
 	get_switches switches
@@ -776,6 +790,7 @@ do_update() {
 	local previous
 	local arg
 
+	check_prerequisites &&
 	load_switch_data || return
 
 	get_switches switches
@@ -880,6 +895,7 @@ do_switch() {
 	local switches
 	local switch
 
+	check_prerequisites &&
 	load_switch_data '' no_save_to_cache || return
 
 	get_switches switches
@@ -895,6 +911,7 @@ do_position() {
 	local position
 	local position_name
 
+	check_prerequisites &&
 	load_switch_data '' no_save_to_cache || return
 
 	get_switches switches
@@ -926,6 +943,7 @@ do_clean() {
 	local state_file
 	local switch_lock_dir
 
+	check_prerequisites &&
 	load_switch_data no_load_from_cache no_save_to_cache || return
 
 	get_switches switches
