@@ -227,6 +227,35 @@ get_position_code() {
 }
 
 
+is_valid_switch_data_file() {
+	local data_file="$1"
+
+	jsonfilter -q -i "$data_file" -t "@" > /dev/null
+
+	[ "$?" -ne 126 ]
+}
+
+get_switch_data_file_board_value() {
+	local __option="$1"
+	local __var="$2"
+	local __data_file="$3"
+	local __board="$4"
+	local __value
+
+	__value=$(jsonfilter -i "$__data_file" "$__option" "@[\"$__board\"]") || __value=
+
+	_set_var "$__var" "$__value"
+}
+
+get_switch_data_file_board_data_type() {
+	get_switch_data_file_board_value -t "$@"
+}
+
+get_switch_data_file_board_data() {
+	get_switch_data_file_board_value -e "$@"
+}
+
+
 check_json_type() {
 	local key="$1"
 	local type="$2"
@@ -414,18 +443,17 @@ load_switch_data() {
 
 	debug "load_switch_data: attempting to load switch data for board \"$board\" from $switch_data_file"
 
-	jsonfilter -q -i "$switch_data_file" -t "@" > /dev/null
-	[ "$?" -ne 126 ] || {
+	is_valid_switch_data_file "$switch_data_file" || {
 		error "load_switch_data: failed to parse $switch_data_file"
 		return $ex_dataerr
 	}
 
-	type=$(jsonfilter -i "$switch_data_file" -t "@[\"$board\"]")
+	get_switch_data_file_board_data_type type "$switch_data_file" "$board"
 
 	[ "x$type" = xstring ] && {
 		debug "load_switch_data: board \"$board\" shares switch data with another model, loading alternate board name"
 
-		alt_board=$(jsonfilter -i "$switch_data_file" -e "@[\"$board\"]")
+		get_switch_data_file_board_data alt_board "$switch_data_file" "$board"
 
 		[ -n "$alt_board" ] || {
 			error "load_switch_data: missing alternate board name for board \"$board\" in $switch_data_file"
@@ -435,13 +463,13 @@ load_switch_data() {
 		info "load_switch_data: using alternate board name \"$alt_board\" for board \"$board\""
 
 		board=$alt_board
-		type=$(jsonfilter -i "$switch_data_file" -t "@[\"$board\"]")
+		get_switch_data_file_board_data_type type "$switch_data_file" "$board"
 	}
 
 	case $type in
 		object)
 			info "load_switch_data: loading switch data for board \"$board\" from $switch_data_file"
-			data=$(jsonfilter -i "$switch_data_file" -e "@[\"$board\"]")
+			get_switch_data_file_board_data data "$switch_data_file" "$board"
 			;;
 		'')
 			warning "load_switch_data: board \"$board\" not found in $switch_data_file"
