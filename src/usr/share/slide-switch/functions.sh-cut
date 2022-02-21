@@ -426,7 +426,7 @@ save_switch_data_to_cache() {
 	json_dump > "$switches_cache"
 }
 
-load_switch_data() {
+load_switch_data_from_file() {
 	local no_load_from_cache="$1"
 	local no_save_to_cache="$2"
 	local board
@@ -437,46 +437,46 @@ load_switch_data() {
 	[ -z "$no_load_from_cache" ] && load_switch_data_from_cache && return
 
 	get_board board && [ -n "$board" ] || {
-		error "load_switch_data: missing board name"
+		error "load_switch_data_from_file: missing board name"
 		return $ex_dataerr
 	}
 
-	debug "load_switch_data: attempting to load switch data for board \"$board\" from $switch_data_file"
+	debug "load_switch_data_from_file: attempting to load switch data for board \"$board\" from $switch_data_file"
 
 	is_valid_switch_data_file "$switch_data_file" || {
-		error "load_switch_data: failed to parse $switch_data_file"
+		error "load_switch_data_from_file: failed to parse $switch_data_file"
 		return $ex_dataerr
 	}
 
 	get_switch_data_file_board_data_type type "$switch_data_file" "$board"
 
 	[ "x$type" = xstring ] && {
-		debug "load_switch_data: board \"$board\" shares switch data with another model, loading alternate board name"
+		debug "load_switch_data_from_file: board \"$board\" shares switch data with another model, loading alternate board name"
 
 		get_switch_data_file_board_data alt_board "$switch_data_file" "$board"
 
 		[ -n "$alt_board" ] || {
-			error "load_switch_data: missing alternate board name for board \"$board\" in $switch_data_file"
+			error "load_switch_data_from_file: missing alternate board name for board \"$board\" in $switch_data_file"
 			return $ex_dataerr
 		}
 
-		info "load_switch_data: using alternate board name \"$alt_board\" for board \"$board\""
+		info "load_switch_data_from_file: using alternate board name \"$alt_board\" for board \"$board\""
 
 		board=$alt_board
 		get_switch_data_file_board_data_type type "$switch_data_file" "$board"
 	}
 
 	[ -n "$type" ] || {
-		warning "load_switch_data: board \"$board\" not found in $switch_data_file"
+		debug "load_switch_data_from_file: board \"$board\" not found in $switch_data_file"
 		return $ex_unavailable
 	}
 
 	[ "x$type" = xobject ] || {
-		error "load_switch_data: \"$board\" is not an object in $switch_data_file"
+		error "load_switch_data_from_file: \"$board\" is not an object in $switch_data_file"
 		return $ex_dataerr
 	}
 
-	info "load_switch_data: loading switch data for board \"$board\" from $switch_data_file"
+	info "load_switch_data_from_file: loading switch data for board \"$board\" from $switch_data_file"
 
 	get_switch_data_file_board_data data "$switch_data_file" "$board"
 
@@ -488,6 +488,23 @@ load_switch_data() {
 	[ -z "$no_save_to_cache" ] && save_switch_data_to_cache
 
 	return 0
+}
+
+load_switch_data() {
+	local result
+
+	[ -z "$result" ] && {
+		debug "load_switch_data: attempting to load switch data for board \"$board\" from $switch_data_file"
+
+		load_switch_data_from_file "$@"
+		result=$?
+
+		[ "$result" -ne 0 ] && {
+			[ "$result" -eq "$ex_unavailable" ] && warning "load_switch_data: board \"$board\" not found in $switch_data_file"
+
+			return $result
+		}
+	}
 }
 
 
