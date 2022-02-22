@@ -193,7 +193,7 @@ check_json_type() {
 
 	json_is_a "$key" "$type" || {
 		error "check_json_type: \"$key_name\" is not $article $type in $switch_data_file"
-		return 1
+		return $ex_dataerr
 	}
 }
 
@@ -203,7 +203,7 @@ check_nonempty_string() {
 
 	[ -n "$str" ] || {
 		error "check_nonempty_string: $str_name cannot be an empty string"
-		return 1
+		return $ex_dataerr
 	}
 }
 
@@ -213,7 +213,7 @@ check_safe_string() {
 
 	[ -n "${str##*[!0-9A-Za-z_-]*}" ] || {
 		error "check_safe_string: $str_name \"$str\" must contain letters, digits, underscores and/or hyphens only"
-		return 1
+		return $ex_dataerr
 	}
 }
 
@@ -223,7 +223,7 @@ check_input_gpio_label() {
 
 	get_gpio_value value "$label" allow_no_matches && [ -n "$value" ] || {
 		error "check_input_gpio_label: \"$label\" is not the label of a valid input gpio"
-		return 1
+		return $ex_dataerr
 	}
 }
 
@@ -241,7 +241,7 @@ check_position_string() {
 
 	[ "x$str" = xhi ] || [ "x$str" = xlo ] || {
 		warning "check_position_string: position \"$position\" is not in the format \"(hi|lo)(_(hi|lo))*\""
-		return 1
+		return $ex_dataerr
 	}
 }
 
@@ -255,7 +255,7 @@ check_position_code() {
 
 	! list_contains "$codes" "$code" || {
 		error "check_position_code: switch \"$switch\" cannot have both a position name \"$position_name\" and a code \"$code\""
-		return 1
+		return $ex_dataerr
 	}
 }
 
@@ -386,7 +386,7 @@ load_switch_data() {
 	json_set_namespace switches
 	json_load "$data"
 
-	validate_switch_data || return $ex_dataerr
+	validate_switch_data || return
 
 	debug "load_switch_data: caching switch data to $switches_cache"
 	mkdir -p "${switches_cache%/*}"
