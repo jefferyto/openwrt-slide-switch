@@ -336,7 +336,27 @@ check_position_code() {
 	}
 }
 
-validate_switch_data() {
+validate_switches_initial() {
+	local switches
+	local switch
+
+	json_set_namespace switches
+	json_select
+
+	json_get_keys switches
+
+	[ -n "$switches" ] || warning "validate_switches_initial: no switches defined"
+
+	for switch in $switches; do
+		debug "validate_switches_initial: checking switch \"$switch\""
+
+		check_nonempty_string "$switch" "switch name" &&
+		check_safe_string "$switch" "switch name" &&
+		check_json_type "$switch" object || return
+	done
+}
+
+validate_switches_details() {
 	local switches
 	local switch
 	local labels_indices
@@ -352,17 +372,11 @@ validate_switch_data() {
 
 	json_get_keys switches
 
-	[ -n "$switches" ] || warning "validate_switch_data: no switches defined"
-
 	for switch in $switches; do
-		debug "validate_switch_data: checking data for switch \"$switch\""
-
-		check_nonempty_string "$switch" "switch name" &&
-		check_safe_string "$switch" "switch name" &&
-		check_json_type "$switch" object || return
-
 		json_select
 		json_select "$switch"
+
+		debug "validate_switches_details: checking data for switch \"$switch\""
 
 		check_json_type labels array "$switch.labels" &&
 		check_json_type codes array "$switch.codes" &&
@@ -372,9 +386,9 @@ validate_switch_data() {
 		json_get_values codes codes
 		json_get_keys positions positions
 
-		[ -n "$labels_indices" ] || warning "validate_switch_data: no labels defined for switch \"$switch\""
-		[ -n "$codes" ] || warning "validate_switch_data: no codes defined for switch \"$switch\""
-		[ -n "$positions" ] || warning "validate_switch_data: no positions defined for switch \"$switch\""
+		[ -n "$labels_indices" ] || warning "validate_switches_details: no labels defined for switch \"$switch\""
+		[ -n "$codes" ] || warning "validate_switches_details: no codes defined for switch \"$switch\""
+		[ -n "$positions" ] || warning "validate_switches_details: no positions defined for switch \"$switch\""
 
 		json_select labels
 
@@ -529,7 +543,9 @@ load_switch_data() {
 		}
 	}
 
-	validate_switch_data || return
+	validate_switches_initial || return
+
+	validate_switches_details || return
 
 	[ -z "$no_save_to_cache" ] && save_switch_data_to_cache
 
