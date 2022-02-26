@@ -36,6 +36,7 @@ initd_dir=@sysconfdir@/init.d
 
 board_name=/tmp/sysinfo/board_name
 gpio_table=/sys/kernel/debug/gpio
+device_tree_keys=/proc/device-tree/keys
 hotplug_call=/sbin/hotplug-call
 rc_button=/etc/rc.button
 
@@ -229,6 +230,94 @@ get_position_code() {
 }
 
 
+is_keys_available() {
+	[ -d "$device_tree_keys" ]
+}
+
+is_key() {
+	local key="$1"
+
+	[ -d "$device_tree_keys/$key" ]
+}
+
+get_key_label_path() {
+	local __var="$1"
+	local __key="$2"
+
+	_set_var "$__var" "$device_tree_keys/$__key/label"
+}
+
+get_key_code_path() {
+	local __var="$1"
+	local __key="$2"
+
+	_set_var "$__var" "$device_tree_keys/$__key/linux,code"
+}
+
+has_key_info() {
+	local key="$1"
+	local label_path
+	local code_path
+
+	get_key_label_path label_path "$key"
+	get_key_code_path code_path "$key"
+
+	[ -f "$label_path" ] && [ -r "$label_path" ] &&
+	[ -f "$code_path" ] && [ -r "$code_path" ]
+}
+
+get_key_label() {
+	local _var="$1"
+	local _key="$2"
+	local _label_path
+	local _label
+
+	get_key_label_path _label_path "$_key"
+
+	_label=$(cat "$_label_path") || {
+		error "get_key_label: failed to read $_label_path"
+		return $ex_oserr
+	}
+
+	_set_var "$_var" "$_label"
+}
+
+get_key_code() {
+	local _var="$1"
+	local _key="$2"
+	local _code_path
+	local _hex
+	local _code
+
+	get_key_code_path _code_path "$_key"
+
+	_hex=$(hexdump -n 4 -v -e '4/1 "%02x"' "$_code_path") || {
+		error "get_key_code: failed to read $_code_path"
+		return $ex_oserr
+	}
+
+	case $_hex in
+		00000100) _code=BTN_0 ;;
+		00000101) _code=BTN_1 ;;
+		00000102) _code=BTN_2 ;;
+		00000103) _code=BTN_3 ;;
+		00000104) _code=BTN_4 ;;
+		00000105) _code=BTN_5 ;;
+		00000106) _code=BTN_6 ;;
+		00000107) _code=BTN_7 ;;
+		00000108) _code=BTN_8 ;;
+		00000109) _code=BTN_9 ;;
+	esac
+
+	[ -n "$_code" ] || {
+		error "get_key_code: unknown value \"$_hex\" in $_code_path"
+		return $ex_osfile
+	}
+
+	_set_var "$_var" "$_code"
+}
+
+
 is_valid_switch_data_file() {
 	local data_file="$1"
 
@@ -255,6 +344,78 @@ get_switch_data_file_board_data_type() {
 
 get_switch_data_file_board_data() {
 	get_switch_data_file_board_value -e "$@"
+}
+
+
+populate_switches_details() {
+	local switches
+	local switch
+	local keys
+	local key
+	local label
+	local code
+
+	json_set_namespace switches
+	json_select
+
+	json_get_keys switches
+
+	for switch in $switches; do
+		json_select
+		json_select "$switch"
+
+		json_is_a labels '' && json_is_a codes '' || {
+			debug "populate_switches_details: switch \"$switch\" already has labels and/or codes properties"
+			continue
+		}
+
+		json_is_a keys array || {
+			debug "populate_switches_details: switch \"$switch\" does not have a keys array"
+			continue
+		}
+
+		json_get_values keys keys
+
+		[ -n "$keys" ] || {
+			debug "populate_switches_details: no keys defined for switch \"$switch\""
+			continue
+		}
+
+		json_add_array labels
+		json_close_array
+
+		json_add_array codes
+		json_close_array
+
+		for key in $keys; do
+			json_select
+			json_select "$switch"
+
+			is_key "$key" || {
+				error "populate_switches_details: key \"$key\" of switch \"$switch\" is not a valid gpio key"
+				return $ex_dataerr
+			}
+
+			has_key_info "$key" || {
+				error "populate_switches_details: key \"$key\" of switch \"$switch\" is missing label and/or linux,code"
+				return $ex_dataerr
+			}
+
+			get_key_label label "$key" &&
+			get_key_code code "$key" || return
+
+			debug "populate_switches_details: found label \"$label\" and code \"$code\" for key \"$key\" of switch \"$switch\""
+
+			json_select labels
+
+			json_add_string '' "$label"
+
+			json_select ..
+			json_select codes
+
+			json_add_string '' "$code"
+		done
+	done
 }
 
 
@@ -544,6 +705,10 @@ load_switch_data() {
 	}
 
 	validate_switches_initial || return
+
+	is_keys_available && {
+		populate_switches_details || return
+	}
 
 	validate_switches_details || return
 

@@ -4,6 +4,10 @@
 * Added support for loading switch data from
   /etc/slide-switch/switch-data.json; if this file exists, it will be
   checked for switch data before the default data file
+* Added support for `keys` array in switch data, in place of `labels`
+  and `codes` arrays; if present, GPIO labels and key codes will be read
+  from device tree information in /proc/device-tree (each element in the
+  `keys` array should be a node-name under the `keys` node)
 * Require user to be root for commands/actions that trigger button
   events or have other side effects
 * Added logging to standard error
