@@ -10,6 +10,10 @@
   * GL.iNet GL-MT300A
   * GL.iNet GL-MT300N v1
   * GL.iNet GL-MT300N v2
+* **BACKWARD-INCOMPATIBLE:** Changed position names from "left" and
+  "right" to "clear" and "dot", respectively:
+  * GL.iNet GL-AR750
+  * GL.iNet GL-AR750S
 * Added support for loading switch data from
   /etc/slide-switch/switch-data.json; if this file exists, it will be
   checked for switch data before the default data file

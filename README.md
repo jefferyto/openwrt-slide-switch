@@ -44,8 +44,8 @@ position of each switch. To disable or re-enable this behaviour, run
 | [GL.iNet GL-AR300M][]          | mode         | left / center / right          | :heavy_check_mark: |       |
 | [GL.iNet GL-AR300M-Lite][]     | mode         | left / center / right          |                    |       |
 | [GL.iNet GL-AR300M16][]        | mode         | left / center / right          |                    |       |
-| [GL.iNet GL-AR750][]           | mode         | left / right                   | :heavy_check_mark: |       |
-| [GL.iNet GL-AR750S][]          | mode         | left / right                   | :heavy_check_mark: |       |
+| [GL.iNet GL-AR750][]           | mode         | dot / clear                    | :heavy_check_mark: |       |
+| [GL.iNet GL-AR750S][]          | mode         | dot / clear                    | :heavy_check_mark: |       |
 | [GL.iNet GL-E750][]            | mode         | dot / clear                    | :heavy_check_mark: |       |
 | [GL.iNet GL-MT1300][]          | mode         | dot / clear                    |                    |       |
 | [GL.iNet GL-MT300A][]          | mode         | left / center / right          | :heavy_check_mark: |       |
@@ -106,6 +106,8 @@ See [NEWS][].
 * GL.iNet GL-AR750,  
   GL.iNet GL-AR750S:
   * Changed switch name from *switch* to *mode*
+  * Changed position names from "left" and "right" to "clear" and "dot",
+    respectively
 
 [NEWS]: NEWS.md
 

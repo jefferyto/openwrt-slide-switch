@@ -82,8 +82,8 @@
 		"mode": {
 			"keys": [ "mode" ],
 			"positions": {
-				"lo": "left",
-				"hi": "right"
+				"lo": "clear",
+				"hi": "dot"
 			}
 		}
 	},
@@ -102,8 +102,8 @@
 		"mode": {
 			"keys": [ "switch" ],
 			"positions": {
-				"hi": "dot",
-				"lo": "clear"
+				"lo": "clear",
+				"hi": "dot"
 			}
 		}
 	},
