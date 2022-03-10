@@ -40,17 +40,17 @@ position of each switch. To disable or re-enable this behaviour, run
 | [Buffalo WZR-HP-AG300H][]      | router       | on / off / auto                |                    |       |
 | [Buffalo WZR-HP-G300NH][]      | movie-engine | on / off                       | :heavy_check_mark: |       |
 | [Buffalo WZR-HP-G300NH][]      | router       | on / off / auto                | :heavy_check_mark: |       |
-| [GL.iNet GL-AR150][]           | switch       | left / center / right          |                    |       |
-| [GL.iNet GL-AR300M][]          | switch       | left / center / right          | :heavy_check_mark: |       |
+| [GL.iNet GL-AR150][]           | mode         | left / center / right          |                    |       |
+| [GL.iNet GL-AR300M][]          | mode         | left / center / right          | :heavy_check_mark: |       |
 | [GL.iNet GL-AR300M-Lite][]     | mode         | left / center / right          |                    |       |
 | [GL.iNet GL-AR300M16][]        | mode         | left / center / right          |                    |       |
-| [GL.iNet GL-AR750][]           | switch       | left / right                   | :heavy_check_mark: |       |
-| [GL.iNet GL-AR750S][]          | switch       | left / right                   | :heavy_check_mark: |       |
+| [GL.iNet GL-AR750][]           | mode         | left / right                   | :heavy_check_mark: |       |
+| [GL.iNet GL-AR750S][]          | mode         | left / right                   | :heavy_check_mark: |       |
 | [GL.iNet GL-E750][]            | mode         | dot / clear                    | :heavy_check_mark: |       |
 | [GL.iNet GL-MT1300][]          | mode         | dot / clear                    |                    |       |
-| [GL.iNet GL-MT300A][]          | switch       | left / center / right          | :heavy_check_mark: |       |
-| [GL.iNet GL-MT300N v1][]       | switch       | left / center / right          |                    |       |
-| [GL.iNet GL-MT300N v2][]       | switch       | left / center / right          | :heavy_check_mark: |       |
+| [GL.iNet GL-MT300A][]          | mode         | left / center / right          | :heavy_check_mark: |       |
+| [GL.iNet GL-MT300N v1][]       | mode         | left / center / right          |                    |       |
+| [GL.iNet GL-MT300N v2][]       | mode         | left / center / right          | :heavy_check_mark: |       |
 | [GL.iNet GL-MV1000][]          | mode         | dot / clear                    |                    |       |
 | [HooToo HT-TM02][]             | mode         | wired / wireless               | :heavy_check_mark: |       |
 | [TP-Link TL-MR3020 v1][]       | mode         | 3g / wisp / ap                 | :heavy_check_mark: |       |
@@ -92,6 +92,20 @@ where the switch data has been tested and verified correct by users.
 ## Changelog
 
 See [NEWS][].
+
+### Backward-Incompatible Changes
+
+#### 0.9.8-dev
+
+* GL.iNet GL-AR150,  
+  GL.iNet GL-AR300M,  
+  GL.iNet GL-MT300A,  
+  GL.iNet GL-MT300N v1,  
+  GL.iNet GL-MT300N v2:
+  * Changed switch name from *switch* to *mode*
+* GL.iNet GL-AR750,  
+  GL.iNet GL-AR750S:
+  * Changed switch name from *switch* to *mode*
 
 [NEWS]: NEWS.md
 

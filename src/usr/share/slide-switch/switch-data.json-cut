@@ -56,7 +56,7 @@
 	},
 	"buffalo,wzr-hp-g300nh-s": "buffalo,wzr-hp-g300nh-rb",
 	"glinet,gl-ar150": {
-		"switch": {
+		"mode": {
 			"keys": [ "manual", "auto" ],
 			"positions": {
 				"lo_hi": "left",
@@ -75,20 +75,11 @@
 			}
 		}
 	},
-	"glinet,gl-ar300m-nand": {
-		"switch": {
-			"keys": [ "right", "left" ],
-			"positions": {
-				"lo_hi": "left",
-				"lo_lo": "center",
-				"hi_lo": "right"
-			}
-		}
-	},
-	"glinet,gl-ar300m-nor": "glinet,gl-ar300m-nand",
+	"glinet,gl-ar300m-nand": "glinet,gl-ar300m-lite",
+	"glinet,gl-ar300m-nor": "glinet,gl-ar300m-lite",
 	"glinet,gl-ar300m16": "glinet,gl-ar300m-lite",
 	"glinet,gl-ar750": {
-		"switch": {
+		"mode": {
 			"keys": [ "mode" ],
 			"positions": {
 				"lo": "left",
@@ -117,7 +108,7 @@
 		}
 	},
 	"glinet,gl-mt300a": {
-		"switch": {
+		"mode": {
 			"keys": [ "0x100", "0x101" ],
 			"positions": {
 				"lo_hi": "left",
@@ -127,7 +118,7 @@
 		}
 	},
 	"glinet,gl-mt300n": {
-		"switch": {
+		"mode": {
 			"keys": [ "0x100", "0x101" ],
 			"positions": {
 				"hi_lo": "left",

@@ -1,6 +1,15 @@
 # News
 
 ## [0.9.8-dev][Unreleased] - Unreleased
+* **BACKWARD-INCOMPATIBLE:** Changed switch name from *switch* to
+  *mode*:
+  * GL.iNet GL-AR150
+  * GL.iNet GL-AR300M
+  * GL.iNet GL-AR750
+  * GL.iNet GL-AR750S
+  * GL.iNet GL-MT300A
+  * GL.iNet GL-MT300N v1
+  * GL.iNet GL-MT300N v2
 * Added support for loading switch data from
   /etc/slide-switch/switch-data.json; if this file exists, it will be
   checked for switch data before the default data file
