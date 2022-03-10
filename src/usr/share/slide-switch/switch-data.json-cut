@@ -19,6 +19,26 @@
  *
  * --8<---- CUT HERE */
 {
+	"buffalo,wzr-600dhp": {
+		"movie-engine": {
+			"labels": [ "movie_engine" ],
+			"codes": [ "BTN_7" ],
+			"positions": {
+				"lo": "on",
+				"hi": "off"
+			}
+		},
+		"router": {
+			"labels": [ "router_auto", "router_off" ],
+			"codes": [ "BTN_6", "BTN_5" ],
+			"positions": {
+				"hi_hi": "on",
+				"hi_lo": "off",
+				"lo_hi": "auto"
+			}
+		}
+	},
+	"buffalo,wzr-hp-ag300h": "buffalo,wzr-600dhp",
 	"buffalo,wzr-hp-g300nh-rb": {
 		"movie-engine": {
 			"labels": [ "movie_off", "movie_on" ],

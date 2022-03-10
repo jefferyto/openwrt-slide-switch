@@ -32,6 +32,10 @@
 * `clean` command:
   * Avoid removing files or directories placed in slide-switch's working
     directories by other processes
+* Restored support for Buffalo WZR-HP-AG300H (requires upcoming OpenWrt
+  22.0X release)
+* Added support for Buffalo WZR-600DHP (requires upcoming OpenWrt 22.0X
+  release)
 
 ## [0.9.7] - 2022-02-18
 * Fixed support for models with spaces in their GPIO labels:

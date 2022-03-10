@@ -34,6 +34,10 @@ position of each switch. To disable or re-enable this behaviour, run
 
 | Device                         | Switch Name  | Switch Positions               | Verified           | Notes |
 | ------------------------------ | :----------: | :----------------------------: | :----------------: | ----- |
+| [Buffalo WZR-600DHP][]         | movie-engine | on / off                       |                    |       |
+| [Buffalo WZR-600DHP][]         | router       | on / off / auto                |                    |       |
+| [Buffalo WZR-HP-AG300H][]      | movie-engine | on / off                       |                    |       |
+| [Buffalo WZR-HP-AG300H][]      | router       | on / off / auto                |                    |       |
 | [Buffalo WZR-HP-G300NH][]      | movie-engine | on / off                       | :heavy_check_mark: |       |
 | [Buffalo WZR-HP-G300NH][]      | router       | on / off / auto                | :heavy_check_mark: |       |
 | [GL.iNet GL-AR150][]           | switch       | left / center / right          |                    |       |
@@ -61,6 +65,8 @@ For most devices, switch data is initially collected from the OpenWrt
 wiki and from OpenWrt's source code. The Verified column indicates cases
 where the switch data has been tested and verified correct by users.
 
+[Buffalo WZR-600DHP]: https://openwrt.org/toh/buffalo/wzr-600dhp
+[Buffalo WZR-HP-AG300H]: https://openwrt.org/toh/buffalo/wzr-hp-ag300h
 [Buffalo WZR-HP-G300NH]: https://openwrt.org/toh/buffalo/wzr-hp-g300h
 [GL.iNet GL-AR150]: https://openwrt.org/toh/gl.inet/gl-ar150
 [GL.iNet GL-AR300M]: https://openwrt.org/toh/gl.inet/gl-ar300m
