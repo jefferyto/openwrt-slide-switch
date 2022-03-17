@@ -19,7 +19,7 @@
 #
 
 initddir = $(sysconfdir)/init.d
-initd_SCRIPTS = zzz-slide-switch
+initd_SCRIPTS = slide-switch zzz-slide-switch-update
 dist_check_SCRIPTS = check-shell-syntax
 
 CLEANFILES = $(initd_SCRIPTS)

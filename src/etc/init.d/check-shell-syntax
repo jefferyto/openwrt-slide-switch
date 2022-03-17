@@ -19,4 +19,4 @@
 # along with slide-switch.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-sh -n zzz-slide-switch
+sh -n slide-switch && sh -n zzz-slide-switch-update

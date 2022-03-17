@@ -31,118 +31,391 @@ version=@VERSION@
 data_dir=@pkgdatadir@
 run_dir=@localstatedir@/run/@PACKAGE@
 lock_dir=@localstatedir@/lock/@PACKAGE@
+conf_dir=@sysconfdir@/@PACKAGE@
 initd_dir=@sysconfdir@/init.d
 
+board_name=/tmp/sysinfo/board_name
 gpio_table=/sys/kernel/debug/gpio
+device_tree_keys=/proc/device-tree/keys
 hotplug_call=/sbin/hotplug-call
 rc_button=/etc/rc.button
 
+custom_switch_data_file=$conf_dir/switch-data.json
 switch_data_file=$data_dir/switch-data.json
 switches_cache=$run_dir/switches
 state_dir=$run_dir/state
-initd_script=$initd_dir/zzz-slide-switch
+update_initd_script=$initd_dir/zzz-slide-switch-update
 
 . /usr/share/libubox/jshn.sh
 
-case $VERBOSITY in
-	emerg)		VERBOSITY=0 ;;
-	alert)		VERBOSITY=1 ;;
-	crit)		VERBOSITY=2 ;;
-	err)		VERBOSITY=3 ;;
-	warning)	VERBOSITY=4 ;;
-	notice)		VERBOSITY=5 ;;
-	info)		VERBOSITY=6 ;;
-	debug)		VERBOSITY=7 ;;
-
-	''|*[!0-9]*)	VERBOSITY=4 ;;
-esac
+me=${0##*/}
 
 ex_usage=64
 ex_dataerr=65
 ex_noinput=66
 ex_unavailable=69
-ex_tempfail=75
+ex_oserr=71
+ex_osfile=72
+ex_noperm=77
 
+log_stderr=
+log_syslog=
+verbosity=
+is_root_result=
 locks=
 
+
+log_level_to_num() {
+	local _var="$1"
+	local _level="$2"
+	local _num
+
+	case $_level in
+		emerg|panic)  _num=0 ;;
+		alert)        _num=1 ;;
+		crit)         _num=2 ;;
+		err|error)    _num=3 ;;
+		warning|warn) _num=4 ;;
+		notice)       _num=5 ;;
+		info)         _num=6 ;;
+		debug)        _num=7 ;;
+
+		*[!0-9]*)     return 1 ;;
+
+		*)            _num=$_level ;;
+	esac
+
+	_set_var "$_var" "$_num"
+}
 
 log() {
 	local level="$1"
 	local message="$2"
+	local level_num
 
-	[ "$level" -le "$VERBOSITY" ] && logger -t "${package}[$$]" -p "user.$level" "$message"
+	log_level_to_num level_num "$level" &&
+	[ "$level_num" -le "$verbosity" ] || return 0
+
+	[ -n "$log_stderr" ] && echo "[$level] $message" >&2
+
+	[ -n "$log_syslog" ] && logger -t "${me}[$$]" -p "user.$level" "$message"
 
 	return 0
 }
 
 error() {
-	local message="$1"
-	local returnTrue="$2"
-
-	log 3 "$message"
-
-	[ -n "$returnTrue" ]
+	log err "$@"
 }
 
 warning() {
-	local message="$1"
-	local returnTrue="$2"
+	log warning "$@"
+}
 
-	log 4 "$message"
+notice() {
+	log notice "$@"
+}
 
-	[ -n "$returnTrue" ]
+info() {
+	log info "$@"
 }
 
 debug() {
-	local message="$1"
-
-	log 7 "$message"
+	log debug "$@"
 }
 
-board_name() {
-	[ -e /tmp/sysinfo/board_name ] && cat /tmp/sysinfo/board_name || echo "generic"
+
+is_root() {
+	local uid
+
+	[ -n "$is_root_result" ] || {
+		uid=$(id -u) && [ "$uid" -eq 0 ]
+		is_root_result=$?
+	}
+
+	return $is_root_result
+}
+
+require_root() {
+	is_root || {
+		error "require_root: user must be root"
+		return $ex_noperm
+	}
+}
+
+get_board() {
+	local _var="$1"
+	local _board
+
+	_board=$(cat "$board_name") && _set_var "$_var" "$_board"
 }
 
 get_epoch() {
-	date -u +%s
-}
+	local _var="$1"
+	local _epoch
 
-get_json_value() {
-	local key="$1"
-	local var
+	_epoch=$(date +%s) || {
+		error "get_epoch: failed to get date"
+		return $ex_oserr
+	}
 
-	json_get_var var "$key" && echo "$var"
+	_set_var "$_var" "$_epoch"
 }
 
 list_contains() {
 	local list=" $1 "
 	local item=" $2 "
 
-	[ "x${list%$item*}" != "x$list" ]
+	[ -z "${list##*$item*}" ]
+}
+
+is_safe_string() {
+	local str="$1"
+
+	[ -n "${str##*[!0-9A-Za-z_-]*}" ]
 }
 
 
-get_gpio_info() {
-	local label="$1"
-	local row="$(grep -m 1 -e "|$label *) in  " "$gpio_table")"
+check_prerequisites() {
+	local file
 
-	echo "${row##*)}"
+	for file in "$board_name" "$gpio_table"; do
+		[ -f "$file" ] && [ -r "$file" ] || {
+			error "check_prerequisites: cannot read $file"
+			return $ex_osfile
+		}
+	done
+
+	[ -f "$switch_data_file" ] && [ -r "$switch_data_file" ] || {
+		error "check_prerequisites: cannot read $switch_data_file"
+		return $ex_noinput
+	}
 }
+
 
 get_gpio_value() {
-	local label="$1"
-	local info="$(get_gpio_info "$label")"
-	local value="lo"
+	local __var="$1"
+	local __label="$2"
+	local __allow_no_matches="$3"
+	local __pattern
+	local __match
+	local __result
 
-	list_contains "$info" hi && value=hi
-	echo "$value"
+	__pattern=$(printf '|%-20.20s) in  \(hi\|lo\)' "$__label") || {
+		error "get_gpio_value: failed to get search pattern for label \"$__label\""
+		return $ex_oserr
+	}
+
+	__match="$(grep -m 1 -o -e "$__pattern" "$gpio_table" 2>/dev/null)"
+	__result=$?
+
+	[ "$__result" -eq 0 ] || {
+		[ "$__result" -eq 1 ] && {
+			[ -z "$__allow_no_matches" ] && error "get_gpio_value: cannot find label \"$__label\" in $gpio_table"
+			return $ex_dataerr
+		}
+
+		error "get_gpio_value: failed to search $gpio_table for label \"$__label\""
+		return $ex_oserr
+	}
+
+	_set_var "$__var" "${__match##*) in  }"
 }
 
 get_position_code() {
-	local switch="$1"
-	local position_name="$2"
+	local _var="$1"
+	local _switch="$2"
+	local _position_name="$3"
 
-	echo "${switch}-$position_name"
+	_set_var "$_var" "${_switch}-$_position_name"
+}
+
+
+is_keys_available() {
+	[ -d "$device_tree_keys" ]
+}
+
+is_key() {
+	local key="$1"
+
+	[ -d "$device_tree_keys/$key" ]
+}
+
+get_key_label_path() {
+	local __var="$1"
+	local __key="$2"
+
+	_set_var "$__var" "$device_tree_keys/$__key/label"
+}
+
+get_key_code_path() {
+	local __var="$1"
+	local __key="$2"
+
+	_set_var "$__var" "$device_tree_keys/$__key/linux,code"
+}
+
+has_key_info() {
+	local key="$1"
+	local label_path
+	local code_path
+
+	get_key_label_path label_path "$key"
+	get_key_code_path code_path "$key"
+
+	[ -f "$label_path" ] && [ -r "$label_path" ] &&
+	[ -f "$code_path" ] && [ -r "$code_path" ]
+}
+
+get_key_label() {
+	local _var="$1"
+	local _key="$2"
+	local _label_path
+	local _label
+
+	get_key_label_path _label_path "$_key"
+
+	_label=$(cat "$_label_path") || {
+		error "get_key_label: failed to read $_label_path"
+		return $ex_oserr
+	}
+
+	_set_var "$_var" "$_label"
+}
+
+get_key_code() {
+	local _var="$1"
+	local _key="$2"
+	local _code_path
+	local _hex
+	local _code
+
+	get_key_code_path _code_path "$_key"
+
+	_hex=$(hexdump -n 4 -v -e '4/1 "%02x"' "$_code_path") || {
+		error "get_key_code: failed to read $_code_path"
+		return $ex_oserr
+	}
+
+	case $_hex in
+		00000100) _code=BTN_0 ;;
+		00000101) _code=BTN_1 ;;
+		00000102) _code=BTN_2 ;;
+		00000103) _code=BTN_3 ;;
+		00000104) _code=BTN_4 ;;
+		00000105) _code=BTN_5 ;;
+		00000106) _code=BTN_6 ;;
+		00000107) _code=BTN_7 ;;
+		00000108) _code=BTN_8 ;;
+		00000109) _code=BTN_9 ;;
+	esac
+
+	[ -n "$_code" ] || {
+		error "get_key_code: unknown value \"$_hex\" in $_code_path"
+		return $ex_osfile
+	}
+
+	_set_var "$_var" "$_code"
+}
+
+
+is_valid_switch_data_file() {
+	local data_file="$1"
+
+	jsonfilter -q -i "$data_file" -t "@" > /dev/null
+
+	[ "$?" -ne 126 ]
+}
+
+get_switch_data_file_board_value() {
+	local __option="$1"
+	local __var="$2"
+	local __data_file="$3"
+	local __board="$4"
+	local __value
+
+	__value=$(jsonfilter -i "$__data_file" "$__option" "@[\"$__board\"]") || __value=
+
+	_set_var "$__var" "$__value"
+}
+
+get_switch_data_file_board_data_type() {
+	get_switch_data_file_board_value -t "$@"
+}
+
+get_switch_data_file_board_data() {
+	get_switch_data_file_board_value -e "$@"
+}
+
+
+populate_switches_details() {
+	local switches
+	local switch
+	local keys
+	local key
+	local label
+	local code
+
+	json_set_namespace switches
+	json_select
+
+	json_get_keys switches
+
+	for switch in $switches; do
+		json_select
+		json_select "$switch"
+
+		json_is_a labels '' && json_is_a codes '' || {
+			debug "populate_switches_details: switch \"$switch\" already has labels and/or codes properties"
+			continue
+		}
+
+		json_is_a keys array || {
+			debug "populate_switches_details: switch \"$switch\" does not have a keys array"
+			continue
+		}
+
+		json_get_values keys keys
+
+		[ -n "$keys" ] || {
+			debug "populate_switches_details: no keys defined for switch \"$switch\""
+			continue
+		}
+
+		json_add_array labels
+		json_close_array
+
+		json_add_array codes
+		json_close_array
+
+		for key in $keys; do
+			json_select
+			json_select "$switch"
+
+			is_key "$key" || {
+				error "populate_switches_details: key \"$key\" of switch \"$switch\" is not a valid gpio key"
+				return $ex_dataerr
+			}
+
+			has_key_info "$key" || {
+				error "populate_switches_details: key \"$key\" of switch \"$switch\" is missing label and/or linux,code"
+				return $ex_dataerr
+			}
+
+			get_key_label label "$key" &&
+			get_key_code code "$key" || return
+
+			debug "populate_switches_details: found label \"$label\" and code \"$code\" for key \"$key\" of switch \"$switch\""
+
+			json_select labels
+
+			json_add_string '' "$label"
+
+			json_select ..
+			json_select codes
+
+			json_add_string '' "$code"
+		done
+	done
 }
 
 
@@ -156,14 +429,40 @@ check_json_type() {
 		[aeiou]*) article=an ;;
 	esac
 
-	json_is_a "$key" "$type" || error "\"$key_name\" is not $article $type in $switch_data_file"
+	json_is_a "$key" "$type" || {
+		error "check_json_type: \"$key_name\" is not $article $type"
+		return $ex_dataerr
+	}
+}
+
+check_nonempty_string() {
+	local str="$1"
+	local str_name="$2"
+
+	[ -n "$str" ] || {
+		error "check_nonempty_string: $str_name cannot be an empty string"
+		return $ex_dataerr
+	}
+}
+
+check_safe_string() {
+	local str="$1"
+	local str_name="$2"
+
+	is_safe_string "$str" || {
+		error "check_safe_string: $str_name \"$str\" must contain letters, digits, underscores and/or hyphens only"
+		return $ex_dataerr
+	}
 }
 
 check_input_gpio_label() {
 	local label="$1"
-	local info="$(get_gpio_info "$label")"
+	local value
 
-	[ -n "$info" ] || error "\"$label\" is not the label of a valid input gpio"
+	get_gpio_value value "$label" allow_no_matches && [ -n "$value" ] || {
+		error "check_input_gpio_label: \"$label\" is not the label of a valid input gpio"
+		return $ex_dataerr
+	}
 }
 
 check_position_string() {
@@ -178,33 +477,47 @@ check_position_string() {
 		str=${str%_lo}
 	done
 
-	[ "x$str" = xhi ] || [ "x$str" = xlo ] || warning "position \"$position\" is not in the format \"(hi|lo)(_(hi|lo))*\""
-}
-
-check_nonempty_string() {
-	local str="$1"
-	local str_name="$2"
-
-	[ -n "$str" ] || error "$str_name cannot be an empty string"
-}
-
-check_safe_string() {
-	local str="$1"
-	local str_name="$2"
-
-	[ "x${str%[!0-9A-Za-z_-]*}" = "x$str" ] || error "$str_name \"$str\" must contain letters, digits, underscores and/or hyphens only"
+	[ "x$str" = xhi ] || [ "x$str" = xlo ] || {
+		warning "check_position_string: position \"$position\" is not in the format \"(hi|lo)(_(hi|lo))*\""
+		return $ex_dataerr
+	}
 }
 
 check_position_code() {
 	local switch="$1"
 	local position_name="$2"
 	local codes="$3"
-	local code="$(get_position_code "$switch" "$position_name")"
+	local code
 
-	! list_contains "$codes" "$code" || error "switch \"$switch\" cannot have both a position name \"$position_name\" and a code \"$code\""
+	get_position_code code "$switch" "$position_name"
+
+	! list_contains "$codes" "$code" || {
+		error "check_position_code: switch \"$switch\" cannot have both a position name \"$position_name\" and a code \"$code\""
+		return $ex_dataerr
+	}
 }
 
-validate_switch_data() {
+validate_switches_initial() {
+	local switches
+	local switch
+
+	json_set_namespace switches
+	json_select
+
+	json_get_keys switches
+
+	[ -n "$switches" ] || warning "validate_switches_initial: no switches defined"
+
+	for switch in $switches; do
+		debug "validate_switches_initial: checking switch \"$switch\""
+
+		check_nonempty_string "$switch" "switch name" &&
+		check_safe_string "$switch" "switch name" &&
+		check_json_type "$switch" object || return
+	done
+}
+
+validate_switches_details() {
 	local switches
 	local switch
 	local labels_indices
@@ -220,14 +533,11 @@ validate_switch_data() {
 
 	json_get_keys switches
 
-	[ -n "$switches" ] || warning "no switches defined"
-
 	for switch in $switches; do
-		check_nonempty_string "$switch" "switch name" &&
-		check_safe_string "$switch" "switch name" &&
-		check_json_type "$switch" object || return
-
+		json_select
 		json_select "$switch"
+
+		debug "validate_switches_details: checking data for switch \"$switch\""
 
 		check_json_type labels array "$switch.labels" &&
 		check_json_type codes array "$switch.codes" &&
@@ -235,9 +545,11 @@ validate_switch_data() {
 
 		json_get_keys labels_indices labels
 		json_get_values codes codes
+		json_get_keys positions positions
 
-		[ -n "$labels_indices" ] || warning "no labels defined for switch \"$switch\""
-		[ -n "$codes" ] || warning "no codes defined for switch \"$switch\""
+		[ -n "$labels_indices" ] || warning "validate_switches_details: no labels defined for switch \"$switch\""
+		[ -n "$codes" ] || warning "validate_switches_details: no codes defined for switch \"$switch\""
+		[ -n "$positions" ] || warning "validate_switches_details: no positions defined for switch \"$switch\""
 
 		json_select labels
 
@@ -247,12 +559,7 @@ validate_switch_data() {
 		done
 
 		json_select ..
-
 		json_select positions
-
-		json_get_keys positions
-
-		[ -n "$positions" ] || warning "no positions defined for switch \"$switch\""
 
 		for position in $positions; do
 			check_position_string "$position" || continue
@@ -265,176 +572,259 @@ validate_switch_data() {
 			check_safe_string "$position_name" "position name" &&
 			check_position_code "$switch" "$position_name" "$codes" || return
 		done
-
-		json_select
 	done
 }
 
-load_switch_data() {
-	local board="$(board_name)"
-	local type
-	local data
 
-	[ -f "$switches_cache" ] && {
-		debug "loading switch data from $switches_cache"
-		json_set_namespace switches
-		json_load "$(cat "$switches_cache")"
+load_switch_data_from_cache() {
+	[ -f "$switches_cache" ] && [ -r "$switches_cache" ] || {
+		debug "load_switch_data_from_cache: cannot read $switches_cache"
+		return 1
+	}
+
+	info "load_switch_data_from_cache: loading switch data from $switches_cache"
+
+	json_set_namespace switches
+	json_load_file "$switches_cache"
+}
+
+save_switch_data_to_cache() {
+	is_root || {
+		debug "save_switch_data_to_cache: user must be root"
 		return
 	}
 
-	[ -n "$board" ] || error "missing board name" || return $ex_dataerr
-	[ -f "$switch_data_file" ] || error "cannot find switch data file \"$switch_data_file\"" || return $ex_noinput
+	debug "save_switch_data_to_cache: caching switch data to $switches_cache"
 
-	[ -n "${board##*,*}" ] && {
-		case $board in
-			gl-*)	board="glinet,$board" ;;
-			ht-*)	board="hootoo,$board" ;;
-			tl-*)	board="tplink,$board" ;;
-			wzr-*)	board="buffalo,$board" ;;
-		esac
-	}
-
-	debug "attempting to load switch data for $board from $switch_data_file"
-
-	jsonfilter -q -i "$switch_data_file" -t "@" > /dev/null
-	[ "$?" -ne 126 ] || error "failed to parse $switch_data_file" || return $ex_dataerr
-
-	type=$(jsonfilter -i "$switch_data_file" -t "@[\"$board\"]")
-
-	[ "x$type" = xstring ] && {
-		debug "$board shares switch data with another board, loading alternate board name"
-		board=$(jsonfilter -i "$switch_data_file" -e "@[\"$board\"]")
-
-		[ -n "$board" ] || error "missing alternate board name" || return $ex_dataerr
-
-		type=$(jsonfilter -i "$switch_data_file" -t "@[\"$board\"]")
-	}
-
-	case $type in
-		object)
-			debug "loading switch data for $board from $switch_data_file"
-			data=$(jsonfilter -i "$switch_data_file" -e "@[\"$board\"]")
-			;;
-		'')
-			warning "\"$board\" not found in $switch_data_file"
-			return $ex_unavailable
-			;;
-		*)
-			error "\"$board\" is not an object in $switch_data_file"
-			return $ex_dataerr
-			;;
-	esac
+	mkdir -p "${switches_cache%/*}"
 
 	json_set_namespace switches
-	json_load "$data"
+	json_select
+	json_dump > "$switches_cache"
+}
 
-	validate_switch_data || return $ex_dataerr
+load_switch_data_from_file() {
+	local _var="$1"
+	local _data_file="$2"
+	local _board="$3"
+	local _no_alt_board_name="$4"
+	local _type
+	local _alt_board
+	local _data
 
-	debug "caching switch data to $switches_cache"
-	mkdir -p "$(dirname "$switches_cache")"
-	echo "$data" > "$switches_cache"
+	debug "load_switch_data_from_file: attempting to load switch data for board \"$_board\" from $_data_file"
+
+	is_valid_switch_data_file "$_data_file" || {
+		error "load_switch_data_from_file: failed to parse $_data_file"
+		return $ex_dataerr
+	}
+
+	get_switch_data_file_board_data_type _type "$_data_file" "$_board"
+
+	[ -z "$_no_alt_board_name" ] && [ "x$_type" = xstring ] && {
+		debug "load_switch_data_from_file: board \"$_board\" shares switch data with another model, loading alternate board name"
+
+		get_switch_data_file_board_data _alt_board "$_data_file" "$_board"
+
+		[ -n "$_alt_board" ] || {
+			error "load_switch_data_from_file: missing alternate board name for board \"$_board\" in $_data_file"
+			return $ex_dataerr
+		}
+
+		info "load_switch_data_from_file: using alternate board name \"$_alt_board\" for board \"$_board\""
+
+		_board=$_alt_board
+		get_switch_data_file_board_data_type _type "$_data_file" "$_board"
+	}
+
+	[ -n "$_type" ] || {
+		debug "load_switch_data_from_file: board \"$_board\" not found in $_data_file"
+		_set_var "$_var" "$_board"
+		return $ex_unavailable
+	}
+
+	[ "x$_type" = xobject ] || {
+		error "load_switch_data_from_file: \"$_board\" is not an object in $_data_file"
+		return $ex_dataerr
+	}
+
+	info "load_switch_data_from_file: loading switch data for board \"$_board\" from $_data_file"
+
+	get_switch_data_file_board_data _data "$_data_file" "$_board"
+
+	json_set_namespace switches
+	json_load "$_data"
+}
+
+load_switch_data() {
+	local no_load_from_cache="$1"
+	local no_save_to_cache="$2"
+	local board
+	local final_board
+	local result
+	local no_alt_board_name
+
+	[ -z "$no_load_from_cache" ] && load_switch_data_from_cache && return
+
+	get_board board && [ -n "$board" ] || {
+		error "load_switch_data: missing board name"
+		return $ex_dataerr
+	}
+
+	[ -f "$custom_switch_data_file" ] && [ -r "$custom_switch_data_file" ] && {
+		info "load_switch_data: attempting to load switch data for board \"$board\" from $custom_switch_data_file"
+
+		load_switch_data_from_file final_board "$custom_switch_data_file" "$board"
+		result=$?
+
+		[ "$result" -ne 0 ] && {
+			[ "$result" -ne "$ex_unavailable" ] && return $result
+
+			notice "load_switch_data: board \"$final_board\" not found in $custom_switch_data_file"
+
+			[ "x$final_board" != "x$board" ] && {
+				board=$final_board
+				no_alt_board_name=1
+			}
+
+			result=
+		}
+	}
+
+	[ -z "$result" ] && {
+		debug "load_switch_data: attempting to load switch data for board \"$board\" from $switch_data_file"
+
+		load_switch_data_from_file final_board "$switch_data_file" "$board" "$no_alt_board_name"
+		result=$?
+
+		[ "$result" -ne 0 ] && {
+			[ "$result" -eq "$ex_unavailable" ] && warning "load_switch_data: board \"$final_board\" not found in $switch_data_file"
+
+			return $result
+		}
+	}
+
+	validate_switches_initial || return
+
+	is_keys_available && {
+		populate_switches_details || return
+	}
+
+	validate_switches_details || return
+
+	[ -z "$no_save_to_cache" ] && save_switch_data_to_cache
+
+	return 0
 }
 
 
 get_switches() {
-	local switches
+	local _var="$1"
 
 	json_set_namespace switches
 	json_select
 
-	json_get_keys switches
-	echo "$switches"
+	json_get_keys "$_var"
 }
 
 get_switch_for_button() {
-	local button="$1"
-	local switches
-	local switch
-	local codes
+	local _var="$1"
+	local _button="$2"
+	local _switches
+	local _switch
+	local _codes
 
 	json_set_namespace switches
 	json_select
 
-	json_get_keys switches
-	for switch in $switches; do
-		json_select "$switch"
-		json_get_values codes codes
+	json_get_keys _switches
 
-		list_contains "$codes" "$button" && {
-			debug "found switch \"$switch\" for button \"$button\""
-			echo "$switch"
+	for _switch in $_switches; do
+		json_select
+		json_select "$_switch"
+
+		json_get_values _codes codes
+
+		list_contains "$_codes" "$_button" && {
+			debug "get_switch_for_button: found switch \"$_switch\" for button \"$_button\""
+			_set_var "$_var" "$_switch"
 			return
 		}
-
-		json_select ..
 	done
 
-	debug "no switches found for button \"$button\""
+	debug "get_switch_for_button: no switches found for button \"$_button\""
 	return 1
 }
 
 get_current_position() {
-	local switch="$1"
-	local labels_indices
-	local label
-	local position
-	local i
+	local _var="$1"
+	local _switch="$2"
+	local _labels_indices
+	local _label
+	local _value
+	local _position
+	local _i
 
 	json_set_namespace switches
 	json_select
-	json_select "$switch"
+	json_select "$_switch"
 	json_select labels
 
-	json_get_keys labels_indices
-	for i in $labels_indices; do
-		json_get_var label "$i"
-		position="${position}_$(get_gpio_value "$label")"
+	json_get_keys _labels_indices
+
+	for _i in $_labels_indices; do
+		json_get_var _label "$_i"
+		get_gpio_value _value "$_label" || return
+		_position="${_position}_$_value"
 	done
 
-	echo "${position#_}"
+	_set_var "$_var" "${_position#_}"
 }
 
 get_position_name() {
-	local switch="$1"
-	local position="$2"
-	local position_name
+	local _var="$1"
+	local _switch="$2"
+	local _position="$3"
 
 	json_set_namespace switches
 	json_select
-	json_select "$switch"
+	json_select "$_switch"
 	json_select positions
 
-	json_get_var position_name "$position" || warning "position \"$position\" for switch \"$switch\" does not have a position name" || return
-
-	echo "$position_name"
+	json_get_var "$_var" "$_position"
 }
 
 
 get_state_file() {
-	local switch="$1"
+	local _var="$1"
+	local _switch="$2"
 
-	echo "$state_dir/$switch"
+	_set_var "$_var" "$state_dir/$_switch"
 }
 
 init_state() {
 	local switch="$1"
-	local now="$(get_epoch)"
+	local now="$2"
 	local positions
 	local position
 
-	debug "initializing state for switch \"$switch\""
+	debug "init_state: initializing state for switch \"$switch\""
 
 	json_set_namespace switches
 	json_select
 	json_select "$switch"
+
 	json_get_keys positions positions
 
-	position=$(get_current_position "$switch")
-	debug "setting \"$position\" as initial position for switch \"$switch\""
+	get_current_position position "$switch" || return
+
+	debug "init_state: setting \"$position\" as initial position for switch \"$switch\""
 
 	json_set_namespace state
 	json_init
+
 	json_add_string position "$position"
+
 	json_add_object seen
 	for position in $positions; do
 		json_add_int "$position" "$now"
@@ -442,35 +832,55 @@ init_state() {
 	json_close_object
 }
 
+has_state() {
+	local switch="$1"
+	local state_file
+
+	get_state_file state_file "$switch"
+
+	[ -f "$state_file" ] && [ -r "$state_file" ]
+}
+
 load_state() {
 	local switch="$1"
-	local state_file="$(get_state_file "$switch")"
+	local state_file
 
-	debug "attempting to load state for switch \"$switch\" from $state_file"
-
-	[ -f "$state_file" ] && {
-		debug "loading state from $state_file"
-		json_set_namespace state
-		json_load "$(cat "$state_file")"
+	has_state "$switch" || {
+		debug "load_state: state for switch \"$switch\" has not been initialized"
+		return 1
 	}
+
+	get_state_file state_file "$switch"
+
+	debug "load_state: loading state for switch \"$switch\" from $state_file"
+
+	json_set_namespace state
+	json_load_file "$state_file"
 }
 
 save_state() {
 	local switch="$1"
-	local state_file="$(get_state_file "$switch")"
+	local state_file
 
-	debug "saving state for switch \"$switch\" to $state_file"
+	get_state_file state_file "$switch"
+
+	debug "save_state: saving state for switch \"$switch\" to $state_file"
+
+	mkdir -p "${state_file%/*}"
 
 	json_set_namespace state
-	mkdir -p "$(dirname "$state_file")"
+	json_select
 	json_dump > "$state_file"
 }
 
 
 get_state_position() {
+	local _var="$1"
+
 	json_set_namespace state
 	json_select
-	get_json_value position
+
+	json_get_var "$_var" position
 }
 
 set_state_position() {
@@ -478,16 +888,19 @@ set_state_position() {
 
 	json_set_namespace state
 	json_select
+
 	json_add_string position "$position"
 }
 
 get_state_seen() {
-	local position="$1"
+	local _var="$1"
+	local _position="$2"
 
 	json_set_namespace state
 	json_select
 	json_select seen
-	get_json_value "$position"
+
+	json_get_var "$_var" "$_position"
 }
 
 set_state_seen() {
@@ -497,27 +910,32 @@ set_state_seen() {
 	json_set_namespace state
 	json_select
 	json_select seen
+
 	json_add_int "$position" "$seen"
 }
 
 
 get_lock_dir() {
-	local switch="$1"
+	local _var="$1"
+	local _switch="$2"
 
-	echo "$lock_dir/$switch"
+	_set_var "$_var" "$lock_dir/$_switch"
 }
 
 cleanup_locks() {
 	local switch
-	local dir
+	local switch_lock_dir
 
 	for switch in $locks; do
-		dir="$(get_lock_dir "$switch")"
-		debug "attempting to remove $dir"
-		[ -d "$dir" ] && {
-			debug "removing $dir"
-			rm -rf "$dir"
+		get_lock_dir switch_lock_dir "$switch"
+
+		[ -d "$switch_lock_dir" ] || {
+			warning "cleanup_locks: cannot find lock for switch \"$switch\" ($switch_lock_dir)"
+			continue
 		}
+
+		debug "cleanup_locks: removing lock for switch \"$switch\" ($switch_lock_dir)"
+		rmdir --ignore-fail-on-non-empty "$switch_lock_dir"
 	done
 
 	locks=
@@ -525,12 +943,14 @@ cleanup_locks() {
 
 get_lock() {
 	local switch="$1"
-	local dir="$(get_lock_dir "$switch")"
+	local switch_lock_dir
 
-	mkdir -p "$lock_dir"
+	get_lock_dir switch_lock_dir "$switch"
 
-	mkdir "$dir" 2>/dev/null || {
-		debug "failed to get lock for switch \"$switch\" ($dir)"
+	mkdir -p "${switch_lock_dir%/*}"
+
+	mkdir "$switch_lock_dir" 2>/dev/null || {
+		debug "get_lock: failed to get lock for switch \"$switch\" ($switch_lock_dir)"
 		return 1
 	}
 
@@ -542,11 +962,11 @@ get_lock() {
 	trap 'exit 131' QUIT
 	trap 'exit 143' TERM
 
-	debug "got lock for $switch ($dir)"
+	debug "get_lock: got lock for $switch ($switch_lock_dir)"
 }
 
 release_locks() {
-	debug "releasing locks"
+	debug "release_locks: releasing locks"
 
 	cleanup_locks
 
@@ -559,122 +979,230 @@ trigger_button_event() {
 	local position="$2"
 	local action="$3"
 	local now="$4"
-	local position_name="$(get_position_name "$switch" "$position")"
+	local position_name
 	local before
 	local button
 	local seen
 
-	[ -n "$position_name" ] || warning "could not get position name for switch \"$switch\" and position \"$position\"" || return
+	get_position_name position_name "$switch" "$position"
 
-	before=$(get_state_seen "$position")
-	[ -n "$now" ] || now=$before
+	[ -n "$position_name" ] || {
+		warning "trigger_button_event: could not get position name for switch \"$switch\" and position \"$position\""
+		return 1
+	}
+
+	get_state_seen before "$position"
 	set_state_seen "$position" "$now"
 
-	button=$(get_position_code "$switch" "$position_name")
+	get_position_code button "$switch" "$position_name"
 	seen=$((now - before))
+
+	notice "trigger_button_event: triggering button event with BUTTON=\"$button\" ACTION=\"$action\" SEEN=\"$seen\""
 
 	(
 		export BUTTON="$button"
 		export ACTION="$action"
 		export SEEN="$seen"
 
-		debug "triggering button event with BUTTON=\"$button\" ACTION=\"$action\" SEEN=\"$seen\""
-
-		debug "attempting to call $hotplug_call"
+		debug "trigger_button_event: attempting to call $hotplug_call"
 		[ -x "$hotplug_call" ] && "$hotplug_call" button
 
-		debug "attempting to call $rc_button/$button"
+		debug "trigger_button_event: attempting to call $rc_button/$button"
 		[ -x "$rc_button/$button" ] && "$rc_button/$button"
 	)
 
 	return 0
 }
 
+
+show_usage() {
+	cat <<- EOF
+	Usage: $me [OPTION]... COMMAND [ARGUMENT]...
+	Print slide switch information, or trigger button presses and releases
+
+	Options:
+	  --log=WHERE                  output logging messages to WHERE:
+	                                 'stderr', 'syslog', 'all', 'none'
+	                                 (default: 'stderr')
+	  --verbosity=LEVEL            output logging messages at LEVEL or higher;
+	                                 LEVEL is a syslog level keyword or value
+	                                 (default: 'notice')
+	  --help                       display this help and exit
+	  --version                    output version information and exit
+
+	Commands:
+	  init                         initialize slide switch state information
+	  update [ARGUMENT]...         trigger button presses and releases for the
+	                                 listed switch names and/or buttons, or for
+	                                 all slide switches if no names given;
+	                                 include '-f' or '--force' to trigger button
+	                                 presses even when no switch position changes
+	                                 have occurred
+	  switch                       print list of slide switches for this device
+	  position NAME                print current position of slide switch NAME
+	  clean                        remove slide switch state information
+	  boot STATUS                  whether to trigger button presses on boot;
+	                                 STATUS is 'enable' or 'disable'
+	                                 (default: 'enable')
+
+	$package home page: <https://github.com/jefferyto/openwrt-slide-switch>
+	EOF
+}
+
+
+set_log() {
+	local value="$1"
+
+	case $value in
+		none)   log_stderr= ; log_syslog=  ;;
+		stderr) log_stderr=1; log_syslog=  ;;
+		syslog) log_stderr= ; log_syslog=1 ;;
+		all)    log_stderr=1; log_syslog=1 ;;
+
+		*)      error "invalid log value \"$value\""; show_usage; return $ex_usage ;;
+	esac
+}
+
+set_verbosity() {
+	local value="$1"
+
+	log_level_to_num verbosity "$value" || {
+		error "invalid verbosity value \"$value\""
+		show_usage
+		return $ex_usage
+	}
+}
+
+
 do_init() {
-	local force="$1"
 	local switches
 	local switch
-	local position
+	local now
 
-	debug "do_init \"$force\""
+	check_prerequisites &&
+	require_root &&
+	load_switch_data no_load_from_cache || return
 
-	case $force in
-		'')	debug "not forcing init" ;;
-		force)	debug "forcing init" ;;
-		*)	error "invalid option \"$force\"" || return $ex_usage ;;
-	esac
-
-	load_switch_data || return
-
-	switches=$(get_switches)
+	get_switches switches
+	get_epoch now || return
 
 	for switch in $switches; do
-		debug "attempting to init switch \"$switch\""
-
-		[ "x$force" = "xforce" ] || ! load_state "$switch" || {
-			debug "switch \"$switch\" already init"
+		get_lock "$switch" || {
+			warning "init: cannot get lock for switch \"$switch\""
 			continue
 		}
 
-		get_lock "$switch" || continue
+		debug "init: initializing switch \"$switch\""
 
-		init_state "$switch"
-
-		position=$(get_state_position)
-		trigger_button_event "$switch" "$position" pressed
-
+		init_state "$switch" "$now" || return
 		save_state "$switch"
-		release_locks
 	done
+
+	release_locks
 }
 
 do_update() {
-	local button="$1"
 	local switches
 	local switch
+	local force
+	local has_requested
+	local requested
 	local locked
 	local now
 	local current
 	local previous
+	local arg
 
-	debug "do_update \"$button\""
-
+	check_prerequisites &&
+	require_root &&
 	load_switch_data || return
 
-	if [ -n "$button" ]; then
-		switches=$(get_switch_for_button "$button")
-	else
-		switches=$(get_switches)
-	fi
+	get_switches switches
 
-	for switch in $switches; do
-		get_lock "$switch" && locked="$locked $switch"
+	for arg in "$@"; do
+		case $arg in
+			-f|--force)
+				debug "update: given --force option"
+				force=1
+				continue
+				;;
+		esac
+
+		is_safe_string "$arg" || {
+			error "update: \"$arg\" is not a valid switch name or button"
+			show_usage
+			return $ex_usage
+		}
+
+		has_requested=1
+		switch=
+
+		list_contains "$switches" "$arg" && {
+			debug "update: \"$arg\" is a switch name"
+			switch=$arg
+		}
+
+		[ -z "$switch" ] && {
+			get_switch_for_button switch "$arg" &&
+			[ -n "$switch" ] &&
+			debug "update: \"$arg\" is a button for switch \"$switch\""
+		}
+
+		[ -n "$switch" ] || {
+			debug "update: \"$arg\" is not a switch name or button"
+			continue
+		}
+
+		! list_contains "$requested" "$switch" && requested="$requested $switch"
+	done
+
+	[ -z "$has_requested" ] && {
+		notice "update: no switch names or buttons given, updating all switches"
+		requested=$switches
+	}
+
+	for switch in $requested; do
+		has_state "$switch" || {
+			debug "update: state for switch \"$switch\" has not been initialized"
+			continue
+		}
+
+		get_lock "$switch" || {
+			debug "update: cannot get lock for switch \"$switch\""
+			continue
+		}
+
+		locked="$locked $switch"
 	done
 
 	[ -n "$locked" ] || {
-		debug "no switches to update"
+		debug "update: no switches to update"
 		return
 	}
 
 	sleep 1
 
-	now="$(get_epoch)"
+	get_epoch now || return
 
 	for switch in $locked; do
-		if load_state "$switch"; then
-			previous=$(get_state_position)
-			debug "previous position for switch \"$switch\" is \"$previous\""
-		else
-			init_state "$switch"
-			previous=
-			debug "no previous position for switch \"$switch\""
-		fi
+		load_state "$switch" || {
+			warning "update: cannot load state for switch \"$switch\""
+			continue
+		}
 
-		current=$(get_current_position "$switch")
-		debug "current position for switch \"$switch\" is \"$current\""
+		get_state_position previous
+		get_current_position current "$switch" || return
+
+		debug "update: previous position for switch \"$switch\" is \"$previous\""
+		debug "update: current position for switch \"$switch\" is \"$current\""
+
+		[ -n "$force" ] && [ "x$current" = "x$previous" ] && {
+			debug "update: forcing update for switch \"$switch\""
+			previous=
+		}
 
 		[ "x$current" != "x$previous" ] || {
-			debug "switch \"$switch\" position unchanged"
+			debug "update: switch \"$switch\" position unchanged"
 			continue
 		}
 
@@ -690,54 +1218,81 @@ do_update() {
 
 do_switch() {
 	local switches
+	local switch
 
-	load_switch_data || return
+	check_prerequisites &&
+	load_switch_data '' no_save_to_cache || return
 
-	switches=$(get_switches)
+	get_switches switches
 
-	echo "${switches# }"
+	for switch in $switches; do
+		echo "$switch"
+	done
 }
 
 do_position() {
-	local requested="$1"
+	local switch="$1"
 	local switches
-	local switch
 	local position
-	local position_names
+	local position_name
 
-	debug "do_position \"$requested\""
+	check_prerequisites &&
+	load_switch_data '' no_save_to_cache || return
 
-	load_switch_data || return
+	get_switches switches
 
-	switches=$(get_switches)
+	[ -n "$switch" ] || {
+		error "position: missing switch name"
+		show_usage
+		return $ex_usage
+	}
 
-	if [ -n "$requested" ]; then
-		for switch in $requested; do
-			list_contains "$switches" "$switch" || error "\"$switch\" is not a valid switch" || return $ex_usage
-		done
-	else
-		requested=$switches
-	fi
+	is_safe_string "$switch" || {
+		error "position: \"$switch\" is not a valid switch name"
+		show_usage
+		return $ex_usage
+	}
 
-	for switch in $requested; do
-		position=$(get_current_position "$switch")
-		position_names="$position_names $(get_position_name "$switch" "$position")"
-	done
+	list_contains "$switches" "$switch" || {
+		error "position: cannot find switch \"$switch\""
+		show_usage
+		return $ex_usage
+	}
 
-	echo "${position_names# }"
+	get_current_position position "$switch" || return
+	get_position_name position_name "$switch" "$position"
+
+	echo "$position_name"
 }
 
 do_clean() {
-	{
-		rm -f "$switches_cache"
+	local switches
+	local switch
+	local state_file
+	local switch_lock_dir
 
-		rm -f "$state_dir"/*
-		rmdir "$state_dir"
+	check_prerequisites &&
+	require_root &&
+	load_switch_data no_load_from_cache no_save_to_cache || return
 
-		rmdir "$lock_dir"/*
+	get_switches switches
 
-		rmdir "$run_dir" "$lock_dir"
-	} 2>/dev/null
+	for switch in $switches; do
+		get_state_file state_file "$switch"
+		get_lock_dir switch_lock_dir "$switch"
+
+		debug "clean: removing state for switch \"$switch\" ($state_file)"
+		rm -f "$state_file"
+
+		debug "clean: removing lock for switch \"$switch\" ($switch_lock_dir)"
+		[ -d "$switch_lock_dir" ] && rmdir --ignore-fail-on-non-empty "$switch_lock_dir"
+	done
+
+	debug "clean: removing $switches_cache"
+	rm -f "$switches_cache"
+
+	debug "clean: removing $state_dir, $run_dir, $lock_dir"
+	rmdir --ignore-fail-on-non-empty "$state_dir" "$run_dir" "$lock_dir" 2>/dev/null
 
 	return 0
 }
@@ -745,19 +1300,23 @@ do_clean() {
 do_boot() {
 	local action="$1"
 
-	debug "do_boot \"$action\""
+	require_root || return
 
-	[ -x "$initd_script" ] || error "init.d script \"$initd_script\" not found" || return $ex_unavailable
+	[ -x "$update_initd_script" ] || {
+		error "boot: init.d script $update_initd_script not found or not executable"
+		return $ex_unavailable
+	}
 
-	case $action in
-		enable)		debug "enabling init on boot" ;;
-		disable)	debug "disabling init on boot" ;;
-		*)		error "invalid option \"$action\"" || return $ex_usage ;;
-	esac
+	[ "x$action" = xenable ] || [ "x$action" = xdisable ] || {
+		error "boot: invalid argument \"$action\""
+		show_usage
+		return $ex_usage
+	}
 
-	"$initd_script" "$action"
+	debug "boot: calling $update_initd_script $action"
+	"$update_initd_script" "$action"
 }
 
 do_version() {
-	echo "$package $version"
+	echo "$me $version"
 }

@@ -1,5 +1,6 @@
+#!/bin/sh /etc/rc.common
 #
-# configure.ac
+# src/etc/init.d/slide-switch.sh-cut.in
 # This file is part of slide-switch.
 #
 # Copyright (C) 2016-2019, 2022 The slide-switch authors
@@ -17,35 +18,22 @@
 # You should have received a copy of the GNU General Public License
 # along with slide-switch.  If not, see <http://www.gnu.org/licenses/>.
 #
+# --8<---- CUT HERE
+#!/bin/sh /etc/rc.common
+#
+# Copyright (C) 2016-2019, 2022 The slide-switch authors
+# https://github.com/jefferyto/openwrt-slide-switch
+#
+# slide-switch is free software, licensed under the GNU General Public License v2.
+#
 
-# Process this file with autoconf to produce a configure script.
+START=94
+STOP=10
 
-AC_PREREQ([2.69])
-AC_INIT([slide-switch], [0.9.8-dev], [https://github.com/jefferyto/openwrt-slide-switch])
-AM_INIT_AUTOMAKE([foreign])
+start() {
+	"@sbindir@/slide-switch" --log=syslog init
+}
 
-AC_COPYRIGHT([Copyright (C) 2016-2019, 2022 The slide-switch authors])
-
-# Checks for programs.
-AC_PROG_AWK
-if test -z "$AWK"; then
-	AC_MSG_ERROR([awk is required])
-fi
-
-# Checks for libraries.
-
-# Checks for header files.
-
-# Checks for typedefs, structures, and compiler characteristics.
-
-# Checks for library functions.
-
-AC_CONFIG_FILES([
-	Makefile
-	src/etc/hotplug.d/button/Makefile
-	src/etc/init.d/Makefile
-	src/usr/sbin/Makefile
-	src/usr/share/slide-switch/Makefile
-])
-
-AC_OUTPUT
+stop() {
+	"@sbindir@/slide-switch" --log=syslog clean
+}

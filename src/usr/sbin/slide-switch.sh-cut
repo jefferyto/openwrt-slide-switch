@@ -29,33 +29,57 @@
 
 . "@pkgdatadir@/functions.sh"
 
+optarg=
+
+
+set_log "${SLIDE_SWITCH_LOG:-stderr}"
+set_verbosity "${SLIDE_SWITCH_VERBOSITY:-notice}"
+
+while true; do
+	case $1 in
+		--log=*)
+			optarg=${1#--log=}
+			shift
+
+			[ -n "$optarg" ] || {
+				error "missing --log argument"
+				show_usage
+				exit $ex_usage
+			}
+
+			set_log "$optarg" || exit
+			;;
+
+		--verbosity=*)
+			optarg=${1#--verbosity=}
+			shift
+
+			[ -n "$optarg" ] || {
+				error "missing --verbosity argument"
+				show_usage
+				exit $ex_usage
+			}
+
+			set_verbosity "$optarg" || exit
+			;;
+
+		*)
+			break
+			;;
+	esac
+done
+
+info "$me $version"
+
 case $1 in
-	init)
-		# $2 optional: "force" to force init
-		do_init "$2"
-		;;
-	update)
-		# $2 optional: button name from button event
-		do_update "$2"
-		;;
-	switch)
-		do_switch
-		;;
-	position)
-		# $2 optional: switch name
-		do_position "$2"
-		;;
-	clean)
-		do_clean
-		;;
-	boot)
-		# $2 required: "enable" or "disable"
-		do_boot "$2"
-		;;
-	-v|--version)
-		do_version
-		;;
-	*)
-		exit $ex_usage
-		;;
+	init)      do_init ;;
+	update)    shift; do_update "$@" ;;
+	switch)    do_switch ;;
+	position)  do_position "$2" ;;
+	clean)     do_clean ;;
+	boot)      do_boot "$2" ;;
+	--version) do_version ;;
+	--help)    show_usage ;;
+
+	*)         error "invalid command \"$1\""; show_usage; exit $ex_usage ;;
 esac
