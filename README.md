@@ -95,7 +95,7 @@ See [NEWS][].
 
 ### Backward-Incompatible Changes
 
-#### 0.9.8-dev
+#### 1.0.0
 
 * GL.iNet GL-AR150,  
   GL.iNet GL-AR300M,  

@@ -1,6 +1,6 @@
 # News
 
-## [0.9.8-dev][Unreleased] - Unreleased
+## [1.0.0] - 2022-03-17
 * **BACKWARD-INCOMPATIBLE:** Changed switch name from *switch* to
   *mode*:
   * GL.iNet GL-AR150
@@ -111,7 +111,7 @@
 ## 0.9.0 - 2016-09-04
 * Initial beta release
 
-[Unreleased]: https://github.com/jefferyto/openwrt-slide-switch/compare/0.9.7...main
+[1.0.0]: https://github.com/jefferyto/openwrt-slide-switch/compare/0.9.7...1.0.0
 [0.9.7]: https://github.com/jefferyto/openwrt-slide-switch/compare/0.9.6...0.9.7
 [0.9.6]: https://github.com/jefferyto/openwrt-slide-switch/compare/0.9.5...0.9.6
 [0.9.5]: https://github.com/jefferyto/openwrt-slide-switch/compare/0.9.4...0.9.5
