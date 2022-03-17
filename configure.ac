@@ -21,7 +21,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([slide-switch], [1.0.0], [https://github.com/jefferyto/openwrt-slide-switch])
+AC_INIT([slide-switch], [1.0.1-dev], [https://github.com/jefferyto/openwrt-slide-switch])
 AM_INIT_AUTOMAKE([foreign])
 
 AC_COPYRIGHT([Copyright (C) 2016-2019, 2022 The slide-switch authors])
