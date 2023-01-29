@@ -47,7 +47,7 @@ position of each switch. To disable or re-enable this behaviour, run
 | [GL.iNet GL-AR750][]           | mode         | dot / clear                    | :heavy_check_mark: |       |
 | [GL.iNet GL-AR750S][]          | mode         | dot / clear                    | :heavy_check_mark: |       |
 | [GL.iNet GL-E750][]            | mode         | dot / clear                    | :heavy_check_mark: |       |
-| [GL.iNet GL-MT1300][]          | mode         | dot / clear                    |                    |       |
+| [GL.iNet GL-MT1300][]          | mode         | dot / clear                    | :heavy_check_mark: |       |
 | [GL.iNet GL-MT300A][]          | mode         | left / center / right          | :heavy_check_mark: |       |
 | [GL.iNet GL-MT300N v1][]       | mode         | left / center / right          |                    |       |
 | [GL.iNet GL-MT300N v2][]       | mode         | left / center / right          | :heavy_check_mark: |       |
