@@ -48,6 +48,7 @@ position of each switch. To disable or re-enable this behaviour, run
 | [GL.iNet GL-AR750S][]          | mode         | dot / clear                    | :heavy_check_mark: |       |
 | [GL.iNet GL-E750][]            | mode         | dot / clear                    | :heavy_check_mark: |       |
 | [GL.iNet GL-MT1300][]          | mode         | dot / clear                    | :heavy_check_mark: |       |
+| [GL.iNet GL-MT3000][]          | mode         | dot / clear                    | :heavy_check_mark: |       |
 | [GL.iNet GL-MT300A][]          | mode         | left / center / right          | :heavy_check_mark: |       |
 | [GL.iNet GL-MT300N v1][]       | mode         | left / center / right          |                    |       |
 | [GL.iNet GL-MT300N v2][]       | mode         | left / center / right          | :heavy_check_mark: |       |
@@ -76,6 +77,7 @@ where the switch data has been tested and verified correct by users.
 [GL.iNet GL-AR750S]: https://openwrt.org/toh/gl.inet/gl-ar750s
 [GL.iNet GL-E750]: https://openwrt.org/toh/gl.inet/gl-e750
 [GL.iNet GL-MT1300]: https://openwrt.org/toh/gl.inet/gl-mt1300_v1
+[GL.iNet GL-MT3000]: https://openwrt.org/toh/gl.inet/gl-mt3000
 [GL.iNet GL-MT300A]: https://openwrt.org/toh/gl.inet/gl-mt300a
 [GL.iNet GL-MT300N v1]: https://openwrt.org/toh/gl.inet/gl-mt300n_v1
 [GL.iNet GL-MT300N v2]: https://openwrt.org/toh/gl.inet/gl-mt300n_v2

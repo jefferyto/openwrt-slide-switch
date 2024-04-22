@@ -36,7 +36,7 @@ initd_dir=@sysconfdir@/init.d
 
 board_name=/tmp/sysinfo/board_name
 gpio_table=/sys/kernel/debug/gpio
-device_tree_keys=/proc/device-tree/keys
+device_tree_keys=/proc/device-tree/gpio-keys
 hotplug_call=/sbin/hotplug-call
 rc_button=/etc/rc.button
 
