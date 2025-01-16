@@ -36,7 +36,8 @@ initd_dir=@sysconfdir@/init.d
 
 board_name=/tmp/sysinfo/board_name
 gpio_table=/sys/kernel/debug/gpio
-device_tree_keys=/proc/device-tree/gpio-keys
+device_tree_keys=/proc/device-tree/keys
+device_tree_gpio_keys=/proc/device-tree/gpio-keys
 hotplug_call=/sbin/hotplug-call
 rc_button=/etc/rc.button
 
@@ -231,27 +232,33 @@ get_position_code() {
 
 
 is_keys_available() {
-	[ -d "$device_tree_keys" ]
+	[ -d "$device_tree_keys" ] || [ -d "$device_tree_gpio_keys" ]
 }
 
 is_key() {
 	local key="$1"
 
-	[ -d "$device_tree_keys/$key" ]
+	[ -d "$device_tree_keys/$key" ] || [ -d "$device_tree_gpio_keys/$key" ]
 }
 
 get_key_label_path() {
 	local __var="$1"
 	local __key="$2"
+	local __key_path="$device_tree_keys/$__key"
 
-	_set_var "$__var" "$device_tree_keys/$__key/label"
+	[ -d "$__key_path" ] || __key_path="$device_tree_gpio_keys/$__key"
+
+	_set_var "$__var" "$__key_path/label"
 }
 
 get_key_code_path() {
 	local __var="$1"
 	local __key="$2"
+	local __key_path="$device_tree_keys/$__key"
 
-	_set_var "$__var" "$device_tree_keys/$__key/linux,code"
+	[ -d "$__key_path" ] || __key_path="$device_tree_gpio_keys/$__key"
+
+	_set_var "$__var" "$__key_path/linux,code"
 }
 
 has_key_info() {
