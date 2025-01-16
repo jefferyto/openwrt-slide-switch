@@ -1,6 +1,7 @@
 # News
 
 ## [1.0.1-dev][Unreleased] - Unreleased
+* Added support for GL.iNet GL-MT3000 ([#26][GH-26])
 
 ## [1.0.0] - 2022-03-17
 * **BACKWARD-INCOMPATIBLE:** Changed switch name from *switch* to
@@ -126,3 +127,4 @@
 [GH-14]: https://github.com/jefferyto/openwrt-slide-switch/issues/14
 [GH-18]: https://github.com/jefferyto/openwrt-slide-switch/issues/18
 [GH-20]: https://github.com/jefferyto/openwrt-slide-switch/pull/20
+[GH-26]: https://github.com/jefferyto/openwrt-slide-switch/pull/26
